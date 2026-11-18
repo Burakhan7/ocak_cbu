@@ -91,6 +91,15 @@ cp docker/.env.example docker/.env   # isteğe bağlı: SA parolası ve SEED_ADM
 docker compose -f docker/docker-compose.yml up --build
 ```
 
+`web` konteyneri SQL Server **sağlıklı** olana kadar bekler (`depends_on: service_healthy`). İlk migrate, SQL henüz hazır değilken veya `UOM` veritabanı zaten varken oluşan kısa süreli **SQL 1801** yarışına karşı uygulama tarafında geri denemeli migrate yapar.
+
+Eski bir volume yarım migrate / tutarsız durumda kaldıysa ve `web` yine de çöküyorsa, bir kez volume’u sıfırlayın (yerel veri silinir):
+
+```bash
+docker compose -f docker/docker-compose.yml down -v
+docker compose -f docker/docker-compose.yml up --build
+```
+
 **ImageSharp (görsel işleme):** NuGet denetimi açıkken Release derlemesi paket güvenlik uyarılarını hata sayar. Şu an `SixLabors.ImageSharp` **3.1.12** kullanılıyor; güvenlik yamaları **3.2.0+** ile gelir ve doğrudan referans için ücretsiz [Six Labors Community](https://licensing.sixlabors.com) build lisansı gerekir (`UOM.Infrastructure`, `UOM.Application.Tests` assembly adları). İleride `sixlabors.lic` köke eklenip sürüm 3.2.0’a çıkıldığında `Directory.Build.props` içindeki geçici `NuGetAuditSuppress` satırları kaldırılmalıdır.
 
 - Web: http://localhost:8080 — yer tutucu **Merhaba** sayfası
