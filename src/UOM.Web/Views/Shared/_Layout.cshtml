@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Ülkü Ocakları Manisa</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/UOM.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom mb-3 site-header">
+            <div class="container" style="max-width: var(--container-max);">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/img/brand/logo-placeholder.svg" alt="Ülkü Ocakları Manisa" height="36" />
+                </a>
+            </div>
+        </nav>
+    </header>
+    <div class="container" style="max-width: var(--container-max);">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top site-footer mt-5">
+        <div class="container py-3" style="max-width: var(--container-max);">
+            <small>© @DateTime.UtcNow.Year Ülkü Ocakları Manisa İl Başkanlığı — Faz 0 yer tutucu</small>
+        </div>
+    </footer>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

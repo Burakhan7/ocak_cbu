@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/UOM.Application/UOM.Application.csproj" />
+    <Project Path="src/UOM.Domain/UOM.Domain.csproj" />
+    <Project Path="src/UOM.Infrastructure/UOM.Infrastructure.csproj" />
+    <Project Path="src/UOM.Web/UOM.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/UOM.Application.Tests/UOM.Application.Tests.csproj" />
+    <Project Path="tests/UOM.Web.IntegrationTests/UOM.Web.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

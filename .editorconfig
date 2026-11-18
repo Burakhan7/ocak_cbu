@@ -1,0 +1,24 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,csx}]
+dotnet_sort_system_directives_first = true
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+csharp_style_var_for_locals = true:suggestion
+csharp_prefer_braces = true:suggestion
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.csproj]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

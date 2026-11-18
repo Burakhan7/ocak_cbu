@@ -1,0 +1,27 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+[Dd]ebug/
+[Rr]elease/
+publish/
+TestResults/
+*.log
+
+## User secrets / local config
+**/secrets.json
+
+## Uploads (runtime)
+src/UOM.Web/wwwroot/uploads/
+
+## OS / IDE
+.DS_Store
+.idea/
+*.swp
+
+## Docker
+.docker/
