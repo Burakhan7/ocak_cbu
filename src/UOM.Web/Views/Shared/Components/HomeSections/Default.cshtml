@@ -1,0 +1,35 @@
+@using UOM.Application.Features.Public
+@model IReadOnlyList<string>
+@foreach (var section in Model)
+{
+    switch (section)
+    {
+        case HomeSectionIds.Hero:
+            @await Component.InvokeAsync("HeroSection");
+            break;
+        case HomeSectionIds.QuoteBand:
+            <section class="home-section text-center py-3"><p class="text-muted small mb-0">Alıntı bandı — içerik Faz 5&apos;te etkinleşecek.</p></section>
+            break;
+        case HomeSectionIds.CbuQuickLinks:
+            <section class="home-section py-4"><div class="row g-3"><div class="col-6 col-md-3"><a class="card h-100 text-decoration-none" asp-controller="Campus" asp-action="Index"><div class="card-body"><strong>CBÜ Hub</strong><p class="small text-muted mb-0">Rehber ve kaynaklar</p></div></a></div></div></section>
+            break;
+        case HomeSectionIds.UpcomingEvents:
+            @await Component.InvokeAsync("UpcomingEventsSection");
+            break;
+        case HomeSectionIds.News:
+            @await Component.InvokeAsync("NewsHomeSection");
+            break;
+        case HomeSectionIds.ParentNews:
+            <section class="home-section py-3 text-muted small">Genel Merkez haber şeridi — Faz 5</section>
+            break;
+        case HomeSectionIds.Projects:
+            <section class="home-section py-3 text-muted small">Projeler — Faz 5</section>
+            break;
+        case HomeSectionIds.MagazineVideo:
+            <section class="home-section py-3 text-muted small">Dergi ve OCAK TV — Faz 5</section>
+            break;
+        case HomeSectionIds.VisitUs:
+            @await Component.InvokeAsync("VisitUsSection");
+            break;
+    }
+}

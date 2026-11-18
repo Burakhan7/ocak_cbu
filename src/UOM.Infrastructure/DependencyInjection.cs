@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UOM.Application.Abstractions;
+using UOM.Application.Features.Public;
 using UOM.Infrastructure.Features.Admin;
+using UOM.Infrastructure.Features.Public;
+using UOM.Infrastructure.Html;
 using UOM.Infrastructure.Identity;
 using UOM.Infrastructure.Imaging;
 using UOM.Infrastructure.Persistence;
@@ -26,6 +29,11 @@ public static class DependencyInjection
         services.AddScoped<IFileStorage, LocalFileStorage>();
         services.AddScoped<IImageProcessor, ImageSharpImageProcessor>();
         services.AddSingleton<IPreviewTokenService, PreviewTokenService>();
+        services.AddSingleton<IHtmlSanitizer, GanssHtmlSanitizer>();
+        services.AddSingleton<IIpHasher, IpHasher>();
+        services.AddHttpClient(nameof(TurnstileVerifier));
+        services.AddSingleton<ITurnstileVerifier, TurnstileVerifier>();
+        services.AddMemoryCache();
 
         services.AddHttpContextAccessor();
         services.AddScoped<IAuditUserProvider>(sp =>
@@ -39,15 +47,29 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("Default");
         if (string.IsNullOrWhiteSpace(connectionString))
         {
+            services.AddSingleton<ISiteSettingsProvider, EmptySiteSettingsProvider>();
+            services.AddSingleton<IPublicNewsService, EmptyPublicNewsService>();
+            services.AddSingleton<IPublicEventService, EmptyPublicEventService>();
+            services.AddSingleton<IPublicPageService, EmptyPublicPageService>();
+            services.AddSingleton<IContactFormService, EmptyContactFormService>();
             return services;
         }
 
         services.AddDbContext<AppDbContext>(options =>
+        {
+            if (configuration.GetValue("Database:UseInMemory", false))
+            {
+                var name = configuration["Database:InMemoryName"] ?? "UOM_Test";
+                options.UseInMemoryDatabase(name);
+                return;
+            }
+
             options.UseSqlServer(connectionString, sql =>
             {
                 sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
                 sql.EnableRetryOnFailure(3);
-            }));
+            });
+        });
 
         services.AddDataProtection();
 
@@ -59,6 +81,11 @@ public static class DependencyInjection
         services.AddScoped<SiteSettingsAdminService>();
         services.AddScoped<MediaAdminService>();
         services.AddScoped<DashboardAdminService>();
+        services.AddScoped<IPublicNewsService, PublicNewsService>();
+        services.AddScoped<IPublicEventService, PublicEventService>();
+        services.AddScoped<IPublicPageService, PublicPageService>();
+        services.AddScoped<IContactFormService, ContactFormService>();
+        services.AddScoped<ISiteSettingsProvider, SiteSettingsProvider>();
 
         return services;
     }

@@ -4,33 +4,31 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace UOM.Web.IntegrationTests;
 
-public class PublicSmokeTests : IClassFixture<WebApplicationFactory<Program>>
+public class PublicSmokeTests
 {
-    private readonly HttpClient _client;
-
-    public PublicSmokeTests(WebApplicationFactory<Program> factory)
+    [Fact]
+    public async Task Home_returns_ok()
     {
-        _client = factory.WithWebHostBuilder(builder =>
+        using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
             builder.UseSetting("ConnectionStrings:Default", "");
-        }).CreateClient();
-    }
-
-    [Fact]
-    public async Task Home_returns_ok_with_merhaba()
-    {
-        var response = await _client.GetAsync("/");
-
+        });
+        var client = factory.CreateClient();
+        var response = await client.GetAsync("/");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var html = await response.Content.ReadAsStringAsync();
-        html.Should().Contain("Merhaba");
+        html.Should().Contain("Ülkü Ocakları Manisa");
     }
 
     [Fact]
     public async Task Health_returns_ok_without_database()
     {
-        var response = await _client.GetAsync("/health");
-
+        using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("ConnectionStrings:Default", "");
+        });
+        var client = factory.CreateClient();
+        var response = await client.GetAsync("/health");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

@@ -1,0 +1,28 @@
+@using UOM.Application.Formatting
+@model UOM.Application.Common.PagedResult<UOM.Application.Features.Public.Models.EventListItemDto>
+@{
+    ViewData["Title"] = "Etkinlikler";
+    var upcoming = (bool)ViewBag.UpcomingOnly;
+}
+<h1 class="h2 mb-3">Etkinlikler</h1>
+<div class="mb-3 d-flex gap-2">
+    <a class="btn btn-sm @(upcoming ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-yaklasan="true">Yaklaşan</a>
+    <a class="btn btn-sm @(!upcoming ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-yaklasan="false">Tümü</a>
+    <a class="btn btn-sm btn-outline-secondary ms-auto" asp-action="Calendar">Takvim (.ics)</a>
+</div>
+@if (Model.Items.Count == 0)
+{
+    <p class="text-muted">Liste boş.</p>
+}
+else
+{
+    <ul class="list-group list-group-flush">
+        @foreach (var evt in Model.Items)
+        {
+            <li class="list-group-item px-0">
+                <a asp-action="Detail" asp-route-slug="@evt.Slug" class="fw-semibold text-decoration-none">@evt.Title</a>
+                <div class="small text-muted">@evt.StartsAtUtc.ToLocalDisplay() — @evt.VenueName</div>
+            </li>
+        }
+    </ul>
+}
