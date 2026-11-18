@@ -2,13 +2,26 @@
 <textarea name="@ViewData["FieldName"]" id="@ViewData["FieldId"]" class="form-control rich-text-editor">@Model</textarea>
 <script src="~/lib/tinymce/tinymce.min.js"></script>
 <script>
-  tinymce.init({
-    selector: '#@ViewData["FieldId"]',
-    height: 360,
-    menubar: false,
-    plugins: 'lists link code',
-    toolbar: 'undo redo | bold italic | bullist numlist | link | code',
-    branding: false,
-    promotion: false
-  });
+  (function () {
+    var fieldId = '@ViewData["FieldId"]';
+    tinymce.init({
+      selector: '#' + fieldId,
+      height: 360,
+      menubar: false,
+      plugins: 'lists link code',
+      toolbar: 'undo redo | bold italic | bullist numlist | link | code',
+      branding: false,
+      promotion: false
+    });
+
+    var textarea = document.getElementById(fieldId);
+    if (textarea) {
+      var form = textarea.closest('form');
+      if (form) {
+        form.addEventListener('submit', function () {
+          tinymce.triggerSave();
+        });
+      }
+    }
+  })();
 </script>

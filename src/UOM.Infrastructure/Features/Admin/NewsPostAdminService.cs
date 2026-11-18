@@ -28,6 +28,9 @@ public sealed class NewsPostAdminService(
             return Result<NewsPost>.Fail("Başlık zorunludur.");
         }
 
+        model.BodyHtml = AdminContentFieldNormalization.NormalizeRequiredHtml(model.BodyHtml);
+        var isCreate = model.Id == 0;
+
         if (model.Id == 0)
         {
             model.Slug = await slugService.GenerateSlugAsync(
@@ -47,7 +50,7 @@ public sealed class NewsPostAdminService(
 
             existing.Title = model.Title;
             existing.Summary = model.Summary;
-            existing.BodyHtml = model.BodyHtml;
+            existing.BodyHtml = AdminContentFieldNormalization.NormalizeRequiredHtml(model.BodyHtml);
             existing.Scope = model.Scope;
             existing.CategoryId = model.CategoryId;
             existing.IsFeatured = model.IsFeatured;
@@ -60,7 +63,7 @@ public sealed class NewsPostAdminService(
         }
 
         await db.SaveChangesAsync(cancellationToken);
-        await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(NewsPost), model.Id, new { model.Title, model.Status }, cancellationToken);
+        await auditLogger.LogAsync(isCreate ? "Create" : "Update", nameof(NewsPost), model.Id, new { model.Title, model.Status }, cancellationToken);
         return Result<NewsPost>.Ok(model);
     }
 
