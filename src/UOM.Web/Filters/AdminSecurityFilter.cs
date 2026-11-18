@@ -23,13 +23,13 @@ public sealed class AdminSecurityFilter : IAsyncActionFilter
 
         if (user.MustChangePassword && !path.Contains("/sifre-degistir", StringComparison.OrdinalIgnoreCase))
         {
-            context.Result = new RedirectToActionResult("ChangePassword", "Account", new { area = "Admin" });
+            context.Result = new RedirectResult("/yonetim/hesap/sifre-degistir");
             return;
         }
 
         if (!accountPaths && !user.TwoFactorEnabled)
         {
-            context.Result = new RedirectToActionResult("TwoFactorSetup", "Account", new { area = "Admin" });
+            context.Result = new RedirectResult("/yonetim/hesap/iki-faktor-kur");
             return;
         }
 

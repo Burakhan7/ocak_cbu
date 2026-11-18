@@ -9,7 +9,7 @@ public sealed class PageController : Controller
 
     public PageController(IPublicPageService pages) => _pages = pages;
 
-    [HttpGet("{slug}")]
+    [HttpGet("{slug:nonreserved}")]
     public async Task<IActionResult> Detail(string slug, CancellationToken cancellationToken = default)
     {
         var redirect = await _pages.FindRedirectAsync(slug, cancellationToken);

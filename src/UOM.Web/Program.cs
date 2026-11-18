@@ -8,6 +8,7 @@ using UOM.Infrastructure.Identity;
 using UOM.Infrastructure.Persistence;
 using UOM.Web.Authorization;
 using UOM.Web.Filters;
+using UOM.Web.Routing;
 
 var turkishCulture = new CultureInfo("tr-TR");
 CultureInfo.DefaultThreadCurrentCulture = turkishCulture;
@@ -67,6 +68,8 @@ try
     });
 
     builder.Services.AddControllersWithViews();
+    builder.Services.Configure<RouteOptions>(options =>
+        options.ConstraintMap["nonreserved"] = typeof(NonReservedSlugRouteConstraint));
 
     var healthChecks = builder.Services.AddHealthChecks()
         .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
@@ -115,12 +118,13 @@ try
 
     app.MapStaticAssets();
     app.MapHealthChecks("/health");
-    app.MapControllers();
 
     app.MapAreaControllerRoute(
         name: "yonetim",
         areaName: "Admin",
         pattern: "yonetim/{controller=Dashboard}/{action=Index}/{id?}");
+
+    app.MapControllers();
 
     app.MapControllerRoute(
             name: "default",
@@ -129,7 +133,7 @@ try
 
     app.MapControllerRoute(
         name: "static-page",
-        pattern: "{slug}",
+        pattern: "{slug:nonreserved}",
         defaults: new { controller = "Page", action = "Detail" });
 
     app.Run();
