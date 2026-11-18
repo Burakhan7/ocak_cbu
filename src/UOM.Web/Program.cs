@@ -1,6 +1,12 @@
+using System.Globalization;
 using Serilog;
 using UOM.Application;
 using UOM.Infrastructure;
+using UOM.Infrastructure.Persistence;
+
+var turkishCulture = new CultureInfo("tr-TR");
+CultureInfo.DefaultThreadCurrentCulture = turkishCulture;
+CultureInfo.DefaultThreadCurrentUICulture = turkishCulture;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -34,6 +40,12 @@ try
     }
 
     var app = builder.Build();
+
+    if (app.Configuration.GetValue("Database:AutoMigrate", false)
+        && !string.IsNullOrWhiteSpace(dbConnection))
+    {
+        await DatabaseInitializer.MigrateAndSeedAsync(app.Services);
+    }
 
     app.UseSerilogRequestLogging();
 
