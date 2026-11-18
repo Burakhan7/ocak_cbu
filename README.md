@@ -114,6 +114,20 @@ docker/
   Dockerfile
 ```
 
+## Public site (Faz 3)
+
+Yayında içerik: `Published` ve `PublishedAtUtc <= now`. Taslaklar public’te **404**.
+
+| URL | Açıklama |
+|-----|----------|
+| `/` | Ana sayfa (ViewComponent bölümleri) |
+| `/haberler`, `/haberler/{slug}` | Haber listesi ve detay |
+| `/etkinlikler`, `/etkinlikler/{slug}` | Etkinlikler, 5 CTA tipi, `.ics` |
+| `/etkinlikler/takvim.ics` | Yaklaşan etkinlik iCal feed |
+| `/iletisim` | İletişim formu (KVKK, honeypot, opsiyonel Turnstile) |
+| `/{slug}` | Yayınlanmış statik sayfalar (`ShowInFooter` footer’da) |
+| `/cbu` | CBÜ Hub yer tutucu (Faz 4) |
+
 ## Yönetim paneli (Faz 2)
 
 - URL: **`/yonetim`** (giriş: `/yonetim/hesap/giris`)
@@ -149,7 +163,8 @@ Migration (Faz 2): `AddContentApprovalRejectionNotes`
 - [x] Faz 0 — İskelet, Serilog, `/health`, Docker
 - [x] Faz 1 — Domain, EF Core, global soft-delete, audit alanları, seed, SQL health
 - [x] Faz 2 — `/yonetim` Identity+2FA, policy’ler, haber/etkinlik/mekan/site/medya CRUD, onay akışı, önizleme, audit log
-- [ ] Faz 3+ — public sayfalar (`ARCHITECTURE.md` Bölüm 13)
+- [x] Faz 3 — Public çekirdek sayfalar (layout, ana sayfa, haber/etkinlik, iletişim, statik slug, 404/500)
+- [ ] Faz 4+ — CBÜ katmanı (`ARCHITECTURE.md` Bölüm 13)
 
 ## TODO(spec)
 

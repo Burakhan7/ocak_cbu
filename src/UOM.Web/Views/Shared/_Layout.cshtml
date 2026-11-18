@@ -3,34 +3,72 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Ülkü Ocakları Manisa</title>
-    <script type="importmap"></script>
+    <title>@(ViewData["Title"] ?? "Ana sayfa") — Ülkü Ocakları Manisa</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/UOM.Web.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom mb-3 site-header">
-            <div class="container" style="max-width: var(--container-max);">
-                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/img/brand/logo-placeholder.svg" alt="Ülkü Ocakları Manisa" height="36" />
-                </a>
-            </div>
-        </nav>
+<body class="public-site">
+@await Component.InvokeAsync("PublicLayout")
+    <header class="site-header border-bottom">
+        <div class="container d-flex align-items-center justify-content-between py-2" style="max-width: var(--container-max);">
+            <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" asp-controller="Home" asp-action="Index">
+                <img src="~/img/brand/logo-placeholder.svg" alt="Ülkü Ocakları Manisa" height="36" />
+            </a>
+            <nav class="d-none d-md-flex gap-3 align-items-center public-nav" aria-label="Ana menü">
+                <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                <a asp-controller="Campus" asp-action="Index">CBÜ</a>
+                <a asp-controller="Event" asp-action="Index">Etkinlikler</a>
+                <a asp-controller="News" asp-action="Index">Haberler</a>
+                <a class="text-muted" href="#" aria-disabled="true" title="Faz 5">Genel Merkez</a>
+                <a class="text-muted" href="#" aria-disabled="true" title="Faz 5">Teşkilat</a>
+                <a asp-controller="Contact" asp-action="Index">İletişim</a>
+            </nav>
+            <a class="btn btn-primary btn-sm ocağa-ugra-btn" asp-controller="Contact" asp-action="Index" asp-fragment="harita">Ocağa Uğra</a>
+        </div>
     </header>
-    <div class="container" style="max-width: var(--container-max);">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top site-footer mt-5">
-        <div class="container py-3" style="max-width: var(--container-max);">
-            <small>© @DateTime.UtcNow.Year Ülkü Ocakları Manisa İl Başkanlığı — Faz 0 yer tutucu</small>
+    <main class="site-main container pb-5" style="max-width: var(--container-max);">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer border-top mt-auto">
+        <div class="container py-4" style="max-width: var(--container-max);">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <strong>@(ViewBag.SiteName ?? "Ülkü Ocakları Manisa")</strong>
+                    <p class="small text-muted mb-0">@(ViewBag.SiteAddress)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Hızlı bağlantılar</strong>
+                    <ul class="list-unstyled small mb-0">
+                        @if (ViewBag.FooterPages is IEnumerable<UOM.Application.Features.Public.Models.StaticPageLinkDto> footerPages)
+                        {
+                            foreach (var link in footerPages)
+                            {
+                                <li><a asp-controller="Page" asp-action="Detail" asp-route-slug="@link.Slug">@link.Title</a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <strong>Genel Merkez</strong>
+                    <p class="small mb-0"><a href="https://ulkuocaklari.org.tr" rel="noopener" target="_blank">ulkuocaklari.org.tr ↗</a></p>
+                    <p class="small text-muted mb-0">Ülkü Ocakları Eğitim ve Kültür Vakfı</p>
+                </div>
+            </div>
+            <p class="small text-muted mb-0 mt-3">© @DateTime.UtcNow.Year Ülkü Ocakları Manisa İl Başkanlığı</p>
         </div>
     </footer>
+
+    <nav class="mobile-tabbar d-md-none" aria-label="Mobil kısayollar">
+        <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+        <a asp-controller="Campus" asp-action="Index">CBÜ</a>
+        <a asp-controller="Event" asp-action="Index">Etkinlikler</a>
+        <a asp-controller="Contact" asp-action="Index" asp-fragment="harita">Ocağa Uğra</a>
+    </nav>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

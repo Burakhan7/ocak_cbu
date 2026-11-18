@@ -1,0 +1,21 @@
+@model UOM.Application.Features.Public.Models.NewsDetailDto
+@{
+    ViewData["Title"] = Model.Title;
+    var related = ViewBag.Related as IReadOnlyList<UOM.Application.Features.Public.Models.NewsListItemDto> ?? [];
+}
+<article>
+    <h1 class="h2">@Model.Title</h1>
+    <div class="content-body mb-4">@Html.Raw(Model.BodyHtml)</div>
+</article>
+@if (related.Count > 0)
+{
+    <section class="mt-4">
+        <h2 class="h5">İlgili haberler</h2>
+        <ul>
+            @foreach (var n in related)
+            {
+                <li><a asp-action="Detail" asp-route-slug="@n.Slug">@n.Title</a></li>
+            }
+        </ul>
+    </section>
+}

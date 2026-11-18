@@ -1,0 +1,94 @@
+@model UOM.Web.Models.ContactFormViewModel
+@{
+    ViewData["Title"] = "İletişim";
+}
+<h1 class="h2 mb-3">İletişim</h1>
+<div class="row g-4">
+    <div class="col-md-5" id="harita">
+        <p>@(Model.Site.Address ?? "Adres yakında eklenecek.")</p>
+        <p class="small text-muted">@Model.Site.Phone · @Model.Site.Email</p>
+    </div>
+    <div class="col-md-7">
+        @if (Model.Submitted)
+        {
+            <div class="alert alert-success">Mesajınız alındı. Teşekkürler. <a asp-controller="Event" asp-action="Index">Yaklaşan etkinliklere</a> göz atabilirsiniz.</div>
+        }
+        else
+        {
+            <form asp-action="Index" method="post" class="contact-form" novalidate>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="d-none" aria-hidden="true">
+                    <label asp-for="Website">Website</label>
+                    <input asp-for="Website" tabindex="-1" autocomplete="off" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Subject" class="form-label"></label>
+                    <select asp-for="Subject" class="form-select" asp-items="Html.GetEnumSelectList<UOM.Domain.Enums.ContactSubject>()"></select>
+                </div>
+                <div class="form-check mb-3">
+                    <input asp-for="IsStudentAtCbu" class="form-check-input" id="cbuStudent" />
+                    <label class="form-check-label" for="cbuStudent" asp-for="IsStudentAtCbu"></label>
+                </div>
+                <div class="mb-3" id="facultyBlock" style="display:none;">
+                    <label asp-for="FacultyId" class="form-label"></label>
+                    <select asp-for="FacultyId" class="form-select">
+                        <option value="">Seçiniz</option>
+                        @foreach (var f in Model.Faculties)
+                        {
+                            <option value="@f.Id">@f.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Message" class="form-label"></label>
+                    <textarea asp-for="Message" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Message" class="text-danger"></span>
+                </div>
+                <div class="form-check mb-3">
+                    <input asp-for="KvkkConsent" class="form-check-input" />
+                    <label asp-for="KvkkConsent" class="form-check-label">
+                        <a asp-controller="Page" asp-action="Detail" asp-route-slug="kvkk-aydinlatma-metni">KVKK aydınlatma metnini</a> okudum ve onaylıyorum.
+                    </label>
+                    <span asp-validation-for="KvkkConsent" class="text-danger"></span>
+                </div>
+                @if (Model.TurnstileEnabled && !string.IsNullOrWhiteSpace(Model.TurnstileSiteKey))
+                {
+                    <div class="cf-turnstile mb-3" data-sitekey="@Model.TurnstileSiteKey" data-response-field-name="TurnstileToken"></div>
+                    <input type="hidden" asp-for="TurnstileToken" />
+                }
+                <button type="submit" class="btn btn-primary">Gönder</button>
+            </form>
+        }
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const cbu = document.getElementById('cbuStudent');
+        const faculty = document.getElementById('facultyBlock');
+        if (cbu && faculty) {
+            const toggle = () => { faculty.style.display = cbu.checked ? 'block' : 'none'; };
+            cbu.addEventListener('change', toggle);
+            toggle();
+        }
+    </script>
+    @if (Model.TurnstileEnabled && !string.IsNullOrWhiteSpace(Model.TurnstileSiteKey))
+    {
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    }
+}

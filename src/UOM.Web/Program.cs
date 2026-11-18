@@ -41,16 +41,27 @@ try
     builder.Services.AddScoped<AdminSecurityFilter>();
 
     var loginPerMinute = builder.Configuration.GetValue("RateLimit:LoginPerMinutePerIp", 5);
+    var formsPerMinute = builder.Configuration.GetValue("RateLimit:FormsPerMinutePerIp", 3);
     builder.Services.AddRateLimiter(options =>
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        var partitionKey = (HttpContext ctx) => ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         options.AddPolicy("login", httpContext =>
             RateLimitPartition.GetFixedWindowLimiter(
-                httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                partitionKey(httpContext),
                 _ => new FixedWindowRateLimiterOptions
                 {
                     Window = TimeSpan.FromMinutes(1),
                     PermitLimit = loginPerMinute,
+                    QueueLimit = 0,
+                }));
+        options.AddPolicy("forms", httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey(httpContext),
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    Window = TimeSpan.FromMinutes(1),
+                    PermitLimit = formsPerMinute,
                     QueueLimit = 0,
                 }));
     });
@@ -81,9 +92,15 @@ try
 
     if (!app.Environment.IsDevelopment())
     {
-        app.UseExceptionHandler("/Home/Error");
+        app.UseExceptionHandler("/hata");
         app.UseHsts();
     }
+    else
+    {
+        app.UseDeveloperExceptionPage();
+    }
+
+    app.UseStatusCodePagesWithReExecute("/bulunamadi");
 
     if (!app.Environment.IsEnvironment("Docker"))
     {
@@ -98,6 +115,7 @@ try
 
     app.MapStaticAssets();
     app.MapHealthChecks("/health");
+    app.MapControllers();
 
     app.MapAreaControllerRoute(
         name: "yonetim",
@@ -108,6 +126,11 @@ try
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}")
         .WithStaticAssets();
+
+    app.MapControllerRoute(
+        name: "static-page",
+        pattern: "{slug}",
+        defaults: new { controller = "Page", action = "Detail" });
 
     app.Run();
 }

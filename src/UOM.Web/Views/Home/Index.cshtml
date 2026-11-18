@@ -1,13 +1,4 @@
 ﻿@{
-    ViewData["Title"] = "Ana Sayfa";
+    ViewData["Title"] = "Ana sayfa";
 }
-
-<div class="text-center py-5">
-    <h1 class="display-5 mb-3">Merhaba</h1>
-    <p class="lead text-muted">
-        Ülkü Ocakları Manisa İl Başkanlığı yerel web sitesi geliştirme aşamasındadır.
-    </p>
-    <p class="text-muted">
-        CBÜ öğrencilerine ve Manisa gençliğine yönelik içerikler sonraki fazlarda eklenecektir.
-    </p>
-</div>
+@await Component.InvokeAsync("HomeSections")

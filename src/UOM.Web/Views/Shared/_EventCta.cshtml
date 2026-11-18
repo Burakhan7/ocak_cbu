@@ -1,0 +1,32 @@
+@using UOM.Application.Features.Public.Models
+@model EventDetailDto
+<div class="event-cta card border-primary-subtle" data-cta-type="@Model.CallToActionType">
+    <div class="card-body">
+        <p class="fw-semibold mb-2">@Model.Cta.PrimaryLabel</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Cta.SecondaryHint))
+        {
+            <p class="small text-muted">@Model.Cta.SecondaryHint</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Cta.PrimaryUrl))
+        {
+            <a class="btn btn-primary"
+               href="@Model.Cta.PrimaryUrl"
+               @(Model.Cta.OpensInNewTab ? "target=\"_blank\" rel=\"noopener\"" : null)>
+                @Model.Cta.PrimaryLabel
+            </a>
+        }
+        else if (Model.Cta.Type == UOM.Domain.Enums.EventCtaType.JustCome && Model.Venue?.Latitude is not null && Model.Venue.Longitude is not null)
+        {
+            var lat = Model.Venue.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var lng = Model.Venue.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            <a class="btn btn-outline-primary" href="https://www.google.com/maps/dir/?api=1&destination=@lat,@lng" target="_blank" rel="noopener">Yol tarifi</a>
+        }
+        @if (Model.Cta.Type == UOM.Domain.Enums.EventCtaType.InternalInterest && Model.Cta.Type == UOM.Domain.Enums.EventCtaType.InternalInterest)
+        {
+            <p class="small mb-0"><a asp-controller="Contact" asp-action="Index">İletişim formu</a> üzerinden ulaşabilirsiniz.</p>
+        }
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            <a class="btn btn-sm btn-outline-secondary" asp-controller="Event" asp-action="Ics" asp-route-slug="@Model.Slug">Takvimime ekle (.ics)</a>
+        </div>
+    </div>
+</div>

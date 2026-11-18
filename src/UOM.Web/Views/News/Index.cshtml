@@ -1,0 +1,25 @@
+@model UOM.Application.Common.PagedResult<UOM.Application.Features.Public.Models.NewsListItemDto>
+@{
+    ViewData["Title"] = "Haberler";
+}
+<h1 class="h2 mb-3">Haberler</h1>
+@if (Model.Items.Count == 0)
+{
+    <p class="text-muted">Yayınlanmış haber yok.</p>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var item in Model.Items)
+        {
+            <div class="col-md-4">
+                <article class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h6"><a asp-action="Detail" asp-route-slug="@item.Slug" class="stretched-link text-decoration-none">@item.Title</a></h2>
+                        <p class="small text-muted">@item.Summary</p>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

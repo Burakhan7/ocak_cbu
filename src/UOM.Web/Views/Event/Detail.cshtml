@@ -1,0 +1,23 @@
+@using UOM.Application.Formatting
+@model UOM.Application.Features.Public.Models.EventDetailDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+<article class="event-detail">
+    <p class="text-muted small mb-2">@Model.StartsAtUtc.ToLocalDisplay()</p>
+    <h1 class="h2 mb-3">@Model.Title</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.Summary))
+    {
+        <p class="lead">@Model.Summary</p>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+    {
+        <img class="img-fluid rounded mb-3" src="@Model.CoverImageUrl" alt="@(Model.CoverImageAlt ?? Model.Title)" />
+    }
+    @if (Model.Venue is not null)
+    {
+        <p class="mb-3"><strong>Mekan:</strong> @Model.Venue.Name — @Model.Venue.Address</p>
+    }
+    <div class="content-body mb-4">@Html.Raw(Model.BodyHtml)</div>
+    <partial name="_EventCta" model="Model" />
+</article>

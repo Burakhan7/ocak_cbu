@@ -1,0 +1,33 @@
+@using UOM.Application.Formatting
+@using UOM.Application.Features.Public.Models
+@model EventDetailDto?
+<section class="home-hero py-5">
+    <div class="row align-items-center g-4">
+        <div class="col-md-7">
+            <p class="text-uppercase small fw-semibold text-muted mb-1">Manisa İl Başkanlığı</p>
+            <h1 class="display-6">Ülkü Ocakları Manisa ile tanış</h1>
+            <p class="lead text-muted">CBÜ öğrencileri için etkinlikler, haberler ve iletişim tek çatı altında.</p>
+        </div>
+        <div class="col-md-5">
+            @if (Model is null)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="mb-0 text-muted">Yaklaşan etkinlik yakında burada.</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="small text-muted mb-1">Yaklaşan etkinlik</p>
+                        <h2 class="h5"><a asp-controller="Event" asp-action="Detail" asp-route-slug="@Model.Slug">@Model.Title</a></h2>
+                        <p class="small mb-3">@Model.StartsAtUtc.ToLocalDisplay()</p>
+                        <a class="btn btn-primary btn-sm" asp-controller="Event" asp-action="Detail" asp-route-slug="@Model.Slug">Etkinliğe katıl</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

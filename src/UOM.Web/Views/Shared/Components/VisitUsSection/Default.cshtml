@@ -1,0 +1,20 @@
+@using UOM.Application.Features.Public.Models
+@model SiteSettingsDto
+<section class="py-4 visit-us-section" id="harita">
+    <h2 class="h4 mb-3">Ocağa uğra</h2>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <p class="mb-1">@(Model.Address ?? "Adres bilgisi yakında eklenecek.")</p>
+            <p class="small text-muted mb-2">@(Model.OpeningHoursText ?? "Çalışma saatleri tanımlanmadı.")</p>
+            @if (!string.IsNullOrWhiteSpace(Model.WhatsAppChannelUrl))
+            {
+                <a class="btn btn-outline-primary btn-sm" href="@Model.WhatsAppChannelUrl" rel="noopener" target="_blank">WhatsApp kanalı</a>
+            }
+            @if (Model.MapLat is double lat && Model.MapLng is double lng)
+            {
+                var maps = $"https://www.google.com/maps/dir/?api=1&destination={lat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{lng.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+                <a class="btn btn-primary btn-sm ms-2" href="@maps" rel="noopener" target="_blank">Yol tarifi al</a>
+            }
+        </div>
+    </div>
+</section>
