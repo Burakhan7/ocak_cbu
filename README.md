@@ -86,9 +86,32 @@ dotnet run --project src/UOM.Web/UOM.Web.csproj
 
 ## Docker Compose
 
+`docker/docker-compose.yml` içindeki `env_file` ve `${...}` değişkenleri **`docker/` klasörüne** göre çözülür. `docker/.env` oluşturup varsayılan geliştirme SuperAdmin tohumunu kullanmak için (örnek parolalar yalnızca yerel geliştirme içindir):
+
 ```bash
-cp docker/.env.example docker/.env   # isteğe bağlı: SA parolası ve SEED_ADMIN_*
-docker compose -f docker/docker-compose.yml up --build
+cd docker
+cp .env.example .env
+docker compose up --build
+```
+
+Depo kökünden çalıştırmak isterseniz proje dizini ve env dosyasını açıkça verin; aksi halde `SEED_ADMIN_*` konteynere gelmez ve `/admin` girişi başarısız olur:
+
+```bash
+cp docker/.env.example docker/.env
+docker compose --project-directory docker -f docker/docker-compose.yml --env-file docker/.env up --build
+```
+
+İlk çalıştırmada volume daha önce **SEED** olmadan migrate edildiyse SuperAdmin oluşmamış olabilir; bir kez `down -v` ile sıfırlayın veya kullanıcıyı elle ekleyin. Admin: `http://localhost:8080/admin` — `docker/.env.example` içindeki geliştirme e-posta/şifre (girişten sonra şifre değişimi zorunlu).
+
+`web` konteyneri SQL Server **sağlıklı** olana kadar bekler (`depends_on: service_healthy`). İlk migrate, SQL henüz hazır değilken veya `UOM` veritabanı zaten varken oluşan kısa süreli **SQL 1801** yarışına karşı uygulama tarafında geri denemeli migrate yapar.
+
+Eski bir volume yarım migrate / tutarsız durumda kaldıysa ve `web` yine de çöküyorsa, bir kez volume’u sıfırlayın (yerel veri silinir):
+
+```bash
+cd docker && docker compose down -v && docker compose up --build
+# veya repo kökünden:
+docker compose --project-directory docker -f docker/docker-compose.yml down -v
+docker compose --project-directory docker -f docker/docker-compose.yml --env-file docker/.env up --build
 ```
 
 **ImageSharp (görsel işleme):** NuGet denetimi açıkken Release derlemesi paket güvenlik uyarılarını hata sayar. Şu an `SixLabors.ImageSharp` **3.1.12** kullanılıyor; güvenlik yamaları **3.2.0+** ile gelir ve doğrudan referans için ücretsiz [Six Labors Community](https://licensing.sixlabors.com) build lisansı gerekir (`UOM.Infrastructure`, `UOM.Application.Tests` assembly adları). İleride `sixlabors.lic` köke eklenip sürüm 3.2.0’a çıkıldığında `Directory.Build.props` içindeki geçici `NuGetAuditSuppress` satırları kaldırılmalıdır.

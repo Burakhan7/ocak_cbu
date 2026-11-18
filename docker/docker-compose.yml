@@ -1,7 +1,19 @@
+# Compose paths (env_file, .env interpolation) resolve from this folder (`docker/`).
+#
+# Recommended:
+#   cd docker && cp .env.example .env && docker compose up --build
+#
+# From repo root:
+#   cp docker/.env.example docker/.env
+#   docker compose --project-directory docker -f docker/docker-compose.yml --env-file docker/.env up --build
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: uom-sqlserver
+    env_file:
+      - path: .env
+        required: false
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}
@@ -22,16 +34,18 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     container_name: uom-web
+    restart: unless-stopped
     depends_on:
       sqlserver:
-        condition: service_started
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Default: Server=sqlserver,1433;Database=UOM;User Id=sa;Password=${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd};TrustServerCertificate=True;Encrypt=False
       Database__AutoMigrate: "true"
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
     ports:
       - "8080:8080"
 
