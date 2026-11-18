@@ -37,6 +37,18 @@ public sealed class DatabaseSeeder
     {
         await SeedRolesAsync(cancellationToken);
         await SeedSuperAdminAsync(cancellationToken);
+        await SeedOptionalUserAsync(
+            "SEED_EDITOR_EMAIL",
+            "SEED_EDITOR_PASSWORD",
+            RoleNames.Editor,
+            mustChangePassword: true,
+            cancellationToken);
+        await SeedOptionalUserAsync(
+            "SEED_PROVINCE_ADMIN_EMAIL",
+            "SEED_PROVINCE_ADMIN_PASSWORD",
+            RoleNames.ProvinceAdmin,
+            mustChangePassword: true,
+            cancellationToken);
         await SeedDistrictsAsync(cancellationToken);
         await SeedStaticPagesAsync(cancellationToken);
         await SeedGuideArticleDraftsAsync(cancellationToken);
@@ -92,6 +104,44 @@ public sealed class DatabaseSeeder
 
         await _userManager.AddToRoleAsync(user, RoleNames.SuperAdmin);
         _logger.LogInformation("Seeded SuperAdmin user {Email} (password change required on first login).", email);
+    }
+
+    private async Task SeedOptionalUserAsync(
+        string emailVar,
+        string passwordVar,
+        string role,
+        bool mustChangePassword,
+        CancellationToken cancellationToken)
+    {
+        var email = Environment.GetEnvironmentVariable(emailVar);
+        var password = Environment.GetEnvironmentVariable(passwordVar);
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            return;
+        }
+
+        if (await _userManager.FindByEmailAsync(email) is not null)
+        {
+            return;
+        }
+
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true,
+            MustChangePassword = mustChangePassword,
+        };
+
+        var createResult = await _userManager.CreateAsync(user, password);
+        if (!createResult.Succeeded)
+        {
+            _logger.LogWarning("Seed user {EmailVar} failed: {Errors}", emailVar, string.Join(", ", createResult.Errors.Select(e => e.Description)));
+            return;
+        }
+
+        await _userManager.AddToRoleAsync(user, role);
+        _logger.LogInformation("Seeded {Role} user {Email}.", role, email);
     }
 
     private async Task SeedDistrictsAsync(CancellationToken cancellationToken)

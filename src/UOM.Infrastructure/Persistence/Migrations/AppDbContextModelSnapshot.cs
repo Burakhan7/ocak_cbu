@@ -621,6 +621,10 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("LastRejectionNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<string>("MetaDescription")
                         .HasColumnType("nvarchar(max)");
 
@@ -1255,6 +1259,10 @@ namespace UOM.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("IsPinned")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastRejectionNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("MetaDescription")
                         .HasColumnType("nvarchar(max)");

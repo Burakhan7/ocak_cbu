@@ -15,6 +15,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
 
         builder.Property(e => e.Title).HasMaxLength(300).IsRequired();
         builder.Property(e => e.Slug).HasMaxLength(120).IsRequired();
+        builder.Property(e => e.LastRejectionNote).HasMaxLength(2000);
         builder.HasIndex(e => new { e.Status, e.StartsAtUtc });
         builder.HasOne(e => e.CoverImage).WithMany().HasForeignKey(e => e.CoverImageId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Venue).WithMany(v => v.Events).HasForeignKey(e => e.VenueId).OnDelete(DeleteBehavior.SetNull);

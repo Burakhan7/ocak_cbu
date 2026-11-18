@@ -1,0 +1,29 @@
+@model IReadOnlyList<NewsPost>
+@{
+    ViewData["Title"] = "Haberler";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Haberler</h1>
+    <a class="btn btn-primary" href="@Url.Action("Create")">Yeni haber</a>
+</div>
+<table class="table table-sm bg-white">
+    <thead>
+    <tr>
+        <th>Başlık</th>
+        <th>Durum</th>
+        <th>Kapsam</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>@item.Status</td>
+            <td>@item.Scope</td>
+            <td><a href="@Url.Action("Edit", new { id = item.Id })">Düzenle</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

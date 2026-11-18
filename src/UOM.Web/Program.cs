@@ -1,8 +1,13 @@
 using System.Globalization;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
 using Serilog;
 using UOM.Application;
 using UOM.Infrastructure;
+using UOM.Infrastructure.Identity;
 using UOM.Infrastructure.Persistence;
+using UOM.Web.Authorization;
+using UOM.Web.Filters;
 
 var turkishCulture = new CultureInfo("tr-TR");
 CultureInfo.DefaultThreadCurrentCulture = turkishCulture;
@@ -24,12 +29,37 @@ try
 
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+
+    var dbConnection = builder.Configuration.GetConnectionString("Default");
+    if (!string.IsNullOrWhiteSpace(dbConnection))
+    {
+        builder.Services.AddUomAdminIdentity();
+        builder.Services.ConfigureUomAdminCookies(builder.Environment);
+    }
+
+    builder.Services.AddUomAuthorizationPolicies();
+    builder.Services.AddScoped<AdminSecurityFilter>();
+
+    var loginPerMinute = builder.Configuration.GetValue("RateLimit:LoginPerMinutePerIp", 5);
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.AddPolicy("login", httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    Window = TimeSpan.FromMinutes(1),
+                    PermitLimit = loginPerMinute,
+                    QueueLimit = 0,
+                }));
+    });
+
     builder.Services.AddControllersWithViews();
 
     var healthChecks = builder.Services.AddHealthChecks()
         .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
 
-    var dbConnection = builder.Configuration.GetConnectionString("Default");
     if (!string.IsNullOrWhiteSpace(dbConnection))
     {
         healthChecks.AddSqlServer(
@@ -60,11 +90,19 @@ try
         app.UseHttpsRedirection();
     }
 
+    app.UseStaticFiles();
     app.UseRouting();
+    app.UseRateLimiter();
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapStaticAssets();
     app.MapHealthChecks("/health");
+
+    app.MapAreaControllerRoute(
+        name: "yonetim",
+        areaName: "Admin",
+        pattern: "yonetim/{controller=Dashboard}/{action=Index}/{id?}");
 
     app.MapControllerRoute(
             name: "default",

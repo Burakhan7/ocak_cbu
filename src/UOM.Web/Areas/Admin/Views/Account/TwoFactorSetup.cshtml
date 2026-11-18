@@ -1,0 +1,20 @@
+@model TwoFactorSetupViewModel
+@{
+    ViewData["Title"] = "İki faktörlü doğrulama";
+}
+<h1 class="h3 mb-3">İki faktörlü doğrulama (zorunlu)</h1>
+<p>Google Authenticator veya uyumlu bir uygulama ile QR kodu okutun veya paylaşılan anahtarı girin.</p>
+<div class="admin-card mb-3">
+    <p class="small text-muted mb-1">Paylaşılan anahtar</p>
+    <code>@Model.SharedKey</code>
+    <p class="small text-muted mt-2 mb-1">otpauth URI</p>
+    <code class="small">@Model.AuthenticatorUri</code>
+</div>
+<form method="post" class="card card-body" style="max-width:480px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label"></label>
+        <input asp-for="Code" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Doğrula ve etkinleştir</button>
+</form>
