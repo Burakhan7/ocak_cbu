@@ -26,6 +26,9 @@ public sealed class EventAdminService(
             return Result<Event>.Fail("Başlık zorunludur.");
         }
 
+        model.BodyHtml = AdminContentFieldNormalization.NormalizeRequiredHtml(model.BodyHtml);
+        var isCreate = model.Id == 0;
+
         if (model.Id == 0)
         {
             model.Slug = await slugService.GenerateSlugAsync(
@@ -45,7 +48,7 @@ public sealed class EventAdminService(
 
             existing.Title = model.Title;
             existing.Summary = model.Summary;
-            existing.BodyHtml = model.BodyHtml;
+            existing.BodyHtml = AdminContentFieldNormalization.NormalizeRequiredHtml(model.BodyHtml);
             existing.StartsAtUtc = model.StartsAtUtc;
             existing.EndsAtUtc = model.EndsAtUtc;
             existing.VenueId = model.VenueId;
@@ -62,7 +65,7 @@ public sealed class EventAdminService(
         }
 
         await db.SaveChangesAsync(cancellationToken);
-        await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(Event), model.Id, new { model.Title, model.Status }, cancellationToken);
+        await auditLogger.LogAsync(isCreate ? "Create" : "Update", nameof(Event), model.Id, new { model.Title, model.Status }, cancellationToken);
         return Result<Event>.Ok(model);
     }
 

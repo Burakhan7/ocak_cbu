@@ -6,7 +6,9 @@
     ViewData["Title"] = Model.Id == 0 ? "Yeni etkinlik" : "Etkinlik düzenle";
     var canPublish = (await AuthorizationService.AuthorizeAsync(User, PolicyNames.CanPublish)).Succeeded;
 }
-<form method="post" asp-action="Save">
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<form method="post" asp-action="Save" asp-controller="Events" asp-area="Admin">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Slug" />
     <input type="hidden" asp-for="Status" />
