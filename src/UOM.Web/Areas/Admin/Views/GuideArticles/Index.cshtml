@@ -1,0 +1,13 @@
+@model IReadOnlyList<GuideArticle>
+@{ ViewData["Title"] = "Rehber"; }
+<h1 class="h3 mb-3">Öğrenci rehberi</h1>
+<a class="btn btn-primary mb-3" asp-action="Create">Yeni madde</a>
+<ul class="list-group">
+@foreach (var g in Model)
+{
+    <li class="list-group-item d-flex justify-content-between">
+        <span>@g.Title <small class="text-muted">@g.Status</small></span>
+        <a asp-action="Edit" asp-route-id="@g.Id">Düzenle</a>
+    </li>
+}
+</ul>

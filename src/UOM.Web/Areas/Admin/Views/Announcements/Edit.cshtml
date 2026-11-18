@@ -1,0 +1,30 @@
+@model Announcement
+@using Microsoft.AspNetCore.Authorization
+@using UOM.Application.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Yeni duyuru" : "Duyuru düzenle";
+    var canPublish = (await AuthorizationService.AuthorizeAsync(User, PolicyNames.CanPublish)).Succeeded;
+}
+<form method="post" asp-action="Save">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Slug" />
+    <input type="hidden" asp-for="Status" />
+    <div class="mb-3"><label asp-for="Title" class="form-label">Başlık</label><input asp-for="Title" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Type" class="form-label">Tür</label><select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<AnnouncementType>()"></select></div>
+    <div class="mb-3"><label asp-for="Body" class="form-label">Metin</label><textarea asp-for="Body" class="form-control" rows="4"></textarea></div>
+    <div class="mb-3"><label asp-for="ExternalUrl" class="form-label">Harici bağlantı</label><input asp-for="ExternalUrl" class="form-control" /></div>
+    <div class="row mb-3">
+        <div class="col-md-6"><label asp-for="DeadlineUtc" class="form-label">Son başvuru (UTC)</label><input asp-for="DeadlineUtc" class="form-control" type="datetime-local" /></div>
+        <div class="col-md-6"><label asp-for="ExpiresAtUtc" class="form-label">Liste bitişi (UTC)</label><input asp-for="ExpiresAtUtc" class="form-control" type="datetime-local" /></div>
+    </div>
+    <div class="form-check mb-3"><input asp-for="IsPinned" class="form-check-input" /><label class="form-check-label" asp-for="IsPinned">Sabitle</label></div>
+    <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        @if (Model.Id > 0)
+        {
+            <button formaction="@Url.Action("Submit", new { id = Model.Id })" formmethod="post" type="submit" class="btn btn-outline-secondary">Onaya gönder</button>
+            if (canPublish) { <button formaction="@Url.Action("Publish", new { id = Model.Id })" formmethod="post" type="submit" class="btn btn-success">Yayınla</button> }
+        }
+    </div>
+</form>

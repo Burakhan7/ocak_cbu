@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using UOM.Application.Features.Public;
 
 namespace UOM.Web.Controllers;
 
-/// <summary>Faz 4'te genişletilecek CBÜ Hub yer tutucusu.</summary>
 [Route("cbu")]
-public sealed class CampusController : Controller
+public sealed class CampusController(IPublicCampusHubService hub) : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => View();
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    {
+        var model = await hub.GetHubAsync(cancellationToken);
+        return View(model);
+    }
 }

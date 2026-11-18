@@ -1,0 +1,17 @@
+@model GuideDetailDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+<article>
+    <p><a asp-action="Index">← Rehber listesi</a></p>
+    <h1 class="h2">@Model.Title</h1>
+    @if (Model.LastReviewedAtUtc is { } r)
+    {
+        <p class="text-muted small">Son güncelleme: @r.ToLocalTime().ToString("d")</p>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Summary))
+    {
+        <p class="lead">@Model.Summary</p>
+    }
+    <div class="content-body">@Html.Raw(Model.BodyHtml)</div>
+</article>

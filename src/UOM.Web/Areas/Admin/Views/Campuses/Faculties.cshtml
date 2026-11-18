@@ -1,0 +1,11 @@
+@model IReadOnlyList<Faculty>
+@{ ViewData["Title"] = "Fakülteler"; }
+<h1 class="h3 mb-3">Fakülteler</h1>
+<p><a asp-action="Index">← Kampüsler</a></p>
+<a class="btn btn-primary mb-3" asp-action="CreateFaculty">Yeni fakülte</a>
+<ul class="list-group">
+@foreach (var f in Model)
+{
+    <li class="list-group-item d-flex justify-content-between"><span>@f.Name <small class="text-muted">(@f.Campus?.Name)</small></span><a asp-action="EditFaculty" asp-route-id="@f.Id">Düzenle</a></li>
+}
+</ul>

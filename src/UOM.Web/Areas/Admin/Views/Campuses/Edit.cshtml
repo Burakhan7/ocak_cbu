@@ -1,0 +1,15 @@
+@model Campus
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni kampüs" : "Kampüs düzenle"; }
+<form method="post" asp-action="Save">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3"><label asp-for="Name" class="form-label">Ad</label><input asp-for="Name" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="ShortName" class="form-label">Kısa ad</label><input asp-for="ShortName" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Address" class="form-label">Adres</label><textarea asp-for="Address" class="form-control" rows="2"></textarea></div>
+    <div class="row">
+        <div class="col-md-4 mb-3"><label asp-for="Latitude" class="form-label">Enlem</label><input asp-for="Latitude" class="form-control" /></div>
+        <div class="col-md-4 mb-3"><label asp-for="Longitude" class="form-label">Boylam</label><input asp-for="Longitude" class="form-control" /></div>
+        <div class="col-md-4 mb-3"><label asp-for="Order" class="form-label">Sıra</label><input asp-for="Order" class="form-control" type="number" /></div>
+    </div>
+    <div class="mb-3"><label asp-for="Description" class="form-label">Açıklama</label><textarea asp-for="Description" class="form-control" rows="3"></textarea></div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

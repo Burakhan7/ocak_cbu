@@ -1,7 +1,139 @@
+@model CampusHubDto
+@using UOM.Domain.Enums
 @{
     ViewData["Title"] = "CBÜ";
 }
-<div class="py-4">
-    <h1 class="h2">CBÜ'lü Ülküdaşlar</h1>
-    <p class="text-muted">CBÜ Hub içeriği Faz 4&apos;te genişletilecek. Şimdilik <a asp-controller="News" asp-action="Index">kampüs haberleri</a> ve <a asp-controller="Event" asp-action="Index">etkinlikleri</a> inceleyebilirsiniz.</p>
+<div class="cbu-hub py-3">
+    <header class="mb-4">
+        <h1 class="h2">CBÜ&apos;lü Ülküdaşlar</h1>
+        <p class="lead text-muted">@(Model.IntroText ?? "Manisa Celal Bayar Üniversitesi öğrencileri için rehber, duyuru ve kaynaklar.")</p>
+    </header>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <a class="card h-100 text-decoration-none" asp-controller="Guide" asp-action="Index" asp-route-kategori="@GuideCategory.YeniOgrenci">
+                <div class="card-body"><strong>Yeni öğrenci rehberi</strong><p class="small text-muted mb-0">@Model.NewStudentGuides.Count maddelik liste</p></div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a class="card h-100 text-decoration-none" asp-controller="Resource" asp-action="Index">
+                <div class="card-body"><strong>Kaynak arşivi</strong><p class="small text-muted mb-0">@Model.PublishedResourceCount kayıt</p></div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a class="card h-100 text-decoration-none" asp-controller="Announcement" asp-action="Index">
+                <div class="card-body"><strong>Duyurular</strong><p class="small text-muted mb-0">Burs, staj, sınav</p></div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a class="card h-100 text-decoration-none" asp-controller="Event" asp-action="Index">
+                <div class="card-body"><strong>Kampüs etkinlikleri</strong><p class="small text-muted mb-0">Bu hafta @Model.CampusWeekEvents.Count etkinlik</p></div>
+            </a>
+        </div>
+    </div>
+
+    @if (Model.NewStudentGuides.Count > 0)
+    {
+        <section class="mb-4">
+            <h2 class="h4">Yeni misin?</h2>
+            <ul class="list-group list-group-flush border rounded">
+                @foreach (var g in Model.NewStudentGuides)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a asp-controller="Guide" asp-action="Detail" asp-route-slug="@g.Slug">@g.Title</a>
+                        @if (g.LastReviewedAtUtc is { } reviewed)
+                        {
+                            <span class="small text-muted">Güncelleme: @reviewed.ToString("d")</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    @if (Model.CampusWeekEvents.Count > 0)
+    {
+        <section class="mb-4">
+            <h2 class="h4">Bu hafta kampüste</h2>
+            <ul class="list-unstyled">
+                @foreach (var e in Model.CampusWeekEvents)
+                {
+                    <li class="mb-2">
+                        <a asp-controller="Event" asp-action="Detail" asp-route-slug="@e.Slug">@e.Title</a>
+                        <span class="text-muted small">— @e.StartsAtUtc.ToLocalTime().ToString("g")</span>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    @if (Model.RecentAnnouncements.Count > 0)
+    {
+        <section class="mb-4">
+            <h2 class="h4">Son duyurular</h2>
+            @foreach (var a in Model.RecentAnnouncements)
+            {
+                <div class="card mb-2 @(a.IsUrgent ? "border-warning" : "")">
+                    <div class="card-body py-2">
+                        <a asp-controller="Announcement" asp-action="Detail" asp-route-slug="@a.Slug" class="fw-semibold">@a.Title</a>
+                        @if (a.DeadlineUtc is { } dl)
+                        {
+                            <span class="small text-muted ms-2">Son: @dl.ToLocalTime().ToString("d")</span>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    }
+
+    @if (Model.Campuses.Count > 0)
+    {
+        <section class="mb-4">
+            <h2 class="h4">Kampüsler</h2>
+            <div id="cbu-map" class="rounded border" style="height: 360px;"></div>
+            <ul class="list-unstyled small mt-2">
+                @foreach (var c in Model.Campuses)
+                {
+                    <li>@c.Name@if (c.DistanceToLodgeKm is { } km){<text> — ocağa ~@km km</text>}</li>
+                }
+            </ul>
+        </section>
+    }
+    else
+    {
+        <p class="text-muted">Kampüs konumları henüz girilmedi. <!-- TODO(spec): il başkanlığından kampüs listesi --></p>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.WhatsAppChannelUrl))
+    {
+        <p class="mt-4"><a class="btn btn-outline-primary" href="@Model.WhatsAppChannelUrl" rel="noopener noreferrer">WhatsApp duyuru kanalı</a></p>
+    }
 </div>
+
+@section Scripts {
+@if (Model.Campuses.Count > 0)
+{
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        (function () {
+            var campuses = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Campuses.Select(c => new { c.Name, c.Latitude, c.Longitude })));
+            var lodgeLat = @(Model.LodgeLatitude?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null");
+            var lodgeLng = @(Model.LodgeLongitude?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null");
+            var map = L.map('cbu-map');
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+            var bounds = [];
+            campuses.forEach(function (c) {
+                var m = L.marker([c.Latitude, c.Longitude]).addTo(map).bindPopup(c.Name);
+                bounds.push([c.Latitude, c.Longitude]);
+            });
+            if (lodgeLat !== null && lodgeLng !== null) {
+                L.marker([lodgeLat, lodgeLng], { title: 'Ocağa uğra' }).addTo(map).bindPopup('Ülkü Ocakları Manisa');
+                bounds.push([lodgeLat, lodgeLng]);
+            }
+            if (bounds.length) map.fitBounds(bounds, { padding: [24, 24] });
+            else map.setView([38.6191, 27.4289], 12);
+        })();
+    </script>
+}
+}

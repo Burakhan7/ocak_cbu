@@ -107,6 +107,74 @@ public sealed record SiteSettingsDto(
 
 public sealed record FacultyOptionDto(int Id, string Name);
 
+public sealed record CampusHubDto(
+    string? IntroText,
+    IReadOnlyList<GuideListItemDto> NewStudentGuides,
+    IReadOnlyList<EventListItemDto> CampusWeekEvents,
+    IReadOnlyList<AnnouncementListItemDto> RecentAnnouncements,
+    int PublishedResourceCount,
+    IReadOnlyList<CampusMapPinDto> Campuses,
+    double? LodgeLatitude,
+    double? LodgeLongitude,
+    string? WhatsAppChannelUrl);
+
+public sealed record CampusMapPinDto(
+    string Name,
+    string? ShortName,
+    double Latitude,
+    double Longitude,
+    double? DistanceToLodgeKm);
+
+public sealed record GuideListItemDto(
+    string Title,
+    string Slug,
+    string? Summary,
+    GuideCategory Category,
+    DateTime? LastReviewedAtUtc);
+
+public sealed record GuideDetailDto(
+    string Title,
+    string Slug,
+    string? Summary,
+    string BodyHtml,
+    GuideCategory Category,
+    DateTime? LastReviewedAtUtc,
+    string? MetaTitle,
+    string? MetaDescription);
+
+public sealed record ResourceListQuery(int? FacultyId, string? CourseCode, int Page = 1, int PageSize = 24);
+
+public sealed record ResourceListItemDto(
+    int Id,
+    string Title,
+    string? Description,
+    ResourceType Type,
+    string? FacultyName,
+    string? CourseCode,
+    string? Semester,
+    string? ExternalUrl);
+
+public sealed record ResourceDownloadDto(
+    int Id,
+    ResourceType Type,
+    string Title,
+    string? ExternalUrl,
+    string? FileRelativePath,
+    string? ContentType,
+    string? OriginalFileName);
+
+public sealed record AnnouncementListItemDto(
+    int Id,
+    string Title,
+    string Slug,
+    string Body,
+    AnnouncementType Type,
+    DateTime? DeadlineUtc,
+    DateTime ExpiresAtUtc,
+    string? ExternalUrl,
+    bool IsPinned,
+    bool IsUrgent);
+
 public sealed class ContactFormRequest
 {
     public string FullName { get; set; } = string.Empty;
