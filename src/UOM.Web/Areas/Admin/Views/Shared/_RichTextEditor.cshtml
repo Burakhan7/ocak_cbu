@@ -1,0 +1,14 @@
+@model string
+<textarea name="@ViewData["FieldName"]" id="@ViewData["FieldId"]" class="form-control rich-text-editor">@Model</textarea>
+<script src="~/lib/tinymce/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: '#@ViewData["FieldId"]',
+    height: 360,
+    menubar: false,
+    plugins: 'lists link code',
+    toolbar: 'undo redo | bold italic | bullist numlist | link | code',
+    branding: false,
+    promotion: false
+  });
+</script>

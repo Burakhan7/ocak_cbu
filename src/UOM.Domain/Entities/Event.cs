@@ -48,4 +48,6 @@ public class Event : BaseEntity, IPublishable, ISeoEntity
     public ICollection<EventInterest> Interests { get; set; } = [];
 
     public ICollection<GalleryAlbum> GalleryAlbums { get; set; } = [];
+
+    public string? LastRejectionNote { get; set; }
 }

@@ -38,4 +38,6 @@ public class NewsPost : BaseEntity, IPublishable, ISeoEntity
     public string? MetaDescription { get; set; }
 
     public int? OgImageId { get; set; }
+
+    public string? LastRejectionNote { get; set; }
 }

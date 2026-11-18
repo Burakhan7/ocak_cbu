@@ -91,6 +91,8 @@ cp docker/.env.example docker/.env   # isteğe bağlı: SA parolası ve SEED_ADM
 docker compose -f docker/docker-compose.yml up --build
 ```
 
+**ImageSharp (görsel işleme):** NuGet denetimi açıkken Release derlemesi paket güvenlik uyarılarını hata sayar. Şu an `SixLabors.ImageSharp` **3.1.12** kullanılıyor; güvenlik yamaları **3.2.0+** ile gelir ve doğrudan referans için ücretsiz [Six Labors Community](https://licensing.sixlabors.com) build lisansı gerekir (`UOM.Infrastructure`, `UOM.Application.Tests` assembly adları). İleride `sixlabors.lic` köke eklenip sürüm 3.2.0’a çıkıldığında `Directory.Build.props` içindeki geçici `NuGetAuditSuppress` satırları kaldırılmalıdır.
+
 - Web: http://localhost:8080 — yer tutucu **Merhaba** sayfası
 - Sağlık: http://localhost:8080/health — SQL bağlıysa `sqlserver` kontrolü sağlıklı; bağlantı yoksa *Degraded* (yine **200**)
 - SQL Server: `localhost:1433` (geliştirme parolası `docker/.env.example` içinde)
@@ -112,11 +114,42 @@ docker/
   Dockerfile
 ```
 
+## Yönetim paneli (Faz 2)
+
+- URL: **`/yonetim`** (giriş: `/yonetim/hesap/giris`)
+- Zorunlu **TOTP 2FA** (Authenticator), ilk girişte şifre değişimi (`MustChangePassword`)
+- İsteğe bağlı test kullanıcıları (migrate/seed sonrası):
+
+| Değişken | Rol |
+|----------|-----|
+| `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | SuperAdmin |
+| `SEED_PROVINCE_ADMIN_EMAIL` / `SEED_PROVINCE_ADMIN_PASSWORD` | ProvinceAdmin |
+| `SEED_EDITOR_EMAIL` / `SEED_EDITOR_PASSWORD` | Editor |
+
+Örnek yerel akış:
+
+```bash
+export ConnectionStrings__Default="Server=localhost,1433;Database=UOM;..."
+export Database__AutoMigrate=true
+export SEED_ADMIN_EMAIL=admin@ulkuocaklari.local
+export SEED_ADMIN_PASSWORD='ChangeMe!SecurePass12'
+export SEED_EDITOR_EMAIL=editor@ulkuocaklari.local
+export SEED_EDITOR_PASSWORD='ChangeMe!SecurePass12'
+dotnet run --project src/UOM.Web/UOM.Web.csproj
+```
+
+1. `https://localhost:5001/yonetim/hesap/giris` — SuperAdmin veya Editor ile giriş  
+2. Şifre değiştir → Authenticator ile 2FA kur  
+3. `/yonetim/haberler` — Editor: kaydet → **Onaya gönder**; ProvinceAdmin/SuperAdmin: **Yayınla** (Editor’da Yayınla düğmesi yok / policy 403)
+
+Migration (Faz 2): `AddContentApprovalRejectionNotes`
+
 ## Faz durumu
 
 - [x] Faz 0 — İskelet, Serilog, `/health`, Docker
 - [x] Faz 1 — Domain, EF Core, global soft-delete, audit alanları, seed, SQL health
-- [ ] Faz 2+ — admin, public sayfalar (`ARCHITECTURE.md` Bölüm 13)
+- [x] Faz 2 — `/yonetim` Identity+2FA, policy’ler, haber/etkinlik/mekan/site/medya CRUD, onay akışı, önizleme, audit log
+- [ ] Faz 3+ — public sayfalar (`ARCHITECTURE.md` Bölüm 13)
 
 ## TODO(spec)
 

@@ -13,10 +13,10 @@ COPY src/ src/
 RUN dotnet publish src/UOM.Web/UOM.Web.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+# Base image already provides non-root user `app` (UID/GID 1654).
 WORKDIR /app
-RUN groupadd --system app && useradd --system --gid app app
-COPY --from=build /app/publish .
-RUN mkdir -p /app/wwwroot/uploads && chown -R app:app /app
+COPY --from=build --chown=app:app /app/publish .
+RUN mkdir -p /app/wwwroot/uploads && chown -R app:app /app/wwwroot/uploads
 USER app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080

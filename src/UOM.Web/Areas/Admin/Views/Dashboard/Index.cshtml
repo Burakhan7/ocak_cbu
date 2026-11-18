@@ -1,0 +1,34 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Panel";
+}
+<h1 class="h3 mb-4">Yönetim paneli</h1>
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="admin-card">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-dark">
+                <span class="text-muted d-block">Onay bekleyen</span>
+                <span class="fs-2 fw-semibold">@Model.PendingApprovalCount</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card">
+            <span class="text-muted d-block">Okunmamış iletişim</span>
+            <span class="fs-2 fw-semibold">@Model.UnreadContactMessages</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card">
+            <span class="text-muted d-block">Yaklaşan etkinlik</span>
+            <span class="fs-2 fw-semibold">@Model.UpcomingEvents</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card">
+            <span class="text-muted d-block">7 gün içinde bitecek duyuru</span>
+            <span class="fs-2 fw-semibold">@Model.ExpiringAnnouncements</span>
+        </div>
+    </div>
+</div>
+<p class="text-muted mt-4">Faz 2: temel panel iskeleti. Detay listeler sonraki iterasyonda genişletilecek.</p>

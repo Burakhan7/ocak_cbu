@@ -1,0 +1,7 @@
+@model Event
+@{ ViewData["Title"] = "Önizleme: " + Model.Title; Layout = "_Layout"; }
+<article class="container py-4">
+    <p class="text-muted small">Önizleme — noindex</p>
+    <h1>@Model.Title</h1>
+    <div>@Html.Raw(Model.BodyHtml)</div>
+</article>

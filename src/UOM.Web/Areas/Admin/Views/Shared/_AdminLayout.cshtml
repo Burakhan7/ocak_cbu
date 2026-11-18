@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Yönetim</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/tokens.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body class="bg-light">
+<header class="border-bottom bg-white mb-4">
+    <nav class="navbar navbar-expand-lg container">
+        <a class="navbar-brand" href="/yonetim">Ülkü Ocakları Manisa — Yönetim</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/yonetim/haberler">Haberler</a>
+            <a class="nav-link" href="/yonetim/etkinlikler">Etkinlikler</a>
+            <a class="nav-link" href="/yonetim/mekanlar">Mekanlar</a>
+            <a class="nav-link" href="/yonetim/medya">Medya</a>
+            <a class="nav-link" href="/yonetim/site-ayarlari">Site Ayarları</a>
+            <form method="post" action="/yonetim/hesap/cikis" class="d-inline ms-3">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-link nav-link">Çıkış</button>
+            </form>
+        </div>
+    </nav>
+</header>
+<main class="container pb-5">
+    @if (TempData["Success"] is string success)
+    {
+        <div class="alert alert-success">@success</div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+    @if (TempData["PreviewUrl"] is string previewUrl)
+    {
+        <div class="alert alert-info">Önizleme (24 saat): <a href="@previewUrl" target="_blank" rel="noopener">@previewUrl</a></div>
+    }
+    @RenderBody()
+</main>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

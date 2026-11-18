@@ -1,0 +1,10 @@
+.admin-card {
+  background: var(--color-surface, #f6f6f6);
+  border: 1px solid var(--color-border, #e2e2e2);
+  border-radius: var(--radius-md, 8px);
+  padding: 1.25rem;
+}
+
+.rich-text-editor {
+  min-height: 320px;
+}
