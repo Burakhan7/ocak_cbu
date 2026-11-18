@@ -121,6 +121,10 @@ docker compose --project-directory docker -f docker/docker-compose.yml --env-fil
 - SQL Server: `localhost:1433` (geliştirme parolası `docker/.env.example` içinde)
 - `Database__AutoMigrate=true` ile web konteyneri açılışta migrate + seed yapar
 
+### Docker sorun giderme
+
+`failed to resolve source metadata for docker.io/docker/dockerfile:1: context deadline exceeded` gibi bir hata görürseniz: bu repodaki `docker/Dockerfile` dosyasında `# syntax=docker/dockerfile:1` satırı **kaldırılmıştır** (standart Dockerfile sözdizimi yeterli; Docker Hub’dan ek front-end çekilmez). Image’ler yine **MCR** üzerinden gelir (`mcr.microsoft.com/dotnet/...`). Hata sürerse VPN, kurumsal güvenlik duvarı veya proxy’nin Docker Hub / registry erişimini kontrol edin.
+
 ## Çözüm yapısı
 
 ```
