@@ -1,6 +1,7 @@
 using UOM.Application.Common;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
+using UOM.Domain.Enums;
 
 namespace UOM.Infrastructure.Features.Public;
 
@@ -84,4 +85,40 @@ internal sealed class EmptyContactFormService : IContactFormService
 
     public Task<Result> SubmitAsync(ContactFormRequest request, string? ipAddress, CancellationToken cancellationToken = default) =>
         Task.FromResult(Result.Fail("Veritabanı bağlantısı yok."));
+}
+
+internal sealed class EmptyPublicCampusHubService : IPublicCampusHubService
+{
+    public Task<CampusHubDto> GetHubAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(new CampusHubDto(null, [], [], [], 0, [], null, null, null));
+}
+
+internal sealed class EmptyPublicGuideService : IPublicGuideService
+{
+    public Task<IReadOnlyList<GuideListItemDto>> ListPublishedAsync(GuideCategory? category, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<GuideListItemDto>>([]);
+
+    public Task<GuideDetailDto?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
+        Task.FromResult<GuideDetailDto?>(null);
+}
+
+internal sealed class EmptyPublicResourceService : IPublicResourceService
+{
+    public Task<PagedResult<ResourceListItemDto>> ListAsync(ResourceListQuery query, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new PagedResult<ResourceListItemDto> { Items = [], Page = query.Page, PageSize = query.PageSize, TotalCount = 0 });
+
+    public Task<ResourceDownloadDto?> GetForDownloadAsync(int id, CancellationToken cancellationToken = default) =>
+        Task.FromResult<ResourceDownloadDto?>(null);
+
+    public Task<bool> TryIncrementDownloadCountAsync(int id, CancellationToken cancellationToken = default) =>
+        Task.FromResult(false);
+}
+
+internal sealed class EmptyPublicAnnouncementService : IPublicAnnouncementService
+{
+    public Task<IReadOnlyList<AnnouncementListItemDto>> ListListableAsync(AnnouncementType? type, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<AnnouncementListItemDto>>([]);
+
+    public Task<AnnouncementListItemDto?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
+        Task.FromResult<AnnouncementListItemDto?>(null);
 }

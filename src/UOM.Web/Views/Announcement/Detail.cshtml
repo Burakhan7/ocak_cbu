@@ -1,0 +1,15 @@
+@model AnnouncementListItemDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+<p><a asp-action="Index">← Duyurular</a></p>
+<h1 class="h2">@Model.Title</h1>
+<p>@Model.Body</p>
+@if (Model.DeadlineUtc is { } dl)
+{
+    <p class="text-muted">Son başvuru: @dl.ToLocalTime().ToString("f")</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.ExternalUrl))
+{
+    <p><a class="btn btn-primary" href="@Model.ExternalUrl" rel="noopener noreferrer">Detay / başvuru</a></p>
+}

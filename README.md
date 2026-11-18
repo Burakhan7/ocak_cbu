@@ -149,7 +149,10 @@ Yayında içerik: `Published` ve `PublishedAtUtc <= now`. Taslaklar public’te 
 | `/etkinlikler/takvim.ics` | Yaklaşan etkinlik iCal feed |
 | `/iletisim` | İletişim formu (KVKK, honeypot, opsiyonel Turnstile) |
 | `/{slug}` | Yayınlanmış statik sayfalar (`ShowInFooter` footer’da) |
-| `/cbu` | CBÜ Hub yer tutucu (Faz 4) |
+| `/cbu` | CBÜ Hub (rehber, duyuru, kaynak özetleri, kampüs haritası) |
+| `/cbu/rehber` | Öğrenci rehberi |
+| `/cbu/kaynaklar` | Kaynak arşivi (`/cbu/kaynaklar/{id}/indir` sayaç artırır) |
+| `/duyurular` | Burs / staj / sınav duyuruları (süresi geçenler listede yok) |
 
 ## Yönetim paneli (Faz 2)
 
@@ -187,7 +190,8 @@ Migration (Faz 2): `AddContentApprovalRejectionNotes`
 - [x] Faz 1 — Domain, EF Core, global soft-delete, audit alanları, seed, SQL health
 - [x] Faz 2 — `/yonetim` Identity+2FA, policy’ler, haber/etkinlik/mekan/site/medya CRUD, onay akışı, önizleme, audit log
 - [x] Faz 3 — Public çekirdek sayfalar (layout, ana sayfa, haber/etkinlik, iletişim, statik slug, 404/500)
-- [ ] Faz 4+ — CBÜ katmanı (`ARCHITECTURE.md` Bölüm 13)
+- [x] Faz 4 — CBÜ katmanı: Hub, rehber/kaynak/duyuru public + admin (`CanWriteCampusContent`), kampüs haritası (Leaflet)
+- [ ] Faz 5+ — Genel Merkez + teşkilat (`ARCHITECTURE.md` Bölüm 13)
 
 ## TODO(spec)
 

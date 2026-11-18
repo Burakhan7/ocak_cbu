@@ -1,0 +1,43 @@
+@model PagedResult<ResourceListItemDto>
+@using UOM.Application.Common
+@using UOM.Domain.Enums
+@{
+    ViewData["Title"] = "Kaynak arşivi";
+    var faculties = (IReadOnlyList<FacultyOptionDto>)ViewBag.Faculties;
+}
+<h1 class="h2 mb-3">Kaynak arşivi</h1>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <select name="fakulte" class="form-select">
+            <option value="">Tüm fakülteler</option>
+            @foreach (var f in faculties)
+            {
+                <option value="@f.Id" selected="@(ViewBag.FacultyId as int? == f.Id)">@f.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input type="search" name="ders" class="form-control" placeholder="Ders kodu" value="@ViewBag.CourseCode" />
+    </div>
+    <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Filtrele</button></div>
+</form>
+@if (Model.Items.Count == 0)
+{
+    <p class="text-muted">Kaynak bulunamadı.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var r in Model.Items)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@r.Title</strong>
+                    @if (!string.IsNullOrWhiteSpace(r.FacultyName)) { <span class="text-muted small">@r.FacultyName</span> }
+                    @if (!string.IsNullOrWhiteSpace(r.CourseCode)) { <span class="badge bg-light text-dark">@r.CourseCode</span> }
+                </div>
+                <a class="btn btn-sm btn-primary" asp-action="Download" asp-route-id="@r.Id">@(r.Type == ResourceType.Link ? "Aç" : "İndir")</a>
+            </li>
+        }
+    </ul>
+}

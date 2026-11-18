@@ -52,6 +52,10 @@ public static class DependencyInjection
             services.AddSingleton<IPublicEventService, EmptyPublicEventService>();
             services.AddSingleton<IPublicPageService, EmptyPublicPageService>();
             services.AddSingleton<IContactFormService, EmptyContactFormService>();
+            services.AddSingleton<IPublicCampusHubService, EmptyPublicCampusHubService>();
+            services.AddSingleton<IPublicGuideService, EmptyPublicGuideService>();
+            services.AddSingleton<IPublicResourceService, EmptyPublicResourceService>();
+            services.AddSingleton<IPublicAnnouncementService, EmptyPublicAnnouncementService>();
             return services;
         }
 
@@ -81,10 +85,18 @@ public static class DependencyInjection
         services.AddScoped<SiteSettingsAdminService>();
         services.AddScoped<MediaAdminService>();
         services.AddScoped<DashboardAdminService>();
+        services.AddScoped<CampusAdminService>();
+        services.AddScoped<GuideArticleAdminService>();
+        services.AddScoped<ResourceAdminService>();
+        services.AddScoped<AnnouncementAdminService>();
         services.AddScoped<IPublicNewsService, PublicNewsService>();
         services.AddScoped<IPublicEventService, PublicEventService>();
         services.AddScoped<IPublicPageService, PublicPageService>();
         services.AddScoped<IContactFormService, ContactFormService>();
+        services.AddScoped<IPublicCampusHubService, PublicCampusHubService>();
+        services.AddScoped<IPublicGuideService, PublicGuideService>();
+        services.AddScoped<IPublicResourceService, PublicResourceService>();
+        services.AddScoped<IPublicAnnouncementService, PublicAnnouncementService>();
         services.AddScoped<ISiteSettingsProvider, SiteSettingsProvider>();
 
         return services;

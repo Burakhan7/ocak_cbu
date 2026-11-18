@@ -1,0 +1,42 @@
+@model Resource
+@using Microsoft.AspNetCore.Authorization
+@using UOM.Application.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Yeni kaynak" : "Kaynak düzenle";
+    var canPublish = (await AuthorizationService.AuthorizeAsync(User, PolicyNames.CanPublish)).Succeeded;
+    var faculties = (IReadOnlyList<Faculty>)ViewBag.Faculties;
+}
+<form method="post" asp-action="Save">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Slug" />
+    <input type="hidden" asp-for="Status" />
+    <div class="mb-3"><label asp-for="Title" class="form-label">Başlık</label><input asp-for="Title" class="form-control" /></div>
+    <div class="mb-3"><label asp-for="Description" class="form-label">Açıklama</label><textarea asp-for="Description" class="form-control" rows="2"></textarea></div>
+    <div class="mb-3"><label asp-for="Type" class="form-label">Tür</label><select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<ResourceType>()"></select></div>
+    <div class="mb-3"><label asp-for="FileId" class="form-label">Medya dosya ID (dosya türü)</label><input asp-for="FileId" class="form-control" type="number" /></div>
+    <div class="mb-3"><label asp-for="ExternalUrl" class="form-label">Harici URL (bağlantı türü)</label><input asp-for="ExternalUrl" class="form-control" /></div>
+    <div class="mb-3">
+        <label asp-for="FacultyId" class="form-label">Fakülte</label>
+        <select asp-for="FacultyId" class="form-select">
+            <option value="">—</option>
+            @foreach (var f in faculties)
+            {
+                <option value="@f.Id">@f.Name</option>
+            }
+        </select>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6"><label asp-for="CourseCode" class="form-label">Ders kodu</label><input asp-for="CourseCode" class="form-control" /></div>
+        <div class="col-md-6"><label asp-for="Semester" class="form-label">Dönem</label><input asp-for="Semester" class="form-control" /></div>
+    </div>
+    <p class="small text-muted">İndirme sayacı: @Model.DownloadCount</p>
+    <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        @if (Model.Id > 0)
+        {
+            <button formaction="@Url.Action("Submit", new { id = Model.Id })" formmethod="post" type="submit" class="btn btn-outline-secondary">Onaya gönder</button>
+            if (canPublish) { <button formaction="@Url.Action("Publish", new { id = Model.Id })" formmethod="post" type="submit" class="btn btn-success">Yayınla</button> }
+        }
+    </div>
+</form>
