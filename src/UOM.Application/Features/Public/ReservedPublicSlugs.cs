@@ -6,7 +6,8 @@ public static class ReservedPublicSlugs
     {
         "cbu", "duyurular", "haberler", "etkinlikler", "genel-merkez", "teskilat",
         "galeri", "videolar", "iletisim", "ara", "sitemap.xml", "robots.txt", "feed.xml",
-        "health", "yonetim", "onizleme", "home", "contact", "news", "event",
+        "health", "yonetim", "onizleme", "bulunamadi", "hata",
+        "home", "contact", "news", "event",
     };
 
     public static bool IsReserved(string slug) => Routes.Contains(slug);
