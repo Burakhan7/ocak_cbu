@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using UOM.Application.Authorization;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Features.Admin;
+using UOM.Domain.Enums;
+using UOM.Web.Areas.Admin;
 using UOM.Web.Filters;
 
 namespace UOM.Web.Areas.Admin.Controllers;
@@ -11,7 +13,10 @@ namespace UOM.Web.Areas.Admin.Controllers;
 [Authorize(Policy = PolicyNames.CanWriteCampusContent)]
 [ServiceFilter(typeof(AdminSecurityFilter))]
 [Route("yonetim/kaynaklar")]
-public sealed class ResourcesController(ResourceAdminService resourceService, CampusAdminService campusService) : Controller
+public sealed class ResourcesController(
+    ResourceAdminService resourceService,
+    CampusAdminService campusService,
+    MediaAdminService mediaAdmin) : Controller
 {
     [HttpGet("")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken) =>
@@ -34,18 +39,40 @@ public sealed class ResourcesController(ResourceAdminService resourceService, Ca
         }
 
         await LoadFacultiesAsync(cancellationToken);
+        await AdminMediaFormBinding.SetResourceFilePreviewAsync(mediaAdmin, ViewData, resource.FileId, cancellationToken);
         return View(resource);
     }
 
     [HttpPost("kaydet")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(Resource model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Save(
+        Resource model,
+        IFormFile? resourceFileUpload,
+        bool removeResourceFile,
+        CancellationToken cancellationToken)
     {
+        if (model.Type == ResourceType.File
+            && !await AdminMediaFormBinding.TryBindResourceFileAsync(
+                mediaAdmin,
+                ModelState,
+                model.FileId,
+                removeResourceFile,
+                resourceFileUpload,
+                model.Title,
+                id => model.FileId = id,
+                cancellationToken))
+        {
+            await LoadFacultiesAsync(cancellationToken);
+            await AdminMediaFormBinding.SetResourceFilePreviewAsync(mediaAdmin, ViewData, model.FileId, cancellationToken);
+            return View("Edit", model);
+        }
+
         var result = await resourceService.SaveAsync(model, cancellationToken);
         await LoadFacultiesAsync(cancellationToken);
         if (!result.Succeeded)
         {
             ModelState.AddModelError(string.Empty, result.Error ?? "Kayıt başarısız.");
+            await AdminMediaFormBinding.SetResourceFilePreviewAsync(mediaAdmin, ViewData, model.FileId, cancellationToken);
             return View("Edit", model);
         }
 

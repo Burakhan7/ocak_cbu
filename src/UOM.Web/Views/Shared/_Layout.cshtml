@@ -14,7 +14,15 @@
     <header class="site-header border-bottom">
         <div class="container d-flex align-items-center justify-content-between py-2" style="max-width: var(--container-max);">
             <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" asp-controller="Home" asp-action="Index">
-                <img src="~/img/brand/logo-placeholder.svg" alt="Ülkü Ocakları Manisa" height="36" />
+                @if (!string.IsNullOrWhiteSpace(ViewBag.SiteLogoUrl as string))
+                {
+                    <img src="@ViewBag.SiteLogoUrl" alt="@(ViewBag.SiteName ?? "Ülkü Ocakları Manisa")" height="36" width="auto" class="site-brand-logo" />
+                }
+                else
+                {
+                    <img src="~/img/brand/logo-placeholder.svg" alt="" height="36" class="site-brand-logo site-brand-logo--placeholder" aria-hidden="true" />
+                }
+                <span class="site-brand-title">@(ViewBag.SiteName ?? "Ülkü Ocakları Manisa")</span>
             </a>
             <nav class="d-none d-md-flex gap-3 align-items-center public-nav" aria-label="Ana menü">
                 <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>

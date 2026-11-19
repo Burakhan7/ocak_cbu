@@ -1,0 +1,24 @@
+@{
+    var previewUrl = ViewData["LogoImagePreviewUrl"] as string;
+    var altText = ViewData["LogoImageAltText"] as string;
+}
+<div class="card card-body mb-3">
+    <h2 class="h6 mb-3">Site logosu</h2>
+    @if (!string.IsNullOrWhiteSpace(previewUrl))
+    {
+        <img src="@previewUrl" alt="@(altText ?? "Mevcut logo")" class="img-thumbnail mb-2" style="max-height: 80px;" />
+    }
+    <div class="mb-2">
+        <label for="logoImageUpload" class="form-label">Yeni logo yükle</label>
+        <input type="file" class="form-control" id="logoImageUpload" name="logoImageUpload" accept="image/jpeg,image/png,image/webp" />
+        <div class="form-text text-muted">JPEG, PNG veya WebP — en fazla 10 MB</div>
+    </div>
+    <div class="mb-2">
+        <label for="logoImageAlt" class="form-label">Alt metin (yükleme yapıyorsanız)</label>
+        <input type="text" class="form-control" id="logoImageAlt" name="logoImageAlt" value="@altText" maxlength="300" />
+    </div>
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="removeLogoImage" name="removeLogoImage" value="true" />
+        <label class="form-check-label" for="removeLogoImage">Logoyu kaldır (yer tutucu kullanılır)</label>
+    </div>
+</div>

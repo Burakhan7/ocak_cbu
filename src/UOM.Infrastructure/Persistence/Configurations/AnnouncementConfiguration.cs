@@ -16,6 +16,6 @@ public class AnnouncementConfiguration : IEntityTypeConfiguration<Announcement>
         builder.Property(e => e.Title).HasMaxLength(300).IsRequired();
         builder.Property(e => e.Slug).HasMaxLength(120).IsRequired();
         builder.HasIndex(e => e.ExpiresAtUtc);
-
+        builder.HasOne(e => e.CoverImage).WithMany().HasForeignKey(e => e.CoverImageId).OnDelete(DeleteBehavior.Restrict);
     }
 }

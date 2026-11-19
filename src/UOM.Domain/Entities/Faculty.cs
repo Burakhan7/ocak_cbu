@@ -12,5 +12,9 @@ public class Faculty : BaseEntity
 
     public int Order { get; set; }
 
+    public int? CoverImageId { get; set; }
+
+    public MediaFile? CoverImage { get; set; }
+
     public ICollection<Resource> Resources { get; set; } = [];
 }

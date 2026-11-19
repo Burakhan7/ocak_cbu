@@ -26,7 +26,12 @@ public sealed class SiteSettingsProvider : ISiteSettingsProvider
             return cached;
         }
 
-        var row = await _db.SiteSettings.AsNoTracking().OrderBy(s => s.Id).FirstOrDefaultAsync(cancellationToken);
+        var row = await _db.SiteSettings
+            .AsNoTracking()
+            .Include(s => s.LogoImage)
+            .OrderBy(s => s.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        var logoUrl = MediaUrlHelper.ResolveUrl(row?.LogoImage?.StoragePath, row?.LogoImage?.Variants, "thumb");
         var dto = new SiteSettingsDto(
             row?.SiteName ?? "Ülkü Ocakları Manisa",
             row?.Tagline,
@@ -37,7 +42,8 @@ public sealed class SiteSettingsProvider : ISiteSettingsProvider
             row?.OpeningHoursText,
             row?.MapLat,
             row?.MapLng,
-            row?.TurnstileEnabled == true);
+            row?.TurnstileEnabled == true,
+            logoUrl);
 
         _cache.Set(CacheKey, dto, TimeSpan.FromMinutes(5));
         return dto;

@@ -1,7 +1,9 @@
 @model Venue
 @{ ViewData["Title"] = Model.Id == 0 ? "Yeni mekan" : "Mekan düzenle"; }
-<form method="post" asp-action="Save">
+<form method="post" asp-action="Save" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CoverImageId" />
+    <partial name="_AdminCoverImageField" />
     <div class="mb-3"><label asp-for="Name" class="form-label">Ad</label><input asp-for="Name" class="form-control" /></div>
     <div class="mb-3"><label asp-for="Address" class="form-label">Adres</label><textarea asp-for="Address" class="form-control" rows="2"></textarea></div>
     <button type="submit" class="btn btn-primary">Kaydet</button>

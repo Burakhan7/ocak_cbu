@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
 using UOM.Domain.Entities;
@@ -6,7 +7,7 @@ using UOM.Infrastructure.Persistence;
 
 namespace UOM.Infrastructure.Features.Admin;
 
-public sealed class SiteSettingsAdminService(AppDbContext db, IAuditLogger auditLogger)
+public sealed class SiteSettingsAdminService(AppDbContext db, IAuditLogger auditLogger, IMemoryCache cache)
 {
     public async Task<SiteSettings> GetSingleAsync(CancellationToken cancellationToken = default)
     {
@@ -43,8 +44,10 @@ public sealed class SiteSettingsAdminService(AppDbContext db, IAuditLogger audit
         existing.FooterText = model.FooterText;
         existing.AnalyticsEnabled = model.AnalyticsEnabled;
         existing.TurnstileEnabled = model.TurnstileEnabled;
+        existing.LogoImageId = model.LogoImageId;
 
         await db.SaveChangesAsync(cancellationToken);
+        cache.Remove("site-settings-public");
         await auditLogger.LogAsync("Update", nameof(SiteSettings), existing.Id, null, cancellationToken);
         return Result<SiteSettings>.Ok(existing);
     }

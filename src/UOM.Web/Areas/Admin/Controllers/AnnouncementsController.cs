@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using UOM.Application.Authorization;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Features.Admin;
+using UOM.Web.Areas.Admin;
 using UOM.Web.Filters;
 
 namespace UOM.Web.Areas.Admin.Controllers;
@@ -11,7 +12,7 @@ namespace UOM.Web.Areas.Admin.Controllers;
 [Authorize(Policy = PolicyNames.CanWriteCampusContent)]
 [ServiceFilter(typeof(AdminSecurityFilter))]
 [Route("yonetim/duyurular")]
-public sealed class AnnouncementsController(AnnouncementAdminService announcementService) : Controller
+public sealed class AnnouncementsController(AnnouncementAdminService announcementService, MediaAdminService mediaAdmin) : Controller
 {
     [HttpGet("")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken) =>
@@ -24,17 +25,44 @@ public sealed class AnnouncementsController(AnnouncementAdminService announcemen
     public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
     {
         var announcement = await announcementService.GetAsync(id, cancellationToken);
-        return announcement is null ? NotFound() : View(announcement);
+        if (announcement is null)
+        {
+            return NotFound();
+        }
+
+        await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, announcement.CoverImageId, cancellationToken);
+        return View(announcement);
     }
 
     [HttpPost("kaydet")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(Announcement model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Save(
+        Announcement model,
+        IFormFile? coverImageUpload,
+        string? coverImageAlt,
+        bool removeCoverImage,
+        CancellationToken cancellationToken)
     {
+        if (!await AdminMediaFormBinding.TryBindCoverImageAsync(
+                mediaAdmin,
+                ModelState,
+                model.CoverImageId,
+                removeCoverImage,
+                coverImageUpload,
+                coverImageAlt,
+                $"Duyuru: {model.Title}",
+                id => model.CoverImageId = id,
+                cancellationToken))
+        {
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
+            return View("Edit", model);
+        }
+
         var result = await announcementService.SaveAsync(model, cancellationToken);
         if (!result.Succeeded)
         {
             ModelState.AddModelError(string.Empty, result.Error ?? "Kayıt başarısız.");
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
             return View("Edit", model);
         }
 

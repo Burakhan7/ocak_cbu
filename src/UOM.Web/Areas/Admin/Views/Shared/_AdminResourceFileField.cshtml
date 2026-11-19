@@ -1,0 +1,20 @@
+@{
+    var fileName = ViewData["ResourceFileName"] as string;
+    var fileUrl = ViewData["ResourceFileUrl"] as string;
+}
+<div class="card card-body mb-3">
+    <h2 class="h6 mb-3">Kaynak dosyası</h2>
+    @if (!string.IsNullOrWhiteSpace(fileName))
+    {
+        <p class="small mb-2">Mevcut: @if (!string.IsNullOrWhiteSpace(fileUrl)) { <a href="@fileUrl" target="_blank" rel="noopener">@fileName</a> } else { @fileName }</p>
+    }
+    <div class="mb-2">
+        <label for="resourceFileUpload" class="form-label">Dosya yükle</label>
+        <input type="file" class="form-control" id="resourceFileUpload" name="resourceFileUpload" accept=".pdf,.docx,.pptx,.xlsx,.zip,application/pdf" />
+        <div class="form-text text-muted">PDF, Office (DOCX, PPTX, XLSX) veya ZIP — en fazla 25 MB</div>
+    </div>
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="removeResourceFile" name="removeResourceFile" value="true" />
+        <label class="form-check-label" for="removeResourceFile">Dosyayı kaldır</label>
+    </div>
+</div>

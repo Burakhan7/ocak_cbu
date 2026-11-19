@@ -10,7 +10,7 @@ internal sealed class EmptySiteSettingsProvider : ISiteSettingsProvider
     public Task<SiteSettingsDto> GetAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult(new SiteSettingsDto(
             "Ülkü Ocakları Manisa",
-            null, null, null, null, null, null, null, null, false));
+            null, null, null, null, null, null, null, null, false, null));
 
     public Task<IReadOnlyList<string>> GetHomeSectionOrderAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult(HomeSectionIds.DefaultOrder);

@@ -1,8 +1,10 @@
 @model SiteSettings
 @{ ViewData["Title"] = "Site ayarları"; }
 <h1 class="h3 mb-3">Site ayarları</h1>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="LogoImageId" />
+    <partial name="_AdminLogoImageField" />
     <div class="row g-3">
         <div class="col-md-6"><label asp-for="SiteName" class="form-label">Site adı</label><input asp-for="SiteName" class="form-control" /></div>
         <div class="col-md-6"><label asp-for="Tagline" class="form-label">Slogan</label><input asp-for="Tagline" class="form-control" /></div>

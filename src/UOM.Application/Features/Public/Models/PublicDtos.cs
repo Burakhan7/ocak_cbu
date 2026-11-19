@@ -103,7 +103,8 @@ public sealed record SiteSettingsDto(
     string? OpeningHoursText,
     double? MapLat,
     double? MapLng,
-    bool TurnstileEnabled);
+    bool TurnstileEnabled,
+    string? LogoUrl);
 
 public sealed record FacultyOptionDto(int Id, string Name);
 

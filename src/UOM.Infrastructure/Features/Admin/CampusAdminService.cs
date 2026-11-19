@@ -40,6 +40,7 @@ public sealed class CampusAdminService(AppDbContext db, IAuditLogger auditLogger
             existing.Longitude = model.Longitude;
             existing.Description = model.Description;
             existing.Order = model.Order;
+            existing.CoverImageId = model.CoverImageId;
             model = existing;
         }
 
@@ -81,6 +82,7 @@ public sealed class CampusAdminService(AppDbContext db, IAuditLogger auditLogger
             existing.Name = model.Name;
             existing.CampusId = model.CampusId;
             existing.Order = model.Order;
+            existing.CoverImageId = model.CoverImageId;
             model = existing;
         }
 

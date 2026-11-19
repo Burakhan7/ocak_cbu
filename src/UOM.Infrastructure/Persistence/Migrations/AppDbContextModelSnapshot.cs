@@ -167,6 +167,9 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CoverImageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -224,6 +227,8 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CoverImageId");
 
                     b.HasIndex("ExpiresAtUtc");
 
@@ -374,6 +379,9 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CoverImageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -420,6 +428,8 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CoverImageId");
 
                     b.ToTable("Campuses", (string)null);
                 });
@@ -771,6 +781,9 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.Property<int>("CampusId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CoverImageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -807,6 +820,8 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CampusId");
+
+                    b.HasIndex("CoverImageId");
 
                     b.ToTable("Faculties", (string)null);
                 });
@@ -1696,6 +1711,9 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<int?>("LogoImageId")
+                        .HasColumnType("int");
+
                     b.Property<double?>("MapLat")
                         .HasColumnType("float");
 
@@ -1738,6 +1756,8 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LogoImageId");
 
                     b.ToTable("SiteSettings", (string)null);
                 });
@@ -1835,6 +1855,9 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.Property<int?>("CampusId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CoverImageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -1874,6 +1897,8 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CampusId");
+
+                    b.HasIndex("CoverImageId");
 
                     b.ToTable("Venues", (string)null);
                 });
@@ -2056,6 +2081,16 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("UOM.Domain.Entities.Announcement", b =>
+                {
+                    b.HasOne("UOM.Domain.Entities.MediaFile", "CoverImage")
+                        .WithMany()
+                        .HasForeignKey("CoverImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CoverImage");
+                });
+
             modelBuilder.Entity("UOM.Domain.Entities.BoardMember", b =>
                 {
                     b.HasOne("UOM.Domain.Entities.MediaFile", "PhotoImage")
@@ -2064,6 +2099,16 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("PhotoImage");
+                });
+
+            modelBuilder.Entity("UOM.Domain.Entities.Campus", b =>
+                {
+                    b.HasOne("UOM.Domain.Entities.MediaFile", "CoverImage")
+                        .WithMany()
+                        .HasForeignKey("CoverImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CoverImage");
                 });
 
             modelBuilder.Entity("UOM.Domain.Entities.ContactMessage", b =>
@@ -2119,7 +2164,14 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("UOM.Domain.Entities.MediaFile", "CoverImage")
+                        .WithMany()
+                        .HasForeignKey("CoverImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Campus");
+
+                    b.Navigation("CoverImage");
                 });
 
             modelBuilder.Entity("UOM.Domain.Entities.GalleryAlbum", b =>
@@ -2232,6 +2284,16 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.Navigation("File");
                 });
 
+            modelBuilder.Entity("UOM.Domain.Entities.SiteSettings", b =>
+                {
+                    b.HasOne("UOM.Domain.Entities.MediaFile", "LogoImage")
+                        .WithMany()
+                        .HasForeignKey("LogoImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("LogoImage");
+                });
+
             modelBuilder.Entity("UOM.Domain.Entities.Venue", b =>
                 {
                     b.HasOne("UOM.Domain.Entities.Campus", "Campus")
@@ -2239,7 +2301,14 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasForeignKey("CampusId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("UOM.Domain.Entities.MediaFile", "CoverImage")
+                        .WithMany()
+                        .HasForeignKey("CoverImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Campus");
+
+                    b.Navigation("CoverImage");
                 });
 
             modelBuilder.Entity("UOM.Domain.Entities.Campus", b =>

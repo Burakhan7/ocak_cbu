@@ -11,6 +11,6 @@ public class CampusConfiguration : IEntityTypeConfiguration<Campus>
         builder.ToTable("Campuses");
         builder.ConfigureAuditFields();
         builder.Property(e => e.Name).HasMaxLength(300);
-
+        builder.HasOne(e => e.CoverImage).WithMany().HasForeignKey(e => e.CoverImageId).OnDelete(DeleteBehavior.Restrict);
     }
 }

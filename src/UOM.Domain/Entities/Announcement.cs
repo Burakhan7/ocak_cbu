@@ -24,4 +24,8 @@ public class Announcement : BaseEntity, IPublishable
     public PublishStatus Status { get; set; }
 
     public DateTime? PublishedAtUtc { get; set; }
+
+    public int? CoverImageId { get; set; }
+
+    public MediaFile? CoverImage { get; set; }
 }

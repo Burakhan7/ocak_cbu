@@ -18,6 +18,10 @@ public class Campus : BaseEntity
 
     public int Order { get; set; }
 
+    public int? CoverImageId { get; set; }
+
+    public MediaFile? CoverImage { get; set; }
+
     public ICollection<Faculty> Faculties { get; set; } = [];
 
     public ICollection<Venue> Venues { get; set; } = [];

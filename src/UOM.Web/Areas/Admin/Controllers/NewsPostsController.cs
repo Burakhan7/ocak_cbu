@@ -4,6 +4,7 @@ using UOM.Application.Abstractions;
 using UOM.Application.Authorization;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Features.Admin;
+using UOM.Web.Areas.Admin;
 using UOM.Web.Filters;
 
 namespace UOM.Web.Areas.Admin.Controllers;
@@ -14,6 +15,7 @@ namespace UOM.Web.Areas.Admin.Controllers;
 [Route("yonetim/haberler")]
 public sealed class NewsPostsController(
     NewsPostAdminService newsService,
+    MediaAdminService mediaAdmin,
     IPreviewTokenService previewTokenService) : Controller
 {
     [HttpGet("")]
@@ -35,17 +37,39 @@ public sealed class NewsPostsController(
             return NotFound();
         }
 
+        await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, post.CoverImageId, cancellationToken);
         return View(post);
     }
 
     [HttpPost("kaydet")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(NewsPost model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Save(
+        NewsPost model,
+        IFormFile? coverImageUpload,
+        string? coverImageAlt,
+        bool removeCoverImage,
+        CancellationToken cancellationToken)
     {
+        if (!await AdminMediaFormBinding.TryBindCoverImageAsync(
+                mediaAdmin,
+                ModelState,
+                model.CoverImageId,
+                removeCoverImage,
+                coverImageUpload,
+                coverImageAlt,
+                $"Kapak: {model.Title}",
+                id => model.CoverImageId = id,
+                cancellationToken))
+        {
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
+            return View("Edit", model);
+        }
+
         var result = await newsService.SaveAsync(model, cancellationToken);
         if (!result.Succeeded)
         {
             ModelState.AddModelError(string.Empty, result.Error ?? "Kayıt başarısız.");
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
             return View("Edit", model);
         }
 

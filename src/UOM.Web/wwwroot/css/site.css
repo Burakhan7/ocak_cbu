@@ -17,13 +17,30 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .site-header {
-  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%);
-  border-color: transparent !important;
+  background-color: var(--color-bg);
+  border-color: var(--color-border) !important;
   border-bottom: 3px solid var(--color-brand-accent);
 }
 
-.site-header .navbar-brand img {
-  filter: brightness(0) invert(1);
+.site-brand-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  background: linear-gradient(
+    95deg,
+    var(--color-brand-primary) 0%,
+    var(--color-brand-secondary) 52%,
+    var(--color-brand-accent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.site-brand-logo--placeholder {
+  max-width: 36px;
+  object-fit: contain;
 }
 
 .site-footer {
@@ -59,7 +76,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .public-nav a {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--color-brand-primary);
   text-decoration: none;
   font-weight: 500;
   padding-bottom: 2px;
@@ -67,12 +84,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .public-nav a:hover {
-  color: #fff;
-  border-bottom-color: rgba(255, 255, 255, 0.5);
+  color: var(--color-brand-secondary);
+  border-bottom-color: var(--color-brand-accent);
 }
 
 .public-nav a.text-muted {
-  color: rgba(255, 255, 255, 0.55) !important;
+  color: var(--color-text-muted) !important;
 }
 
 .ocağa-ugra-btn,
