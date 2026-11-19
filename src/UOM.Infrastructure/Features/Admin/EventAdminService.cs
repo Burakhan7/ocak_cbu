@@ -91,9 +91,9 @@ public sealed class EventAdminService(
             return Result.Fail("Etkinlik bulunamadı.");
         }
 
-        if (entity.Status != PublishStatus.PendingApproval)
+        if (entity.Status is not (PublishStatus.Draft or PublishStatus.PendingApproval))
         {
-            return Result.Fail("Yalnızca onay bekleyen etkinlik yayınlanabilir.");
+            return Result.Fail("Yalnızca taslak veya onay bekleyen etkinlik yayınlanabilir.");
         }
 
         entity.Status = PublishStatus.Published;

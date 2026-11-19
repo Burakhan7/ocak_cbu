@@ -12,6 +12,11 @@ RUN dotnet publish src/UOM.Web/UOM.Web.csproj -c Release -o /app/publish /p:UseA
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 # Base image already provides non-root user `app` (UID/GID 1654).
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tzdata \
+    && rm -rf /var/lib/apt/lists/*
+ENV TZ=Europe/Istanbul
 WORKDIR /app
 COPY --from=build --chown=app:app /app/publish .
 RUN mkdir -p /app/wwwroot/uploads && chown -R app:app /app/wwwroot/uploads

@@ -1,12 +1,39 @@
 @model NewsPost
 @using Microsoft.AspNetCore.Authorization
 @using UOM.Application.Authorization
+@using UOM.Domain.Enums
 @inject IAuthorizationService AuthorizationService
 @{
     ViewData["Title"] = Model.Id == 0 ? "Yeni haber" : "Haber düzenle";
     var canPublish = (await AuthorizationService.AuthorizeAsync(User, PolicyNames.CanPublish)).Succeeded;
+    var statusLabel = Model.Status switch
+    {
+        PublishStatus.Draft => "Taslak",
+        PublishStatus.PendingApproval => "Onay bekliyor",
+        PublishStatus.Published => "Yayında",
+        PublishStatus.Archived => "Arşiv",
+        _ => Model.Status.ToString(),
+    };
 }
 <h1 class="h3 mb-3">@ViewData["Title"]</h1>
+@if (Model.Id > 0)
+{
+    <div class="alert alert-info py-2">
+        <strong>Durum: @statusLabel</strong>
+        @if (Model.Status != PublishStatus.Published)
+        {
+            <span class="ms-1">— Ana sayfa ve haber listesinde yalnızca <strong>yayınlanmış</strong> içerik görünür.</span>
+            @if (!canPublish)
+            {
+                <span class="d-block small mt-1">Kaydettikten sonra <strong>Onaya gönder</strong>; il yöneticisi <strong>Yayınla</strong> dediğinde sitede görünür.</span>
+            }
+            else if (Model.Status == PublishStatus.Draft)
+            {
+                <span class="d-block small mt-1">Doğrudan yayınlamak için <strong>Yayınla</strong> veya önce <strong>Onaya gönder</strong> kullanabilirsiniz.</span>
+            }
+        }
+    </div>
+}
 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 @if (!string.IsNullOrWhiteSpace(Model.LastRejectionNote))
 {
