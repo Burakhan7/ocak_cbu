@@ -1,6 +1,14 @@
 @model UOM.Application.Features.Public.Models.StaticPageDto
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.MetaTitle) ? Model.Title : Model.MetaTitle;
+    ViewData["Description"] = Model.MetaDescription;
+    ViewData["Canonical"] = "/" + Model.Slug;
+    ViewData["OgType"] = "article";
+    ViewData["Breadcrumbs"] = new BreadcrumbItem[]
+    {
+        new("Ana Sayfa", "/"),
+        new(Model.Title, "/" + Model.Slug),
+    };
 }
 <article>
     <h1 class="h2 mb-3">@Model.Title</h1>

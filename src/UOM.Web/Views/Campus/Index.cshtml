@@ -81,7 +81,7 @@
             {
                 <div class="col-md-6">
                     <article class="card h-100 content-card @(a.IsUrgent ? "border-warning" : "")">
-                        <partial name="_CardCover" model="@(new CoverImageModel(a.CoverImageUrl, a.CoverImageAlt ?? a.Title))" />
+                        <partial name="_CardCover" model="@(new CoverImageModel(a.CoverImageUrl, a.CoverImageAlt ?? a.Title, MediaId: a.CoverImageId))" />
                         <div class="card-body py-3">
                             <a asp-controller="Announcement" asp-action="Detail" asp-route-slug="@a.Slug" class="fw-semibold stretched-link text-decoration-none">@a.Title</a>
                             @if (a.DeadlineUtc is { } dl)
@@ -106,7 +106,7 @@
                 {
                     <div class="col-sm-6 col-lg-4">
                         <article class="card h-100 content-card">
-                            <partial name="_CardCover" model="@(new CoverImageModel(c.CoverImageUrl, c.CoverImageAlt ?? c.Name))" />
+                            <partial name="_CardCover" model="@(new CoverImageModel(c.CoverImageUrl, c.CoverImageAlt ?? c.Name, MediaId: c.CoverImageId))" />
                             <div class="card-body py-3">
                                 <strong class="d-block">@c.Name</strong>
                                 @if (c.DistanceToLodgeKm is { } km)

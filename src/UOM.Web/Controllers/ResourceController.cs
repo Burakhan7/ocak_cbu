@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using UOM.Application.Abstractions;
+using UOM.Application.Caching;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
 using UOM.Domain.Enums;
@@ -13,6 +15,7 @@ public sealed class ResourceController(
     IFileStorage fileStorage) : Controller
 {
     [HttpGet("")]
+    [OutputCache(Duration = 300, Tags = [CacheTags.Resources], VaryByQueryKeys = ["*"])]
     public async Task<IActionResult> Index(int? fakulte, string? ders, int sayfa = 1, CancellationToken cancellationToken = default)
     {
         var query = new ResourceListQuery(fakulte, ders, sayfa, 24);

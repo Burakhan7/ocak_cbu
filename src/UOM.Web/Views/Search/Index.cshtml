@@ -1,0 +1,39 @@
+@model UOM.Application.Features.Public.Models.SearchResultDto
+@{
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.Query) ? "Arama" : $"Arama: {Model.Query}";
+}
+<h1 class="h2 mb-3">Arama</h1>
+@if (!Model.Enabled)
+{
+    <p>Arama şu anda kapalı.</p>
+}
+else
+{
+    <form method="get" action="/ara" class="mb-4" role="search">
+        <label class="form-label" for="q">Aranacak kelime</label>
+        <div class="input-group">
+            <input class="form-control" id="q" name="q" type="search" value="@Model.Query" maxlength="200" />
+            <button class="btn btn-primary" type="submit">Ara</button>
+        </div>
+    </form>
+    @if (!string.IsNullOrWhiteSpace(Model.Query) && Model.Hits.Count == 0)
+    {
+        <p>Sonuç bulunamadı.</p>
+    }
+    @if (Model.Hits.Count > 0)
+    {
+        <ul class="list-group">
+        @foreach (var hit in Model.Hits)
+        {
+            <li class="list-group-item">
+                <span class="badge text-bg-light me-2">@hit.Kind</span>
+                <a href="@hit.Url">@hit.Title</a>
+                @if (!string.IsNullOrWhiteSpace(hit.Excerpt))
+                {
+                    <p class="small text-muted mb-0 mt-1">@hit.Excerpt</p>
+                }
+            </li>
+        }
+        </ul>
+    }
+}

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using UOM.Application.Common;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
@@ -161,4 +162,58 @@ internal sealed class EmptyPublicVideoService : IPublicVideoService
 {
     public Task<IReadOnlyList<VideoListItemDto>> ListAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<VideoListItemDto>>([]);
+}
+
+internal sealed class EmptyPublicSearchService(IConfiguration configuration) : IPublicSearchService
+{
+    public Task<SearchResultDto> SearchAsync(string? query, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new SearchResultDto(
+            (query ?? string.Empty).Trim(),
+            configuration.GetValue("Features:Search", true),
+            false,
+            []));
+}
+
+internal sealed class EmptySitemapService : ISitemapService
+{
+    public Task<string> BuildXmlAsync(string baseUrl, CancellationToken cancellationToken = default)
+    {
+        var root = baseUrl.TrimEnd('/');
+        var body = string.Join(
+            "",
+            PublicIndexPaths.All.Select(item => $"<url><loc>{root}{item.Path}</loc></url>"));
+        var xml = $"""
+            <?xml version="1.0" encoding="utf-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>
+            """;
+        return Task.FromResult(xml);
+    }
+}
+
+internal sealed class EmptyFeedService : IFeedService
+{
+    public Task<string> BuildRssAsync(string baseUrl, CancellationToken cancellationToken = default)
+    {
+        var root = baseUrl.TrimEnd('/');
+        var xml = $"""
+            <?xml version="1.0" encoding="utf-8"?>
+            <rss version="2.0"><channel><title>Ülkü Ocakları Manisa</title><link>{root}/haberler</link><description>Ülkü Ocakları Manisa</description><language>tr-TR</language></channel></rss>
+            """;
+        return Task.FromResult(xml);
+    }
+}
+
+internal sealed class EmptyMediaAssetReader : IMediaAssetReader
+{
+    public Task<ResponsiveImageDto?> GetAsync(int id, CancellationToken cancellationToken = default) =>
+        Task.FromResult<ResponsiveImageDto?>(null);
+}
+
+internal sealed class EmptyPublicRedirectService : IPublicRedirectService
+{
+    public Task<RedirectMatch?> FindAsync(string requestPath, CancellationToken cancellationToken = default) =>
+        Task.FromResult<RedirectMatch?>(null);
+
+    public Task RegisterHitAsync(string requestPath, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 }

@@ -23,7 +23,8 @@ public sealed record NewsListItemDto(
     string? CategoryName,
     DateTime? PublishedAtUtc,
     string? CoverImageUrl,
-    string? CoverImageAlt);
+    string? CoverImageAlt,
+    int? CoverImageId = null);
 
 public sealed record NewsDetailDto(
     int Id,
@@ -38,7 +39,8 @@ public sealed record NewsDetailDto(
     string? CoverImageUrl,
     string? CoverImageAlt,
     string? MetaTitle,
-    string? MetaDescription);
+    string? MetaDescription,
+    int? CoverImageId = null);
 
 public sealed record EventListItemDto(
     int Id,
@@ -48,7 +50,8 @@ public sealed record EventListItemDto(
     DateTime StartsAtUtc,
     DateTime? EndsAtUtc,
     string? VenueName,
-    string? CoverImageUrl);
+    string? CoverImageUrl,
+    int? CoverImageId = null);
 
 public sealed record EventDetailDto(
     int Id,
@@ -68,7 +71,8 @@ public sealed record EventDetailDto(
     string? CoverImageAlt,
     bool IsPast,
     string? MetaTitle,
-    string? MetaDescription);
+    string? MetaDescription,
+    int? CoverImageId = null);
 
 public sealed record VenueDto(
     string Name,
@@ -94,6 +98,8 @@ public sealed record StaticPageLinkDto(string Title, string Slug);
 
 public sealed record RedirectDto(string ToPath, int StatusCode);
 
+public sealed record RedirectMatch(int Id, string ToPath, int StatusCode);
+
 public sealed record SiteSettingsDto(
     string SiteName,
     string? Tagline,
@@ -105,7 +111,8 @@ public sealed record SiteSettingsDto(
     double? MapLat,
     double? MapLng,
     bool TurnstileEnabled,
-    string? LogoUrl);
+    string? LogoUrl,
+    string? SocialLinksJson = null);
 
 public sealed record FacultyOptionDto(int Id, string Name);
 
@@ -127,7 +134,8 @@ public sealed record CampusMapPinDto(
     double Longitude,
     double? DistanceToLodgeKm,
     string? CoverImageUrl,
-    string? CoverImageAlt);
+    string? CoverImageAlt,
+    int? CoverImageId = null);
 
 public sealed record GuideListItemDto(
     string Title,
@@ -136,7 +144,8 @@ public sealed record GuideListItemDto(
     GuideCategory Category,
     DateTime? LastReviewedAtUtc,
     string? CoverImageUrl,
-    string? CoverImageAlt);
+    string? CoverImageAlt,
+    int? CoverImageId = null);
 
 public sealed record GuideDetailDto(
     string Title,
@@ -148,7 +157,8 @@ public sealed record GuideDetailDto(
     string? CoverImageUrl,
     string? CoverImageAlt,
     string? MetaTitle,
-    string? MetaDescription);
+    string? MetaDescription,
+    int? CoverImageId = null);
 
 public sealed record ResourceListQuery(int? FacultyId, string? CourseCode, int Page = 1, int PageSize = 24);
 
@@ -183,7 +193,30 @@ public sealed record AnnouncementListItemDto(
     bool IsPinned,
     bool IsUrgent,
     string? CoverImageUrl,
-    string? CoverImageAlt);
+    string? CoverImageAlt,
+    int? CoverImageId = null);
+
+public sealed record SearchHitDto(
+    string Kind,
+    string Title,
+    string? Excerpt,
+    string Url,
+    DateTime? WhenUtc);
+
+public sealed record SearchResultDto(
+    string Query,
+    bool Enabled,
+    bool UsedFullText,
+    IReadOnlyList<SearchHitDto> Hits);
+
+public sealed record ResponsiveSourceDto(string Url, int Width);
+
+public sealed record ResponsiveImageDto(
+    string Alt,
+    string Src,
+    IReadOnlyList<ResponsiveSourceDto> Sources,
+    int? Width,
+    int? Height);
 
 public sealed class ContactFormRequest
 {

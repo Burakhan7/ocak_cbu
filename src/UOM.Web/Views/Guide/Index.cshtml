@@ -26,7 +26,7 @@ else
         {
             <div class="col-md-6 col-lg-4">
                 <article class="card h-100 content-card">
-                    <partial name="_CardCover" model="@(new CoverImageModel(g.CoverImageUrl, g.CoverImageAlt ?? g.Title))" />
+                    <partial name="_CardCover" model="@(new CoverImageModel(g.CoverImageUrl, g.CoverImageAlt ?? g.Title, MediaId: g.CoverImageId))" />
                     <div class="card-body">
                         <span class="badge text-bg-light mb-2">@g.Category</span>
                         <h2 class="h6"><a asp-action="Detail" asp-route-slug="@g.Slug" class="stretched-link text-decoration-none">@g.Title</a></h2>

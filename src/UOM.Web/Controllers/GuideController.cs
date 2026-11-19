@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using UOM.Application.Caching;
 using UOM.Application.Features.Public;
 using UOM.Domain.Enums;
 
 namespace UOM.Web.Controllers;
 
 [Route("cbu/rehber")]
+[OutputCache(Duration = 300, Tags = [CacheTags.Guides], VaryByQueryKeys = ["*"])]
 public sealed class GuideController(IPublicGuideService guides) : Controller
 {
     [HttpGet("")]

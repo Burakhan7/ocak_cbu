@@ -8,4 +8,6 @@ public sealed class PublicLayoutModel
         "Ülkü Ocakları Manisa", null, null, null, null, null, null, null, null, false, null);
 
     public IReadOnlyList<StaticPageLinkDto> FooterPages { get; init; } = [];
+
+    public bool SearchEnabled { get; init; } = true;
 }

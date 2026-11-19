@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using UOM.Application.Caching;
 using UOM.Application.Features.Public;
 
 namespace UOM.Web.Controllers;
 
+[OutputCache(Duration = 300, Tags = [CacheTags.Pages], VaryByQueryKeys = ["*"])]
 public sealed class PageController : Controller
 {
     private readonly IPublicPageService _pages;

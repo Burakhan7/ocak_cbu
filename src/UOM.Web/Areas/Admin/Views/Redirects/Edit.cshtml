@@ -1,0 +1,24 @@
+@model UOM.Domain.Entities.Redirect
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni yönlendirme" : "Yönlendirme düzenle"; }
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<form method="post" asp-action="Save">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label class="form-label" asp-for="FromPath">Kaynak adres</label>
+        <input class="form-control" asp-for="FromPath" placeholder="/haberler/eski-adres" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="ToPath">Hedef adres</label>
+        <input class="form-control" asp-for="ToPath" placeholder="/haberler/yeni-adres" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="StatusCode">Durum kodu</label>
+        <select class="form-select" asp-for="StatusCode">
+            <option value="301">301 — Kalıcı</option>
+            <option value="302">302 — Geçici</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a class="btn btn-link" asp-action="Index">Vazgeç</a>
+</form>

@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using UOM.Application.Caching;
 using UOM.Application.Features.Public;
 
 namespace UOM.Web.Controllers;
 
 [Route("teskilat")]
+[OutputCache(Duration = 300, Tags = [CacheTags.Organization], VaryByQueryKeys = ["*"])]
 public sealed class OrganizationController(IPublicOrganizationService organization) : Controller
 {
     [HttpGet("")]

@@ -1,6 +1,17 @@
 @model GuideDetailDto
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.MetaTitle) ? Model.Title : Model.MetaTitle;
+    ViewData["Description"] = string.IsNullOrWhiteSpace(Model.MetaDescription) ? Model.Summary : Model.MetaDescription;
+    ViewData["Canonical"] = "/cbu/rehber/" + Model.Slug;
+    ViewData["OgImage"] = Model.CoverImageUrl;
+    ViewData["OgType"] = "article";
+    ViewData["Breadcrumbs"] = new BreadcrumbItem[]
+    {
+        new("Ana Sayfa", "/"),
+        new("CBÜ", "/cbu"),
+        new("Rehber", "/cbu/rehber"),
+        new(Model.Title, "/cbu/rehber/" + Model.Slug),
+    };
 }
 @section PageBanner {
     <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.Summary, Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail page-banner--cbu"))" />
@@ -16,7 +27,7 @@
     </p>
     @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
     {
-        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title))" />
+        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, MediaId: Model.CoverImageId))" />
     }
     <div class="content-body">@Html.Raw(Model.BodyHtml)</div>
 </article>

@@ -8,11 +8,15 @@
 }
 <form method="post" asp-action="Save" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="Slug" />
     <input type="hidden" asp-for="Status" />
     <input type="hidden" asp-for="CoverImageId" />
     <partial name="_AdminCoverImageField" />
     <div class="mb-3"><label asp-for="Title" class="form-label">Başlık</label><input asp-for="Title" class="form-control" /></div>
+    <div class="mb-3">
+        <label asp-for="Slug" class="form-label">Adres (slug)</label>
+        <input asp-for="Slug" class="form-control" />
+        <div class="form-text">Yayındaki adres değişirse eski adres yeni adrese yönlendirilir.</div>
+    </div>
     <div class="mb-3"><label asp-for="Type" class="form-label">Tür</label><select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<AnnouncementType>()"></select></div>
     <div class="mb-3"><label asp-for="Body" class="form-label">Metin</label><textarea asp-for="Body" class="form-control" rows="4"></textarea></div>
     <div class="mb-3"><label asp-for="ExternalUrl" class="form-label">Harici bağlantı</label><input asp-for="ExternalUrl" class="form-control" /></div>

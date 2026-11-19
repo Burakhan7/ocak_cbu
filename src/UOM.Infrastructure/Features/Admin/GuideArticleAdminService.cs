@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
+using UOM.Application.Features.Public;
 using UOM.Domain.Entities;
 using UOM.Domain.Enums;
 using UOM.Infrastructure.Persistence;
@@ -11,7 +12,8 @@ public sealed class GuideArticleAdminService(
     AppDbContext db,
     ISlugService slugService,
     IClock clock,
-    IAuditLogger auditLogger)
+    IAuditLogger auditLogger,
+    IRedirectRecorder? redirects = null)
 {
     public Task<List<GuideArticle>> ListAsync(CancellationToken cancellationToken = default) =>
         db.GuideArticles.OrderBy(g => g.Category).ThenBy(g => g.Order).ToListAsync(cancellationToken);
@@ -52,10 +54,16 @@ public sealed class GuideArticleAdminService(
             existing.MetaTitle = model.MetaTitle;
             existing.MetaDescription = model.MetaDescription;
             existing.OgImageId = model.OgImageId;
-            if (!string.IsNullOrWhiteSpace(model.Slug))
-            {
-                existing.Slug = model.Slug.Trim();
-            }
+            await PublishedSlug.ApplyAsync(
+                slugService,
+                redirects,
+                existing.Slug,
+                model.Slug,
+                existing.Status,
+                PublicContentPaths.Guide,
+                slug => db.GuideArticles.AnyAsync(g => g.Slug == slug && g.Id != existing.Id, cancellationToken),
+                slug => existing.Slug = slug,
+                cancellationToken);
 
             model = existing;
         }

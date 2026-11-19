@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using UOM.Application.Caching;
 using UOM.Application.Common;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
@@ -6,6 +8,7 @@ using UOM.Application.Features.Public.Models;
 namespace UOM.Web.Controllers;
 
 [Route("etkinlikler")]
+[OutputCache(Duration = 300, Tags = [CacheTags.Events], VaryByQueryKeys = ["*"])]
 public sealed class EventController : Controller
 {
     private readonly IPublicEventService _events;

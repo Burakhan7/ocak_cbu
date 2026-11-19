@@ -1,7 +1,17 @@
 @using UOM.Application.Formatting
 @model UOM.Application.Features.Public.Models.EventDetailDto
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.MetaTitle) ? Model.Title : Model.MetaTitle;
+    ViewData["Description"] = string.IsNullOrWhiteSpace(Model.MetaDescription) ? Model.Summary : Model.MetaDescription;
+    ViewData["Canonical"] = "/etkinlikler/" + Model.Slug;
+    ViewData["OgImage"] = Model.CoverImageUrl;
+    ViewData["OgType"] = "article";
+    ViewData["Breadcrumbs"] = new BreadcrumbItem[]
+    {
+        new("Ana Sayfa", "/"),
+        new("Etkinlikler", "/etkinlikler"),
+        new(Model.Title, "/etkinlikler/" + Model.Slug),
+    };
 }
 @section PageBanner {
     <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.StartsAtUtc.ToLocalDisplay(), Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail"))" />
@@ -13,7 +23,7 @@
     }
     @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
     {
-        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title))" />
+        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, MediaId: Model.CoverImageId))" />
     }
     @if (Model.Venue is not null)
     {

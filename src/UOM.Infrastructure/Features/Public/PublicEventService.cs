@@ -176,7 +176,8 @@ public sealed class PublicEventService : IPublicEventService
             evt.CoverImage?.AltText,
             isPast,
             evt.MetaTitle,
-            evt.MetaDescription);
+            evt.MetaDescription,
+            evt.CoverImageId);
     }
 
     private EventListItemDto MapList(Event evt) =>
@@ -188,5 +189,6 @@ public sealed class PublicEventService : IPublicEventService
             evt.StartsAtUtc,
             evt.EndsAtUtc,
             evt.Venue?.Name,
-            MediaUrlHelper.ResolveUrl(evt.CoverImage?.StoragePath, evt.CoverImage?.Variants));
+            MediaUrlHelper.ResolveUrl(evt.CoverImage?.StoragePath, evt.CoverImage?.Variants),
+            evt.CoverImageId);
 }

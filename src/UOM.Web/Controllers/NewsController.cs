@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using UOM.Application.Caching;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
 using UOM.Domain.Enums;
@@ -6,6 +8,7 @@ using UOM.Domain.Enums;
 namespace UOM.Web.Controllers;
 
 [Route("haberler")]
+[OutputCache(Duration = 300, Tags = [CacheTags.News], VaryByQueryKeys = ["*"])]
 public sealed class NewsController : Controller
 {
     private readonly IPublicNewsService _news;

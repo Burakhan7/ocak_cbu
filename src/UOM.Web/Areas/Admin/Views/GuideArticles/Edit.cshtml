@@ -8,11 +8,15 @@
 }
 <form method="post" asp-action="Save" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="Slug" />
     <input type="hidden" asp-for="Status" />
     <input type="hidden" asp-for="CoverImageId" />
     <partial name="_AdminCoverImageField" />
     <div class="mb-3"><label asp-for="Title" class="form-label">Başlık</label><input asp-for="Title" class="form-control" /></div>
+    <div class="mb-3">
+        <label asp-for="Slug" class="form-label">Adres (slug)</label>
+        <input asp-for="Slug" class="form-control" />
+        <div class="form-text">Yayındaki adres değişirse eski adres yeni adrese yönlendirilir.</div>
+    </div>
     <div class="mb-3"><label asp-for="Category" class="form-label">Kategori</label><select asp-for="Category" class="form-select" asp-items="Html.GetEnumSelectList<GuideCategory>()"></select></div>
     <div class="mb-3"><label asp-for="Summary" class="form-label">Özet</label><textarea asp-for="Summary" class="form-control" rows="2"></textarea></div>
     <div class="mb-3"><label asp-for="Order" class="form-label">Sıra</label><input asp-for="Order" class="form-control" type="number" /></div>
@@ -21,6 +25,17 @@
         @{ ViewData["FieldName"] = "BodyHtml"; ViewData["FieldId"] = "guide-body"; }
         <partial name="_RichTextEditor" model="Model.BodyHtml" />
     </div>
+    <details class="mb-3">
+        <summary>SEO</summary>
+        <div class="mt-2">
+            <label class="form-label" asp-for="MetaTitle">Meta başlık</label>
+            <input asp-for="MetaTitle" class="form-control" maxlength="60" />
+        </div>
+        <div class="mt-2">
+            <label class="form-label" asp-for="MetaDescription">Meta açıklama</label>
+            <textarea asp-for="MetaDescription" class="form-control" maxlength="160" rows="2"></textarea>
+        </div>
+    </details>
     <div class="d-flex flex-wrap gap-2">
         <button type="submit" class="btn btn-primary">Kaydet</button>
         @if (Model.Id > 0)
