@@ -1,10 +1,63 @@
+/* Yönetim paneli — public site ile aynı design token'lar (tokens.css) */
+
+body.bg-light {
+  background-color: var(--color-surface) !important;
+}
+
+header.border-bottom.bg-white {
+  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) !important;
+  border-bottom: 3px solid var(--color-brand-accent) !important;
+}
+
+header .navbar-brand {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+header .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+header .nav-link:hover,
+header .btn-link.nav-link:hover {
+  color: #fff !important;
+}
+
+header form .btn-link.nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
 .admin-card {
-  background: var(--color-surface, #f6f6f6);
-  border: 1px solid var(--color-border, #e2e2e2);
-  border-radius: var(--radius-md, 8px);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.admin-card h1,
+.admin-card .h2,
+.admin-card .h3 {
+  color: var(--color-brand-primary);
 }
 
 .rich-text-editor {
   min-height: 320px;
+}
+
+table.table {
+  --bs-table-border-color: var(--color-border);
+}
+
+.table thead th {
+  color: var(--color-brand-primary);
+  font-weight: 600;
+}
+
+.alert-success {
+  border-left: 4px solid var(--color-success);
+}
+
+.alert-danger {
+  border-left: 4px solid var(--color-danger);
 }

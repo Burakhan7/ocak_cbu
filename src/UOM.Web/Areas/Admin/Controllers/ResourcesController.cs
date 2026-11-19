@@ -50,6 +50,11 @@ public sealed class ResourcesController(ResourceAdminService resourceService, Ca
         }
 
         TempData["Success"] = "Kaynak kaydedildi.";
+        if (model.Id == 0)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
         return RedirectToAction(nameof(Edit), new { id = result.Value!.Id });
     }
 

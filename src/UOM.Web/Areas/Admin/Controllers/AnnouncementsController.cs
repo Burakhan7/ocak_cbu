@@ -39,6 +39,11 @@ public sealed class AnnouncementsController(AnnouncementAdminService announcemen
         }
 
         TempData["Success"] = "Duyuru kaydedildi.";
+        if (model.Id == 0)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
         return RedirectToAction(nameof(Edit), new { id = result.Value!.Id });
     }
 

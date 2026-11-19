@@ -17,13 +17,28 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .site-header {
-  background-color: var(--color-bg);
-  border-color: var(--color-border) !important;
+  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%);
+  border-color: transparent !important;
+  border-bottom: 3px solid var(--color-brand-accent);
+}
+
+.site-header .navbar-brand img {
+  filter: brightness(0) invert(1);
 }
 
 .site-footer {
+  background-color: var(--color-surface);
   color: var(--color-text-muted);
   border-color: var(--color-border) !important;
+}
+
+.site-footer a {
+  color: var(--color-brand-secondary);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-brand-accent);
 }
 
 .text-muted {
@@ -31,26 +46,89 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem var(--color-bg), 0 0 0 0.25rem var(--color-brand-primary);
+  box-shadow: 0 0 0 0.1rem var(--color-bg), 0 0 0 0.25rem var(--color-brand-secondary);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--color-brand-secondary);
+  --bs-btn-border-color: var(--color-brand-secondary);
+  --bs-btn-hover-bg: var(--color-brand-primary);
+  --bs-btn-hover-border-color: var(--color-brand-primary);
+  --bs-btn-active-bg: var(--color-brand-primary);
+  --bs-btn-active-border-color: var(--color-brand-primary);
 }
 
 .public-nav a {
-  color: var(--color-text);
+  color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
   font-weight: 500;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
 }
 
 .public-nav a:hover {
-  color: var(--color-brand-primary);
+  color: #fff;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
-.ocağa-ugra-btn {
+.public-nav a.text-muted {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.ocağa-ugra-btn,
+.btn-accent {
+  --bs-btn-bg: var(--color-brand-accent);
+  --bs-btn-border-color: var(--color-brand-accent);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-bg: #a01830;
+  --bs-btn-hover-border-color: #a01830;
+  --bs-btn-active-bg: #8b1429;
+  --bs-btn-active-border-color: #8b1429;
   background-color: var(--color-brand-accent);
   border-color: var(--color-brand-accent);
+  color: #fff;
 }
 
 body.public-site {
   padding-bottom: 5rem;
+}
+
+.site-main {
+  padding-top: 1.5rem;
+}
+
+.home-section .card,
+.cbu-hub .card,
+.site-main .card {
+  border-color: var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+a.card:hover {
+  border-color: var(--color-brand-secondary);
+  box-shadow: 0 4px 14px rgba(13, 27, 51, 0.12);
+  transform: translateY(-1px);
+}
+
+a.card:hover .card-body strong {
+  color: var(--color-brand-secondary);
+}
+
+.cbu-hub > header {
+  border-left: 4px solid var(--color-brand-accent);
+  padding-left: 1rem;
+}
+
+.cbu-hub .list-group-item a {
+  color: var(--color-brand-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.cbu-hub .list-group-item a:hover {
+  color: var(--color-brand-accent);
 }
 
 .mobile-tabbar {
@@ -60,18 +138,22 @@ body.public-site {
   right: 0;
   display: flex;
   justify-content: space-around;
-  background: var(--color-bg);
-  border-top: 1px solid var(--color-border);
+  background: var(--color-brand-primary);
+  border-top: 2px solid var(--color-brand-accent);
   padding: 0.5rem;
   z-index: 1030;
 }
 
 .mobile-tabbar a {
-  color: var(--color-text);
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
   font-size: 0.75rem;
   text-align: center;
   flex: 1;
+}
+
+.mobile-tabbar a:active {
+  color: var(--color-brand-accent);
 }
 
 .content-body {

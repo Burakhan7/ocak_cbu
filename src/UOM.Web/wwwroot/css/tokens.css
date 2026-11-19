@@ -1,28 +1,45 @@
 :root {
-  /* Marka — TODO(spec): kurumsal kimlik kılavuzundan doldurulacak */
-  --color-brand-primary: #000000;   /* TODO */
-  --color-brand-secondary: #000000; /* TODO */
-  --color-brand-accent: #000000;    /* TODO */
+  /*
+   * Marka renkleri — ulkuocaklari.org.tr (theming.css, 2026) örneklemesi:
+   *   #0d1b33, #0a3a66, #004d6d, #005f82, #0075a0
+   * Yerel Manisa/CBÜ vurgusu: kırmızı aksan (kullanıcı onayı, OC-13)
+   */
+  --color-brand-primary: #0d1b33;
+  --color-brand-secondary: #004d6d;
+  --color-brand-accent: #c41e3a;
 
   /* Nötr */
   --color-bg: #ffffff;
-  --color-surface: #f6f6f6;
+  --color-surface: #f4f7fa;
   --color-text: #1a1a1a;
-  --color-text-muted: #5c5c5c;
-  --color-border: #e2e2e2;
+  --color-text-muted: #505050;
+  --color-border: #d7e3f0;
 
   /* Durum */
   --color-success: #1f7a3f;
   --color-warning: #b26b00;
   --color-danger: #b42318;
 
-  /* Tipografi — TODO(spec): kurumsal font */
+  /* Tipografi — TODO(spec): kurumsal font self-host */
   --font-heading: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
-  --shadow-card: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-card: 0 2px 8px rgba(13, 27, 51, 0.08);
   --container-max: 1200px;
+
+  /* Bootstrap 5.3 — marka token köprüsü */
+  --bs-primary: var(--color-brand-secondary);
+  --bs-primary-rgb: 0, 77, 109;
+  --bs-secondary: var(--color-brand-primary);
+  --bs-secondary-rgb: 13, 27, 51;
+  --bs-danger: var(--color-brand-accent);
+  --bs-danger-rgb: 196, 30, 58;
+  --bs-link-color: var(--color-brand-secondary);
+  --bs-link-hover-color: var(--color-brand-primary);
+  --bs-border-color: var(--color-border);
+  --bs-body-color: var(--color-text);
+  --bs-body-bg: var(--color-bg);
 }
