@@ -169,18 +169,17 @@ body.public-site {
 .card-cover {
   overflow: hidden;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
-  background: var(--color-surface);
   line-height: 0;
 }
 
 .card-cover__img {
-  width: 100%;
-  height: auto;
   display: block;
-}
-
-.card-cover.cover-image--card .card-cover__img {
-  max-height: 16rem;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 12rem;
+  object-fit: contain;
+  margin-inline: auto;
 }
 
 .card-cover__placeholder {
@@ -197,16 +196,19 @@ body.public-site {
 
 .detail-cover {
   margin: 0 0 1.25rem;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-  background: var(--color-surface);
+  line-height: 0;
 }
 
 .detail-cover__img {
-  width: 100%;
-  height: auto;
   display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 28rem;
+  object-fit: contain;
+  margin-inline: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
 }
 
 .content-card {
