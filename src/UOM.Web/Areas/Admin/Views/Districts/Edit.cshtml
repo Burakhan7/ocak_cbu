@@ -1,0 +1,41 @@
+@model UOM.Domain.Entities.District
+@{ ViewData["Title"] = Model.Name; }
+<form method="post" asp-action="Save">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Slug" />
+    <input type="hidden" asp-for="Name" />
+    <h1 class="h4 mb-3">@Model.Name</h1>
+    <section class="mb-3">
+        <label asp-for="PresidentName" class="form-label">İlçe başkanı</label>
+        <input asp-for="PresidentName" class="form-control" />
+    </section>
+    <section class="mb-3">
+        <label asp-for="Address" class="form-label">Adres</label>
+        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+    </section>
+    <section class="mb-3">
+        <label asp-for="Phone" class="form-label">Telefon</label>
+        <input asp-for="Phone" class="form-control" />
+    </section>
+    <div class="row g-2 mb-3">
+        <div class="col">
+            <label asp-for="Latitude" class="form-label">Enlem</label>
+            <input asp-for="Latitude" class="form-control" />
+        </div>
+        <div class="col">
+            <label asp-for="Longitude" class="form-label">Boylam</label>
+            <input asp-for="Longitude" class="form-control" />
+        </div>
+    </div>
+    <section class="mb-3">
+        <label asp-for="Order" class="form-label">Sıra</label>
+        <input asp-for="Order" type="number" class="form-control" />
+    </section>
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label">Aktif (haritada göster)</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-link">Liste</a>
+</form>

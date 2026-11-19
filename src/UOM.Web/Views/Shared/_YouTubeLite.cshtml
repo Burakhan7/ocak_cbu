@@ -1,0 +1,8 @@
+@model UOM.Application.Features.Public.Models.VideoListItemDto
+<div class="youtube-lite card content-card" data-youtube-lite data-video-id="@Model.YouTubeVideoId">
+    <button type="button" class="youtube-lite__trigger btn w-100 p-0 border-0 text-start" aria-label="@Model.Title videosunu oynat">
+        <img class="youtube-lite__thumb w-100" src="https://i.ytimg.com/vi/@Model.YouTubeVideoId/hqdefault.jpg" alt="" loading="lazy" />
+        <span class="youtube-lite__play" aria-hidden="true">▶</span>
+        <span class="youtube-lite__title d-block p-2 small"><strong>@Model.Title</strong></span>
+    </button>
+</div>

@@ -1,0 +1,25 @@
+@model UOM.Domain.Entities.MagazineIssue
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni dergi" : "Dergi düzenle"; }
+<form method="post" asp-action="Save" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CoverImageId" />
+    <section class="mb-3">
+        <label asp-for="Title" class="form-label">Başlık</label>
+        <input asp-for="Title" class="form-control" required />
+    </section>
+    <section class="mb-3">
+        <label asp-for="IssueDate" class="form-label">Sayı tarihi</label>
+        <input asp-for="IssueDate" type="date" class="form-control" />
+    </section>
+    <section class="mb-3">
+        <label asp-for="ExternalUrl" class="form-label">Ana site dergi URL</label>
+        <input asp-for="ExternalUrl" class="form-control" required />
+    </section>
+    <partial name="_AdminCoverImageField" />
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label">Aktif</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

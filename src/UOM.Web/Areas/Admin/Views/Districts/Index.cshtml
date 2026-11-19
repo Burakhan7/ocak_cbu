@@ -1,0 +1,13 @@
+@model IReadOnlyList<UOM.Domain.Entities.District>
+@{ ViewData["Title"] = "İlçeler"; }
+<h1 class="h3 mb-3">İlçeler</h1>
+<p class="small text-muted"><!-- TODO(spec): harita üzerinde pin seçimi (admin) --></p>
+<ul class="list-group">
+@foreach (var d in Model)
+{
+    <li class="list-group-item d-flex justify-content-between">
+        <span>@d.Name <small class="text-muted">@(d.IsActive ? "aktif" : "pasif")</small></span>
+        <a asp-action="Edit" asp-route-id="@d.Id">Düzenle</a>
+    </li>
+}
+</ul>

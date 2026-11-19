@@ -1,0 +1,30 @@
+@model UOM.Domain.Entities.Quote
+@using UOM.Domain.Enums
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni alıntı" : "Alıntı düzenle"; }
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<form method="post" asp-action="Save">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label asp-for="Text" class="form-label">Metin</label>
+        <textarea asp-for="Text" class="form-control" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Author" class="form-label">Kaynak</label>
+        <select asp-for="Author" asp-items="Html.GetEnumSelectList<QuoteAuthor>()" class="form-select"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SourceNote" class="form-label">Not (opsiyonel)</label>
+        <input asp-for="SourceNote" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Order" class="form-label">Sıra</label>
+        <input asp-for="Order" type="number" class="form-control" />
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label">Aktif</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a class="btn btn-link" asp-action="Index">İptal</a>
+</form>

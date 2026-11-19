@@ -1,0 +1,31 @@
+@model UOM.Domain.Entities.ParentProject
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni proje" : "Proje düzenle"; }
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<form method="post" asp-action="Save" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="LogoImageId" />
+    <p class="text-muted small">İçerik ana sitede; burada yalnızca özet ve bağlantı.</p>
+    <section class="mb-3">
+        <label asp-for="Name" class="form-label">Ad</label>
+        <input asp-for="Name" class="form-control" required />
+    </section>
+    <section class="mb-3">
+        <label asp-for="ShortDescription" class="form-label">Kısa açıklama</label>
+        <textarea asp-for="ShortDescription" class="form-control" rows="2"></textarea>
+    </section>
+    <section class="mb-3">
+        <label asp-for="ExternalUrl" class="form-label">URL</label>
+        <input asp-for="ExternalUrl" class="form-control" required />
+    </section>
+    <partial name="_AdminLogoImageField" />
+    <section class="mb-3">
+        <label asp-for="Order" class="form-label">Sıra</label>
+        <input asp-for="Order" type="number" class="form-control" />
+    </section>
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label">Aktif</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

@@ -195,7 +195,8 @@ Migration (Faz 2): `AddContentApprovalRejectionNotes`
 - [x] Faz 2 — `/yonetim` Identity+2FA, policy’ler, haber/etkinlik/mekan/site/medya CRUD, onay akışı, önizleme, audit log
 - [x] Faz 3 — Public çekirdek sayfalar (layout, ana sayfa, haber/etkinlik, iletişim, statik slug, 404/500)
 - [x] Faz 4 — CBÜ katmanı: Hub, rehber/kaynak/duyuru public + admin (`CanWriteCampusContent`), kampüs haritası (Leaflet)
-- [ ] Faz 5+ — Genel Merkez + teşkilat (`ARCHITECTURE.md` Bölüm 13)
+- [x] Faz 5 — Genel Merkez + teşkilat: alıntı bandı, `/genel-merkez`, `/teskilat`, Leaflet, lite YouTube, admin CRUD (`CanManageParentLayer`)
+- [ ] Faz 6+ — SEO, arama, performans (`ARCHITECTURE.md` Bölüm 13)
 
 ## TODO(spec)
 

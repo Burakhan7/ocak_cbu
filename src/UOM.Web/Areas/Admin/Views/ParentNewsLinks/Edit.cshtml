@@ -1,0 +1,42 @@
+@model UOM.Domain.Entities.ParentNewsLink
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni haber bağlantısı" : "Düzenle"; }
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+<form method="post" asp-action="Save" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ImageId" />
+    <div class="row g-3">
+        <div class="col-md-8 mb-3">
+            <label asp-for="Title" class="form-label">Başlık</label>
+            <input asp-for="Title" class="form-control" required />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="PublishedDate" class="form-label">Tarih</label>
+            <input asp-for="PublishedDate" type="date" class="form-control" />
+        </div>
+        <div class="col-12 mb-3">
+            <label asp-for="Summary" class="form-label">Özet</label>
+            <textarea asp-for="Summary" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="col-12 mb-3">
+            <label asp-for="ExternalUrl" class="form-label">Ana site URL</label>
+            <input asp-for="ExternalUrl" class="form-control" required />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="ImageUrl" class="form-label">Harici görsel URL (opsiyonel)</label>
+            <input asp-for="ImageUrl" class="form-control" />
+        </div>
+        <div class="col-12">
+            <partial name="_AdminCoverImageField" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="Order" class="form-label">Sıra</label>
+            <input asp-for="Order" type="number" class="form-control" />
+        </div>
+        <div class="col-md-4 form-check mb-3">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label">Aktif</label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

@@ -1,0 +1,13 @@
+@model IReadOnlyList<UOM.Domain.Entities.Video>
+@{ ViewData["Title"] = "Videolar"; }
+<h1 class="h3 mb-3">Videolar</h1>
+<a class="btn btn-primary mb-3" asp-action="Create">Yeni</a>
+<ul class="list-group">
+@foreach (var v in Model)
+{
+    <li class="list-group-item d-flex justify-content-between">
+        <span>@v.Title <small class="text-muted">@v.YouTubeVideoId</small></span>
+        <a asp-action="Edit" asp-route-id="@v.Id">Düzenle</a>
+    </li>
+}
+</ul>

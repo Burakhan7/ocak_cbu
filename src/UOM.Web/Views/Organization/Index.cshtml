@@ -1,0 +1,99 @@
+@model UOM.Application.Features.Public.Models.OrganizationPageDto
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Teşkilat";
+}
+@section PageBanner {
+    <partial name="_PageBanner" model='new UOM.Web.Models.PageBannerModel("Teşkilat", "İl yönetimi ve ilçe teşkilatları", ModifierClass: "page-banner--list")' />
+}
+
+<section class="mb-5">
+    <h2 class="h4 mb-3">İl yönetimi</h2>
+    @if (Model.BoardMembers.Count == 0)
+    {
+        <p class="text-muted small"><!-- TODO(spec): il yönetimi listesi --></p>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var m in Model.BoardMembers)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <article class="card h-100 text-center content-card">
+                        @if (m.ShowPhoto && !string.IsNullOrWhiteSpace(m.PhotoUrl))
+                        {
+                            <img src="@m.PhotoUrl" alt="@m.PhotoAlt" class="card-img-top board-member-photo" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="board-member-placeholder card-img-top d-flex align-items-center justify-content-center text-muted small">Fotoğraf yok</div>
+                        }
+                        <div class="card-body py-3">
+                            <strong class="d-block">@m.FullName</strong>
+                            <span class="small text-muted">@m.Title</span>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<section class="mb-4">
+    <h2 class="h4 mb-3">İlçe haritası</h2>
+    <div id="org-map" class="rounded border mb-3" style="height: 400px;"></div>
+</section>
+
+<section>
+    <h2 class="h4 mb-3">İlçeler</h2>
+    <ul class="list-group">
+        @foreach (var d in Model.DistrictList)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center @(d.IsActive ? "" : "text-muted")">
+                <div>
+                    <strong>@d.Name</strong>
+                    @if (d.IsActive && !string.IsNullOrWhiteSpace(d.PresidentName))
+                    {
+                        <span class="small d-block">@d.PresidentName</span>
+                    }
+                </div>
+                @if (d.IsActive)
+                {
+                    <a class="small" asp-action="District" asp-route-slug="@d.Slug">Detay</a>
+                }
+                else
+                {
+                    <span class="badge text-bg-secondary">Pasif</span>
+                }
+            </li>
+        }
+    </ul>
+</section>
+
+@section Scripts {
+@if (Model.DistrictsForMap.Count > 0)
+{
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        (function () {
+            var districts = @Html.Raw(JsonSerializer.Serialize(Model.DistrictsForMap.Select(d => new {
+                d.Name, d.Slug, d.Latitude, d.Longitude, d.Address, d.Phone
+            })));
+            var map = L.map('org-map');
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+            var bounds = [];
+            districts.forEach(function (d) {
+                var popup = '<strong>' + d.Name + '</strong>';
+                if (d.Address) popup += '<br>' + d.Address;
+                if (d.Phone) popup += '<br>' + d.Phone;
+                popup += '<br><a href="/teskilat/' + d.Slug + '">Detay</a>';
+                L.marker([d.Latitude, d.Longitude]).addTo(map).bindPopup(popup);
+                bounds.push([d.Latitude, d.Longitude]);
+            });
+            if (bounds.length) map.fitBounds(bounds, { padding: [32, 32] });
+            else map.setView([38.6191, 27.4289], 9);
+        })();
+    </script>
+}
+}
