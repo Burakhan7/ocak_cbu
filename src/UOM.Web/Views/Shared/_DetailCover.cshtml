@@ -1,7 +1,13 @@
 @model UOM.Web.Models.CoverImageModel
-@if (!string.IsNullOrWhiteSpace(Model.Url))
+@if (Model.MediaId is int mediaId && mediaId > 0)
 {
     <figure class="detail-cover @Model.ModifierClass">
-        <img src="@Model.Url" alt="@Model.Alt" class="detail-cover__img" />
+        <responsive-image media-id="@mediaId" src="@Model.Url" alt="@Model.Alt" class="detail-cover__img" sizes="@(Model.Sizes ?? "(min-width: 992px) 960px, 100vw")" loading="eager" fetchpriority="high" />
+    </figure>
+}
+else if (!string.IsNullOrWhiteSpace(Model.Url))
+{
+    <figure class="detail-cover @Model.ModifierClass">
+        <img src="@Model.Url" alt="@Model.Alt" class="detail-cover__img" fetchpriority="high" decoding="async" />
     </figure>
 }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
+using UOM.Application.Features.Public;
 using UOM.Domain.Entities;
 using UOM.Domain.Enums;
 using UOM.Infrastructure.Persistence;
@@ -11,7 +12,8 @@ public sealed class AnnouncementAdminService(
     AppDbContext db,
     ISlugService slugService,
     IClock clock,
-    IAuditLogger auditLogger)
+    IAuditLogger auditLogger,
+    IRedirectRecorder? redirects = null)
 {
     public Task<List<Announcement>> ListAsync(CancellationToken cancellationToken = default) =>
         db.Announcements.OrderByDescending(a => a.IsPinned).ThenBy(a => a.ExpiresAtUtc).ToListAsync(cancellationToken);
@@ -61,6 +63,16 @@ public sealed class AnnouncementAdminService(
             existing.ExpiresAtUtc = model.ExpiresAtUtc;
             existing.IsPinned = model.IsPinned;
             existing.CoverImageId = model.CoverImageId;
+            await PublishedSlug.ApplyAsync(
+                slugService,
+                redirects,
+                existing.Slug,
+                model.Slug,
+                existing.Status,
+                PublicContentPaths.Announcement,
+                slug => db.Announcements.AnyAsync(a => a.Slug == slug && a.Id != existing.Id, cancellationToken),
+                slug => existing.Slug = slug,
+                cancellationToken);
             model = existing;
         }
 

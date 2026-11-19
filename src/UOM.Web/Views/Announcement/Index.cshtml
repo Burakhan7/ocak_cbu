@@ -24,7 +24,7 @@ else
         {
             <div class="col-md-6">
                 <article class="card h-100 content-card @(a.IsUrgent ? "border-warning" : "")">
-                    <partial name="_CardCover" model="@(new CoverImageModel(a.CoverImageUrl, a.CoverImageAlt ?? a.Title))" />
+                    <partial name="_CardCover" model="@(new CoverImageModel(a.CoverImageUrl, a.CoverImageAlt ?? a.Title, MediaId: a.CoverImageId))" />
                     <div class="card-body">
                         @if (a.IsUrgent)
                         {

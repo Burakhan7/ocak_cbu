@@ -50,7 +50,8 @@ public sealed class PublicGuideService(AppDbContext db, IClock clock, IHtmlSanit
             g.Category,
             g.LastReviewedAtUtc,
             MediaUrlHelper.ResolveUrl(g.CoverImage?.StoragePath, g.CoverImage?.Variants),
-            g.CoverImage?.AltText);
+            g.CoverImage?.AltText,
+            g.CoverImageId);
 
     private GuideDetailDto MapDetail(GuideArticle article) =>
         new(
@@ -63,5 +64,6 @@ public sealed class PublicGuideService(AppDbContext db, IClock clock, IHtmlSanit
             MediaUrlHelper.ResolveUrl(article.CoverImage?.StoragePath, article.CoverImage?.Variants, "large"),
             article.CoverImage?.AltText,
             article.MetaTitle,
-            article.MetaDescription);
+            article.MetaDescription,
+            article.CoverImageId);
 }

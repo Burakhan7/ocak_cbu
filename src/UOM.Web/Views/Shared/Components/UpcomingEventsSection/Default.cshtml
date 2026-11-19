@@ -17,7 +17,7 @@
             {
                 <div class="col-md-4">
                     <article class="card h-100 content-card">
-                        <partial name="_CardCover" model="@(new CoverImageModel(evt.CoverImageUrl, evt.Title))" />
+                        <partial name="_CardCover" model="@(new CoverImageModel(evt.CoverImageUrl, evt.Title, MediaId: evt.CoverImageId))" />
                         <div class="card-body">
                             <h3 class="h6"><a asp-controller="Event" asp-action="Detail" asp-route-slug="@evt.Slug" class="stretched-link text-decoration-none">@evt.Title</a></h3>
                             <p class="small text-muted mb-0">@evt.StartsAtUtc.ToLocalDisplay()</p>

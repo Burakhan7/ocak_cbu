@@ -58,6 +58,7 @@ public sealed class PublicAnnouncementService(AppDbContext db, IClock clock) : I
             a.IsPinned,
             urgent,
             MediaUrlHelper.ResolveUrl(a.CoverImage?.StoragePath, a.CoverImage?.Variants),
-            a.CoverImage?.AltText);
+            a.CoverImage?.AltText,
+            a.CoverImageId);
     }
 }

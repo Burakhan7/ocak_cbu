@@ -1,6 +1,13 @@
 @model UOM.Application.Features.Public.Models.DistrictDetailDto
 @{
     ViewData["Title"] = Model.Name;
+    ViewData["Canonical"] = "/teskilat/" + Model.Slug;
+    ViewData["Breadcrumbs"] = new BreadcrumbItem[]
+    {
+        new("Ana Sayfa", "/"),
+        new("Teşkilat", "/teskilat"),
+        new(Model.Name, "/teskilat/" + Model.Slug),
+    };
 }
 @section PageBanner {
     <partial name="_PageBanner" model='new UOM.Web.Models.PageBannerModel(Model.Name, "İlçe teşkilatı", ModifierClass: "page-banner--detail")' />

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
 using UOM.Domain.Entities;
+using UOM.Infrastructure.Features.Public;
 using UOM.Infrastructure.Persistence;
 
 namespace UOM.Infrastructure.Features.Admin;
@@ -47,7 +48,7 @@ public sealed class SiteSettingsAdminService(AppDbContext db, IAuditLogger audit
         existing.LogoImageId = model.LogoImageId;
 
         await db.SaveChangesAsync(cancellationToken);
-        cache.Remove("site-settings-public");
+        cache.Remove(SiteSettingsProvider.CacheKey);
         await auditLogger.LogAsync("Update", nameof(SiteSettings), existing.Id, null, cancellationToken);
         return Result<SiteSettings>.Ok(existing);
     }

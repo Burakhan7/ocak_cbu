@@ -9,7 +9,7 @@ namespace UOM.Infrastructure.Features.Public;
 
 public sealed class SiteSettingsProvider : ISiteSettingsProvider
 {
-    private const string CacheKey = "site-settings-public";
+    internal const string CacheKey = PublicCacheKeys.SiteSettings;
     private readonly AppDbContext _db;
     private readonly IMemoryCache _cache;
 
@@ -43,7 +43,8 @@ public sealed class SiteSettingsProvider : ISiteSettingsProvider
             row?.MapLat,
             row?.MapLng,
             row?.TurnstileEnabled == true,
-            logoUrl);
+            logoUrl,
+            row?.SocialLinks);
 
         _cache.Set(CacheKey, dto, TimeSpan.FromMinutes(5));
         return dto;

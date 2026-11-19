@@ -117,7 +117,8 @@ public sealed class PublicNewsService : IPublicNewsService
             n.Category?.Name,
             n.PublishedAtUtc,
             MediaUrlHelper.ResolveUrl(n.CoverImage?.StoragePath, n.CoverImage?.Variants),
-            n.CoverImage?.AltText);
+            n.CoverImage?.AltText,
+            n.CoverImageId);
 
     private NewsDetailDto MapDetail(NewsPost n) =>
         new(
@@ -133,5 +134,6 @@ public sealed class PublicNewsService : IPublicNewsService
             MediaUrlHelper.ResolveUrl(n.CoverImage?.StoragePath, n.CoverImage?.Variants, "large"),
             n.CoverImage?.AltText,
             n.MetaTitle,
-            n.MetaDescription);
+            n.MetaDescription,
+            n.CoverImageId);
 }

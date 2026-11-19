@@ -61,6 +61,7 @@ public sealed class ResourceAdminService(
             existing.FacultyId = model.FacultyId;
             existing.CourseCode = model.CourseCode;
             existing.Semester = model.Semester;
+            // TODO(spec): kaynak public adresi kimlik kullanır (/cbu/kaynaklar/{id}/indir); slug değişince yönlendirme açılmaz.
             model = existing;
         }
 

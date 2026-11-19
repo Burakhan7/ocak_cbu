@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] ?? "Ana sayfa") — Ülkü Ocakları Manisa</title>
+    <seo-meta />
+    <json-ld />
+    <link rel="alternate" type="application/rss+xml" title="Haberler" href="/feed.xml" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -31,7 +33,15 @@
                 <a asp-controller="Parent" asp-action="Index">Genel Merkez</a>
                 <a asp-controller="Organization" asp-action="Index">Teşkilat</a>
                 <a asp-controller="Contact" asp-action="Index">İletişim</a>
+                @if (ViewBag.SearchEnabled is not false)
+                {
+                    <a href="/ara">Ara</a>
+                }
             </nav>
+            @if (ViewBag.SearchEnabled is not false)
+            {
+                <a class="btn btn-link btn-sm d-md-none" href="/ara">Ara</a>
+            }
             <a class="btn btn-primary btn-sm ocağa-ugra-btn" asp-controller="Contact" asp-action="Index" asp-fragment="harita">Ocağa Uğra</a>
         </div>
     </header>

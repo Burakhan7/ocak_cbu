@@ -1,6 +1,16 @@
 @model UOM.Application.Features.Public.Models.NewsDetailDto
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.MetaTitle) ? Model.Title : Model.MetaTitle;
+    ViewData["Description"] = string.IsNullOrWhiteSpace(Model.MetaDescription) ? Model.Summary : Model.MetaDescription;
+    ViewData["Canonical"] = "/haberler/" + Model.Slug;
+    ViewData["OgImage"] = Model.CoverImageUrl;
+    ViewData["OgType"] = "article";
+    ViewData["Breadcrumbs"] = new BreadcrumbItem[]
+    {
+        new("Ana Sayfa", "/"),
+        new("Haberler", "/haberler"),
+        new(Model.Title, "/haberler/" + Model.Slug),
+    };
     var related = ViewBag.Related as IReadOnlyList<UOM.Application.Features.Public.Models.NewsListItemDto> ?? [];
 }
 @section PageBanner {
@@ -19,7 +29,7 @@
     }
     @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
     {
-        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title))" />
+        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, MediaId: Model.CoverImageId))" />
     }
     <div class="content-body mb-4">@Html.Raw(Model.BodyHtml)</div>
 </article>
@@ -32,7 +42,7 @@
             {
                 <div class="col-md-4">
                     <article class="card h-100 content-card">
-                        <partial name="_CardCover" model="@(new CoverImageModel(n.CoverImageUrl, n.CoverImageAlt ?? n.Title))" />
+                        <partial name="_CardCover" model="@(new CoverImageModel(n.CoverImageUrl, n.CoverImageAlt ?? n.Title, MediaId: n.CoverImageId))" />
                         <div class="card-body">
                             <h3 class="h6 mb-0"><a asp-action="Detail" asp-route-slug="@n.Slug" class="stretched-link text-decoration-none">@n.Title</a></h3>
                         </div>

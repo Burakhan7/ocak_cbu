@@ -41,7 +41,6 @@
 }
 <form method="post" asp-action="Save" asp-controller="NewsPosts" asp-area="Admin" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="Slug" />
     <input type="hidden" asp-for="Status" />
     <input type="hidden" asp-for="CoverImageId" />
     <partial name="_AdminCoverImageField" />
@@ -54,6 +53,11 @@
             <label class="form-label">Kapsam</label>
             <select asp-for="Scope" class="form-select" asp-items="Html.GetEnumSelectList<NewsScope>()"></select>
         </div>
+        <div class="col-md-8">
+            <label class="form-label" asp-for="Slug">Adres (slug)</label>
+            <input asp-for="Slug" class="form-control" />
+            <div class="form-text">Boş bırakılırsa başlıktan üretilir. Yayındaki adres değişirse eski adres yeni adrese yönlendirilir.</div>
+        </div>
         <div class="col-12">
             <label class="form-label">Özet</label>
             <textarea asp-for="Summary" class="form-control" rows="2"></textarea>
@@ -64,6 +68,19 @@
             <partial name="_RichTextEditor" model="Model.BodyHtml" />
         </div>
     </div>
+    <details class="mt-3">
+        <summary>SEO</summary>
+        <div class="mt-2">
+            <label class="form-label" asp-for="MetaTitle">Meta başlık</label>
+            <input asp-for="MetaTitle" class="form-control" maxlength="60" />
+            <div class="form-text">En fazla 60 karakter. Boşsa haber başlığı kullanılır.</div>
+        </div>
+        <div class="mt-2">
+            <label class="form-label" asp-for="MetaDescription">Meta açıklama</label>
+            <textarea asp-for="MetaDescription" class="form-control" maxlength="160" rows="2"></textarea>
+            <div class="form-text">En fazla 160 karakter. Boşsa özet kullanılır. OG görseli kapak görselidir.</div>
+        </div>
+    </details>
     <div class="mt-3 d-flex flex-wrap gap-2">
         <button type="submit" class="btn btn-primary">Kaydet</button>
         @if (Model.Id > 0)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
+using UOM.Application.Features.Public;
 using UOM.Domain.Entities;
 using UOM.Domain.Enums;
 using UOM.Infrastructure.Persistence;
@@ -11,7 +12,8 @@ public sealed class EventAdminService(
     AppDbContext db,
     ISlugService slugService,
     IClock clock,
-    IAuditLogger auditLogger)
+    IAuditLogger auditLogger,
+    IRedirectRecorder? redirects = null)
 {
     public Task<List<Event>> ListAsync(CancellationToken cancellationToken = default) =>
         db.Events.OrderByDescending(e => e.StartsAtUtc).ToListAsync(cancellationToken);
@@ -61,6 +63,16 @@ public sealed class EventAdminService(
             existing.MetaTitle = model.MetaTitle;
             existing.MetaDescription = model.MetaDescription;
             existing.OgImageId = model.OgImageId;
+            await PublishedSlug.ApplyAsync(
+                slugService,
+                redirects,
+                existing.Slug,
+                model.Slug,
+                existing.Status,
+                PublicContentPaths.Event,
+                slug => db.Events.AnyAsync(e => e.Slug == slug && e.Id != existing.Id, cancellationToken),
+                slug => existing.Slug = slug,
+                cancellationToken);
             model = existing;
         }
 

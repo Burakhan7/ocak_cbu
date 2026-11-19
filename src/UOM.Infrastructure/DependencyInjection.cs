@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UOM.Application.Abstractions;
 using UOM.Application.Features.Public;
+using UOM.Infrastructure.Caching;
 using UOM.Infrastructure.Features.Admin;
 using UOM.Infrastructure.Features.Public;
 using UOM.Infrastructure.Html;
@@ -31,6 +32,8 @@ public static class DependencyInjection
         services.AddSingleton<IPreviewTokenService, PreviewTokenService>();
         services.AddSingleton<IHtmlSanitizer, GanssHtmlSanitizer>();
         services.AddSingleton<IIpHasher, IpHasher>();
+        services.AddSingleton<ICacheInvalidator, NullCacheInvalidator>();
+        services.AddSingleton<ContentCacheInvalidationInterceptor>();
         services.AddHttpClient(nameof(TurnstileVerifier));
         services.AddSingleton<ITurnstileVerifier, TurnstileVerifier>();
         services.AddMemoryCache();
@@ -60,11 +63,17 @@ public static class DependencyInjection
             services.AddSingleton<IPublicParentHubService, EmptyPublicParentHubService>();
             services.AddSingleton<IPublicOrganizationService, EmptyPublicOrganizationService>();
             services.AddSingleton<IPublicVideoService, EmptyPublicVideoService>();
+            services.AddSingleton<IPublicSearchService, EmptyPublicSearchService>();
+            services.AddSingleton<ISitemapService, EmptySitemapService>();
+            services.AddSingleton<IFeedService, EmptyFeedService>();
+            services.AddSingleton<IMediaAssetReader, EmptyMediaAssetReader>();
+            services.AddSingleton<IPublicRedirectService, EmptyPublicRedirectService>();
             return services;
         }
 
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddDbContext<AppDbContext>((sp, options) =>
         {
+            options.AddInterceptors(sp.GetRequiredService<ContentCacheInvalidationInterceptor>());
             if (configuration.GetValue("Database:UseInMemory", false))
             {
                 var name = configuration["Database:InMemoryName"] ?? "UOM_Test";
@@ -113,6 +122,14 @@ public static class DependencyInjection
         services.AddScoped<IPublicResourceService, PublicResourceService>();
         services.AddScoped<IPublicAnnouncementService, PublicAnnouncementService>();
         services.AddScoped<ISiteSettingsProvider, SiteSettingsProvider>();
+        services.AddScoped<RedirectService>();
+        services.AddScoped<IRedirectRecorder>(sp => sp.GetRequiredService<RedirectService>());
+        services.AddScoped<IPublicRedirectService>(sp => sp.GetRequiredService<RedirectService>());
+        services.AddScoped<IPublicSearchService, PublicSearchService>();
+        services.AddScoped<ISitemapService, SitemapService>();
+        services.AddScoped<IFeedService, FeedService>();
+        services.AddScoped<IMediaAssetReader, MediaAssetReader>();
+        services.AddScoped<RedirectAdminService>();
 
         return services;
     }

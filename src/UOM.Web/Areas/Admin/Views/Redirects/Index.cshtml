@@ -1,0 +1,25 @@
+@model IReadOnlyList<UOM.Domain.Entities.Redirect>
+@{ ViewData["Title"] = "Yönlendirmeler"; }
+<h1 class="h3 mb-3">Yönlendirmeler</h1>
+<a class="btn btn-primary mb-3" asp-action="Create">Yeni yönlendirme</a>
+<ul class="list-group">
+@foreach (var row in Model)
+{
+    <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+        <span>
+            <code>@row.FromPath</code>
+            <span class="text-muted">→</span>
+            <code>@row.ToPath</code>
+            <small class="text-muted">@row.StatusCode · @row.HitCount istek</small>
+        </span>
+        <span class="text-nowrap">
+            <a asp-action="Edit" asp-route-id="@row.Id">Düzenle</a>
+            <partial name="_AdminDeleteForm" model="row.Id" />
+        </span>
+    </li>
+}
+</ul>
+@if (Model.Count == 0)
+{
+    <p class="text-muted">Henüz yönlendirme yok. Yayınlanmış bir içeriğin adresi değişince kayıt kendiliğinden açılır.</p>
+}

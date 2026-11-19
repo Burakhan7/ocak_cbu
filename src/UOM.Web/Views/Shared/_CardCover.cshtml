@@ -1,6 +1,10 @@
 @model UOM.Web.Models.CoverImageModel
 <div class="card-cover @Model.ModifierClass">
-    @if (!string.IsNullOrWhiteSpace(Model.Url))
+    @if (Model.MediaId is int mediaId && mediaId > 0)
+    {
+        <responsive-image media-id="@mediaId" src="@Model.Url" alt="@Model.Alt" class="card-cover__img" sizes="@(Model.Sizes ?? "(min-width: 992px) 360px, (min-width: 768px) 50vw, 100vw")" loading="lazy" />
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.Url))
     {
         <img src="@Model.Url" alt="@Model.Alt" class="card-cover__img" loading="lazy" decoding="async" />
     }

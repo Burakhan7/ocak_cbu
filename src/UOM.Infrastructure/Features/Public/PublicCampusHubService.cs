@@ -88,7 +88,8 @@ public sealed class PublicCampusHubService(
                 c.Longitude!.Value,
                 GeoDistance.KilometersBetween(settings.MapLat, settings.MapLng, c.Latitude!.Value, c.Longitude!.Value),
                 MediaUrlHelper.ResolveUrl(c.CoverImage?.StoragePath, c.CoverImage?.Variants),
-                c.CoverImage?.AltText))
+                c.CoverImage?.AltText,
+                c.CoverImageId))
             .ToList();
 
         return new CampusHubDto(

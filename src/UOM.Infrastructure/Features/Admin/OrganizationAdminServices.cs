@@ -1,13 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
+using UOM.Application.Features.Public;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Persistence;
 using UOM.Infrastructure.Slugs;
 
 namespace UOM.Infrastructure.Features.Admin;
 
-public sealed class DistrictAdminService(AppDbContext db, IAuditLogger auditLogger, ISlugService slugService)
+public sealed class DistrictAdminService(
+    AppDbContext db,
+    IAuditLogger auditLogger,
+    ISlugService slugService,
+    IRedirectRecorder? redirects = null)
 {
     public Task<List<District>> ListAsync(CancellationToken cancellationToken = default) =>
         db.Districts.OrderBy(d => d.Order).ThenBy(d => d.Name).ToListAsync(cancellationToken);
@@ -35,9 +40,18 @@ public sealed class DistrictAdminService(AppDbContext db, IAuditLogger auditLogg
                 return Result<District>.Fail("İlçe bulunamadı.");
             }
 
+            var previousSlug = existing.Slug;
             if (!string.Equals(existing.Name, model.Name, StringComparison.Ordinal))
             {
                 existing.Slug = await GenerateDistrictSlugAsync(model.Name, excludeId: existing.Id, cancellationToken);
+            }
+
+            if (!string.Equals(previousSlug, existing.Slug, StringComparison.Ordinal) && redirects is not null)
+            {
+                await redirects.StagePermanentAsync(
+                    PublicContentPaths.District(previousSlug),
+                    PublicContentPaths.District(existing.Slug),
+                    cancellationToken);
             }
 
             existing.Name = model.Name.Trim();
