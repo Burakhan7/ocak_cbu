@@ -16,5 +16,9 @@ public class Venue : BaseEntity
 
     public Campus? Campus { get; set; }
 
+    public int? CoverImageId { get; set; }
+
+    public MediaFile? CoverImage { get; set; }
+
     public ICollection<Event> Events { get; set; } = [];
 }

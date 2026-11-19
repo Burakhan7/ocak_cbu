@@ -7,7 +7,7 @@ namespace UOM.Web.Models;
 public sealed class ContactFormViewModel
 {
     public SiteSettingsDto Site { get; set; } = new(
-        "Ülkü Ocakları Manisa", null, null, null, null, null, null, null, null, false);
+        "Ülkü Ocakları Manisa", null, null, null, null, null, null, null, null, false, null);
 
     public IReadOnlyList<FacultyOptionDto> Faculties { get; set; } = [];
 

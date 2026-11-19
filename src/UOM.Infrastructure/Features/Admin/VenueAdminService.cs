@@ -38,6 +38,7 @@ public sealed class VenueAdminService(AppDbContext db, IAuditLogger auditLogger)
             existing.Latitude = model.Latitude;
             existing.Longitude = model.Longitude;
             existing.CampusId = model.CampusId;
+            existing.CoverImageId = model.CoverImageId;
             model = existing;
         }
 

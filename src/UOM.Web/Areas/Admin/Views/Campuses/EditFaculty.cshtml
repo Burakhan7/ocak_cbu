@@ -3,8 +3,10 @@
     ViewData["Title"] = Model.Id == 0 ? "Yeni fakülte" : "Fakülte düzenle";
     var campuses = (IReadOnlyList<Campus>)ViewBag.Campuses;
 }
-<form method="post" asp-action="SaveFaculty">
+<form method="post" asp-action="SaveFaculty" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CoverImageId" />
+    <partial name="_AdminCoverImageField" />
     <div class="mb-3"><label asp-for="Name" class="form-label">Ad</label><input asp-for="Name" class="form-control" /></div>
     <div class="mb-3">
         <label asp-for="CampusId" class="form-label">Kampüs</label>

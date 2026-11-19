@@ -6,10 +6,12 @@
     ViewData["Title"] = Model.Id == 0 ? "Yeni duyuru" : "Duyuru düzenle";
     var canPublish = (await AuthorizationService.AuthorizeAsync(User, PolicyNames.CanPublish)).Succeeded;
 }
-<form method="post" asp-action="Save">
+<form method="post" asp-action="Save" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Slug" />
     <input type="hidden" asp-for="Status" />
+    <input type="hidden" asp-for="CoverImageId" />
+    <partial name="_AdminCoverImageField" />
     <div class="mb-3"><label asp-for="Title" class="form-label">Başlık</label><input asp-for="Title" class="form-control" /></div>
     <div class="mb-3"><label asp-for="Type" class="form-label">Tür</label><select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<AnnouncementType>()"></select></div>
     <div class="mb-3"><label asp-for="Body" class="form-label">Metin</label><textarea asp-for="Body" class="form-control" rows="4"></textarea></div>

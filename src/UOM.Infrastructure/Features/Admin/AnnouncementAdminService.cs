@@ -60,6 +60,7 @@ public sealed class AnnouncementAdminService(
             existing.DeadlineUtc = model.DeadlineUtc;
             existing.ExpiresAtUtc = model.ExpiresAtUtc;
             existing.IsPinned = model.IsPinned;
+            existing.CoverImageId = model.CoverImageId;
             model = existing;
         }
 

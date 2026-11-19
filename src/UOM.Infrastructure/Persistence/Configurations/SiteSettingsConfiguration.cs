@@ -15,6 +15,6 @@ public class SiteSettingsConfiguration : IEntityTypeConfiguration<SiteSettings>
         builder.Property(e => e.SocialLinks).HasColumnType("nvarchar(max)");
         builder.Property(e => e.GenelMerkezSocialLinks).HasColumnType("nvarchar(max)");
         builder.Property(e => e.HomeSectionsJson).HasColumnType("nvarchar(max)");
-
+        builder.HasOne(e => e.LogoImage).WithMany().HasForeignKey(e => e.LogoImageId).OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -6,6 +6,10 @@ public class SiteSettings : BaseEntity
 {
     public string? SiteName { get; set; }
 
+    public int? LogoImageId { get; set; }
+
+    public MediaFile? LogoImage { get; set; }
+
     public string? Tagline { get; set; }
 
     public string? Address { get; set; }

@@ -7,6 +7,7 @@ using UOM.Application.Authorization;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Features.Admin;
 using UOM.Infrastructure.Persistence;
+using UOM.Web.Areas.Admin;
 using UOM.Web.Filters;
 
 namespace UOM.Web.Areas.Admin.Controllers;
@@ -17,6 +18,7 @@ namespace UOM.Web.Areas.Admin.Controllers;
 [Route("yonetim/etkinlikler")]
 public sealed class EventsController(
     EventAdminService eventService,
+    MediaAdminService mediaAdmin,
     AppDbContext db,
     IPreviewTokenService previewTokenService) : Controller
 {
@@ -44,18 +46,41 @@ public sealed class EventsController(
         }
 
         await LoadVenuesAsync(cancellationToken);
+        await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, entity.CoverImageId, cancellationToken);
         return View(entity);
     }
 
     [HttpPost("kaydet")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(Event model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Save(
+        Event model,
+        IFormFile? coverImageUpload,
+        string? coverImageAlt,
+        bool removeCoverImage,
+        CancellationToken cancellationToken)
     {
+        if (!await AdminMediaFormBinding.TryBindCoverImageAsync(
+                mediaAdmin,
+                ModelState,
+                model.CoverImageId,
+                removeCoverImage,
+                coverImageUpload,
+                coverImageAlt,
+                $"Kapak: {model.Title}",
+                id => model.CoverImageId = id,
+                cancellationToken))
+        {
+            await LoadVenuesAsync(cancellationToken);
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
+            return View("Edit", model);
+        }
+
         var result = await eventService.SaveAsync(model, cancellationToken);
         if (!result.Succeeded)
         {
             await LoadVenuesAsync(cancellationToken);
             ModelState.AddModelError(string.Empty, result.Error ?? "Kayıt başarısız.");
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
             return View("Edit", model);
         }
 

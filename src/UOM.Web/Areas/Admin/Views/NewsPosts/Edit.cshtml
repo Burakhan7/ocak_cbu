@@ -39,10 +39,12 @@
 {
     <div class="alert alert-warning">Son red notu: @Model.LastRejectionNote</div>
 }
-<form method="post" asp-action="Save" asp-controller="NewsPosts" asp-area="Admin">
+<form method="post" asp-action="Save" asp-controller="NewsPosts" asp-area="Admin" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Slug" />
     <input type="hidden" asp-for="Status" />
+    <input type="hidden" asp-for="CoverImageId" />
+    <partial name="_AdminCoverImageField" />
     <div class="row g-3">
         <div class="col-md-8">
             <label class="form-label">Başlık</label>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using UOM.Application.Authorization;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Features.Admin;
+using UOM.Web.Areas.Admin;
 using UOM.Web.Filters;
 
 namespace UOM.Web.Areas.Admin.Controllers;
@@ -11,7 +12,7 @@ namespace UOM.Web.Areas.Admin.Controllers;
 [Authorize(Policy = PolicyNames.CanWriteCampusContent)]
 [ServiceFilter(typeof(AdminSecurityFilter))]
 [Route("yonetim/rehber")]
-public sealed class GuideArticlesController(GuideArticleAdminService guideService) : Controller
+public sealed class GuideArticlesController(GuideArticleAdminService guideService, MediaAdminService mediaAdmin) : Controller
 {
     [HttpGet("")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken) =>
@@ -24,17 +25,44 @@ public sealed class GuideArticlesController(GuideArticleAdminService guideServic
     public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
     {
         var article = await guideService.GetAsync(id, cancellationToken);
-        return article is null ? NotFound() : View(article);
+        if (article is null)
+        {
+            return NotFound();
+        }
+
+        await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, article.CoverImageId, cancellationToken);
+        return View(article);
     }
 
     [HttpPost("kaydet")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(GuideArticle model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Save(
+        GuideArticle model,
+        IFormFile? coverImageUpload,
+        string? coverImageAlt,
+        bool removeCoverImage,
+        CancellationToken cancellationToken)
     {
+        if (!await AdminMediaFormBinding.TryBindCoverImageAsync(
+                mediaAdmin,
+                ModelState,
+                model.CoverImageId,
+                removeCoverImage,
+                coverImageUpload,
+                coverImageAlt,
+                $"Kapak: {model.Title}",
+                id => model.CoverImageId = id,
+                cancellationToken))
+        {
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
+            return View("Edit", model);
+        }
+
         var result = await guideService.SaveAsync(model, cancellationToken);
         if (!result.Succeeded)
         {
             ModelState.AddModelError(string.Empty, result.Error ?? "Kayıt başarısız.");
+            await AdminMediaFormBinding.SetCoverImagePreviewAsync(mediaAdmin, ViewData, model.CoverImageId, cancellationToken);
             return View("Edit", model);
         }
 
