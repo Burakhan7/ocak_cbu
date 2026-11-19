@@ -8,6 +8,7 @@ using UOM.Domain.Enums;
 using UOM.Infrastructure.Features.Public;
 using UOM.Infrastructure.Html;
 using UOM.Infrastructure.Identity;
+using UOM.Application.Features.Public.Models;
 using UOM.Infrastructure.Persistence;
 using UOM.Infrastructure.Time;
 
@@ -80,6 +81,40 @@ public class PublicNewsServiceTests
 
         items.Should().HaveCount(2);
         items.Select(i => i.Slug).Should().Equal("one-cikan", "diger");
+    }
+
+    [Fact]
+    public async Task ListAsync_returns_published_items_using_same_visibility_as_home()
+    {
+        await using var db = CreateDbContext();
+        db.NewsPosts.AddRange(
+            new NewsPost
+            {
+                Title = "Liste ve ana sayfa",
+                Slug = "listede",
+                BodyHtml = "<p>c</p>",
+                Status = PublishStatus.Published,
+                PublishedAtUtc = Now.AddHours(-1),
+                Scope = NewsScope.Province,
+            },
+            new NewsPost
+            {
+                Title = "Gizli taslak",
+                Slug = "taslak-liste",
+                BodyHtml = "<p>d</p>",
+                Status = PublishStatus.Draft,
+                Scope = NewsScope.Province,
+            });
+        await db.SaveChangesAsync();
+
+        var service = CreateService(db);
+        var page = await service.ListAsync(new NewsListQuery(null, null, 1, 12));
+        var home = await service.GetFeaturedForHomeAsync(1, 4);
+
+        page.TotalCount.Should().Be(1);
+        page.Items.Should().ContainSingle(i => i.Slug == "listede");
+        home.Should().Contain(i => i.Slug == "listede");
+        home.Should().NotContain(i => i.Slug == "taslak-liste");
     }
 
     private static PublicNewsService CreateService(AppDbContext db)

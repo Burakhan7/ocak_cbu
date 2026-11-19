@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UOM.Domain.Entities;
 using UOM.Domain.Enums;
+using UOM.Infrastructure.Features.Admin;
 using UOM.Infrastructure.Persistence;
 
 namespace UOM.Web.IntegrationTests;
@@ -58,6 +59,54 @@ public class PublicContentIntegrationTests
         await SeedNewsAsync(factory.Services);
         (await client.GetAsync("/haberler/yayin-haber")).StatusCode.Should().Be(HttpStatusCode.OK);
         (await client.GetAsync("/haberler/taslak-haber")).StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Published_news_appears_on_home_and_news_index()
+    {
+        using var factory = CreateFactory(Guid.NewGuid().ToString());
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = true });
+        await SeedNewsAsync(factory.Services);
+
+        var homeHtml = await client.GetStringAsync("/");
+        var listResponse = await client.GetAsync("/haberler");
+        var listHtml = await listResponse.Content.ReadAsStringAsync();
+
+        listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        homeHtml.Should().Contain("yayin-haber");
+        listHtml.Should().Contain("yayin-haber");
+        listHtml.Should().NotContain("taslak-haber");
+        homeHtml.Should().NotContain("taslak-haber");
+    }
+
+    [Fact]
+    public async Task Publish_flow_makes_news_visible_on_home_and_news_index()
+    {
+        using var factory = CreateFactory(Guid.NewGuid().ToString());
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureCreatedAsync();
+
+        var admin = scope.ServiceProvider.GetRequiredService<NewsPostAdminService>();
+        var saved = await admin.SaveAsync(new NewsPost
+        {
+            Title = "Yayın akışı testi",
+            BodyHtml = "<p>akış</p>",
+            Scope = NewsScope.Province,
+        });
+        saved.Succeeded.Should().BeTrue();
+        var publish = await admin.PublishAsync(saved.Value!.Id);
+        publish.Succeeded.Should().BeTrue();
+
+        var slug = saved.Value.Slug;
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = true });
+        var homeHtml = await client.GetStringAsync("/");
+        var listHtml = await client.GetStringAsync("/haberler");
+        var detailStatus = (await client.GetAsync($"/haberler/{slug}")).StatusCode;
+
+        homeHtml.Should().Contain(slug);
+        listHtml.Should().Contain(slug);
+        detailStatus.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
