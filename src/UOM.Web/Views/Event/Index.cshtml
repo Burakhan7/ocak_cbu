@@ -4,11 +4,13 @@
     ViewData["Title"] = "Etkinlikler";
     var upcoming = (bool)ViewBag.UpcomingOnly;
 }
-<h1 class="h2 mb-3">Etkinlikler</h1>
-<div class="mb-3 d-flex gap-2">
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel("Etkinlikler", upcoming ? "Yaklaşan etkinlikler" : "Tüm etkinlikler", ModifierClass: "page-banner--list"))" />
+}
+<div class="mb-4 d-flex flex-wrap gap-2">
     <a class="btn btn-sm @(upcoming ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-yaklasan="true">Yaklaşan</a>
     <a class="btn btn-sm @(!upcoming ? "btn-primary" : "btn-outline-primary")" asp-action="Index" asp-route-yaklasan="false">Tümü</a>
-    <a class="btn btn-sm btn-outline-secondary ms-auto" asp-action="Calendar">Takvim (.ics)</a>
+    <a class="btn btn-sm btn-outline-secondary ms-md-auto" asp-action="Calendar">Takvim (.ics)</a>
 </div>
 @if (Model.Items.Count == 0)
 {
@@ -16,13 +18,26 @@
 }
 else
 {
-    <ul class="list-group list-group-flush">
+    <div class="row g-4">
         @foreach (var evt in Model.Items)
         {
-            <li class="list-group-item px-0">
-                <a asp-action="Detail" asp-route-slug="@evt.Slug" class="fw-semibold text-decoration-none">@evt.Title</a>
-                <div class="small text-muted">@evt.StartsAtUtc.ToLocalDisplay() — @evt.VenueName</div>
-            </li>
+            <div class="col-md-6 col-lg-4">
+                <article class="card h-100 content-card">
+                    <partial name="_CardCover" model="@(new CoverImageModel(evt.CoverImageUrl, evt.Title))" />
+                    <div class="card-body">
+                        <h2 class="h6"><a asp-action="Detail" asp-route-slug="@evt.Slug" class="stretched-link text-decoration-none">@evt.Title</a></h2>
+                        <p class="content-list-meta mb-1">@evt.StartsAtUtc.ToLocalDisplay()</p>
+                        @if (!string.IsNullOrWhiteSpace(evt.VenueName))
+                        {
+                            <p class="small text-muted mb-0">@evt.VenueName</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(evt.Summary))
+                        {
+                            <p class="small mb-0 mt-2">@evt.Summary</p>
+                        }
+                    </div>
+                </article>
+            </div>
         }
-    </ul>
+    </div>
 }

@@ -24,6 +24,7 @@ public sealed class PublicAnnouncementService(AppDbContext db, IClock clock) : I
 
         var now = clock.UtcNow;
         var items = await query
+            .Include(a => a.CoverImage)
             .OrderByDescending(a => a.IsPinned)
             .ThenBy(a => a.DeadlineUtc ?? a.ExpiresAtUtc)
             .ToListAsync(cancellationToken);
@@ -35,6 +36,7 @@ public sealed class PublicAnnouncementService(AppDbContext db, IClock clock) : I
     {
         var item = await db.Announcements
             .AsNoTracking()
+            .Include(a => a.CoverImage)
             .WhereListableAnnouncements(clock)
             .FirstOrDefaultAsync(a => a.Slug == slug, cancellationToken);
 
@@ -54,6 +56,8 @@ public sealed class PublicAnnouncementService(AppDbContext db, IClock clock) : I
             a.ExpiresAtUtc,
             a.ExternalUrl,
             a.IsPinned,
-            urgent);
+            urgent,
+            MediaUrlHelper.ResolveUrl(a.CoverImage?.StoragePath, a.CoverImage?.Variants),
+            a.CoverImage?.AltText);
     }
 }

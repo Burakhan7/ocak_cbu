@@ -19,14 +19,25 @@ public sealed class PublicCampusHubService(
         var now = clock.UtcNow;
         var weekAhead = now.AddDays(7);
 
-        var newStudentGuides = await db.GuideArticles
+        var newStudentGuideRows = await db.GuideArticles
             .AsNoTracking()
+            .Include(g => g.CoverImage)
             .WherePubliclyVisible(clock)
             .Where(g => g.Category == GuideCategory.YeniOgrenci)
             .OrderBy(g => g.Order)
             .ThenBy(g => g.Title)
-            .Select(g => new GuideListItemDto(g.Title, g.Slug, g.Summary, g.Category, g.LastReviewedAtUtc))
             .ToListAsync(cancellationToken);
+
+        var newStudentGuides = newStudentGuideRows
+            .Select(g => new GuideListItemDto(
+                g.Title,
+                g.Slug,
+                g.Summary,
+                g.Category,
+                g.LastReviewedAtUtc,
+                MediaUrlHelper.ResolveUrl(g.CoverImage?.StoragePath, g.CoverImage?.Variants),
+                g.CoverImage?.AltText))
+            .ToList();
 
         var campusEvents = await db.Events
             .AsNoTracking()
@@ -50,6 +61,7 @@ public sealed class PublicCampusHubService(
 
         var announcements = await db.Announcements
             .AsNoTracking()
+            .Include(a => a.CoverImage)
             .WhereListableAnnouncements(clock)
             .OrderByDescending(a => a.IsPinned)
             .ThenBy(a => a.DeadlineUtc ?? a.ExpiresAtUtc)
@@ -62,6 +74,7 @@ public sealed class PublicCampusHubService(
 
         var campuses = await db.Campuses
             .AsNoTracking()
+            .Include(c => c.CoverImage)
             .Where(c => c.Latitude != null && c.Longitude != null)
             .OrderBy(c => c.Order)
             .ThenBy(c => c.Name)
@@ -73,7 +86,9 @@ public sealed class PublicCampusHubService(
                 c.ShortName,
                 c.Latitude!.Value,
                 c.Longitude!.Value,
-                GeoDistance.KilometersBetween(settings.MapLat, settings.MapLng, c.Latitude!.Value, c.Longitude!.Value)))
+                GeoDistance.KilometersBetween(settings.MapLat, settings.MapLng, c.Latitude!.Value, c.Longitude!.Value),
+                MediaUrlHelper.ResolveUrl(c.CoverImage?.StoragePath, c.CoverImage?.Variants),
+                c.CoverImage?.AltText))
             .ToList();
 
         return new CampusHubDto(

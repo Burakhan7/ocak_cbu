@@ -3,11 +3,10 @@
 @{
     ViewData["Title"] = "CBÜ";
 }
-<div class="cbu-hub py-3">
-    <header class="mb-4">
-        <h1 class="h2">CBÜ&apos;lü Ülküdaşlar</h1>
-        <p class="lead text-muted">@(Model.IntroText ?? "Manisa Celal Bayar Üniversitesi öğrencileri için rehber, duyuru ve kaynaklar.")</p>
-    </header>
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel("CBÜ'lü Ülküdaşlar", Model.IntroText ?? "Manisa Celal Bayar Üniversitesi öğrencileri için rehber, duyuru ve kaynaklar.", ModifierClass: "page-banner--cbu"))" />
+}
+<div class="cbu-hub">
 
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
@@ -58,9 +57,15 @@
             <ul class="list-unstyled">
                 @foreach (var e in Model.CampusWeekEvents)
                 {
-                    <li class="mb-2">
-                        <a asp-controller="Event" asp-action="Detail" asp-route-slug="@e.Slug">@e.Title</a>
-                        <span class="text-muted small">— @e.StartsAtUtc.ToLocalTime().ToString("g")</span>
+                    <li class="mb-3 d-flex gap-3 align-items-start">
+                        @if (!string.IsNullOrWhiteSpace(e.CoverImageUrl))
+                        {
+                            <img src="@e.CoverImageUrl" alt="" width="72" height="48" class="rounded flex-shrink-0" style="object-fit:cover;" loading="lazy" decoding="async" />
+                        }
+                        <div>
+                            <a asp-controller="Event" asp-action="Detail" asp-route-slug="@e.Slug">@e.Title</a>
+                            <div class="text-muted small">@e.StartsAtUtc.ToLocalDisplay()</div>
+                        </div>
                     </li>
                 }
             </ul>
@@ -71,18 +76,23 @@
     {
         <section class="mb-4">
             <h2 class="h4">Son duyurular</h2>
+            <div class="row g-3">
             @foreach (var a in Model.RecentAnnouncements)
             {
-                <div class="card mb-2 @(a.IsUrgent ? "border-warning" : "")">
-                    <div class="card-body py-2">
-                        <a asp-controller="Announcement" asp-action="Detail" asp-route-slug="@a.Slug" class="fw-semibold">@a.Title</a>
-                        @if (a.DeadlineUtc is { } dl)
-                        {
-                            <span class="small text-muted ms-2">Son: @dl.ToLocalTime().ToString("d")</span>
-                        }
-                    </div>
+                <div class="col-md-6">
+                    <article class="card h-100 content-card @(a.IsUrgent ? "border-warning" : "")">
+                        <partial name="_CardCover" model="@(new CoverImageModel(a.CoverImageUrl, a.CoverImageAlt ?? a.Title))" />
+                        <div class="card-body py-3">
+                            <a asp-controller="Announcement" asp-action="Detail" asp-route-slug="@a.Slug" class="fw-semibold stretched-link text-decoration-none">@a.Title</a>
+                            @if (a.DeadlineUtc is { } dl)
+                            {
+                                <p class="small text-muted mb-0 mt-1">Son: @dl.ToLocalDisplay()</p>
+                            }
+                        </div>
+                    </article>
                 </div>
             }
+            </div>
         </section>
     }
 
@@ -91,12 +101,23 @@
         <section class="mb-4">
             <h2 class="h4">Kampüsler</h2>
             <div id="cbu-map" class="rounded border" style="height: 360px;"></div>
-            <ul class="list-unstyled small mt-2">
+            <div class="row g-3 mt-2">
                 @foreach (var c in Model.Campuses)
                 {
-                    <li>@c.Name@if (c.DistanceToLodgeKm is { } km){<text> — ocağa ~@km km</text>}</li>
+                    <div class="col-sm-6 col-lg-4">
+                        <article class="card h-100 content-card">
+                            <partial name="_CardCover" model="@(new CoverImageModel(c.CoverImageUrl, c.CoverImageAlt ?? c.Name))" />
+                            <div class="card-body py-3">
+                                <strong class="d-block">@c.Name</strong>
+                                @if (c.DistanceToLodgeKm is { } km)
+                                {
+                                    <span class="small text-muted">Ocağa ~@km.ToString("0.#") km</span>
+                                }
+                            </div>
+                        </article>
+                    </div>
                 }
-            </ul>
+            </div>
         </section>
     }
     else

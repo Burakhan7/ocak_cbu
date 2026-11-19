@@ -3,8 +3,10 @@
 @{
     ViewData["Title"] = "Duyurular";
 }
-<h1 class="h2 mb-3">Duyurular</h1>
-<div class="mb-3 d-flex flex-wrap gap-2">
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel("Duyurular", "Burs, staj ve sınav duyuruları", ModifierClass: "page-banner--list page-banner--cbu"))" />
+}
+<div class="mb-4 d-flex flex-wrap gap-2">
     <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Tümü</a>
     @foreach (AnnouncementType t in Enum.GetValues(typeof(AnnouncementType)))
     {
@@ -17,13 +19,27 @@
 }
 else
 {
-    @foreach (var a in Model)
-    {
-        <div class="card mb-2 @(a.IsUrgent ? "border-warning" : "")">
-            <div class="card-body">
-                <a asp-action="Detail" asp-route-slug="@a.Slug" class="h5 text-decoration-none">@a.Title</a>
-                <p class="mb-0 small text-muted">@a.Body</p>
+    <div class="row g-4">
+        @foreach (var a in Model)
+        {
+            <div class="col-md-6">
+                <article class="card h-100 content-card @(a.IsUrgent ? "border-warning" : "")">
+                    <partial name="_CardCover" model="@(new CoverImageModel(a.CoverImageUrl, a.CoverImageAlt ?? a.Title))" />
+                    <div class="card-body">
+                        @if (a.IsUrgent)
+                        {
+                            <span class="badge text-bg-warning mb-2">Son günler</span>
+                        }
+                        <h2 class="h5"><a asp-action="Detail" asp-route-slug="@a.Slug" class="stretched-link text-decoration-none">@a.Title</a></h2>
+                        <p class="small text-muted mb-2">@a.Type</p>
+                        <p class="mb-0">@a.Body</p>
+                        @if (a.DeadlineUtc is { } dl)
+                        {
+                            <p class="content-list-meta mb-0 mt-2">Son başvuru: @dl.ToLocalDisplay()</p>
+                        }
+                    </div>
+                </article>
             </div>
-        </div>
-    }
+        }
+    </div>
 }

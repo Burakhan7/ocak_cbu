@@ -4,9 +4,11 @@
     ViewData["Title"] = "Öğrenci rehberi";
     var category = ViewBag.Category as GuideCategory?;
 }
-<h1 class="h2 mb-3">Öğrenci rehberi</h1>
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel("Öğrenci rehberi", "CBÜ için güncel rehber maddeleri", ModifierClass: "page-banner--list page-banner--cbu"))" />
+}
 <p><a asp-controller="Campus" asp-action="Index">← CBÜ Hub</a></p>
-<div class="mb-3 d-flex flex-wrap gap-2">
+<div class="mb-4 d-flex flex-wrap gap-2">
     <a class="btn btn-sm @(category is null ? "btn-primary" : "btn-outline-secondary")" asp-action="Index">Tümü</a>
     @foreach (GuideCategory cat in Enum.GetValues(typeof(GuideCategory)))
     {
@@ -19,10 +21,23 @@
 }
 else
 {
-    <ul class="list-group">
+    <div class="row g-4">
         @foreach (var g in Model)
         {
-            <li class="list-group-item"><a asp-action="Detail" asp-route-slug="@g.Slug">@g.Title</a> <span class="badge bg-secondary">@g.Category</span></li>
+            <div class="col-md-6 col-lg-4">
+                <article class="card h-100 content-card">
+                    <partial name="_CardCover" model="@(new CoverImageModel(g.CoverImageUrl, g.CoverImageAlt ?? g.Title))" />
+                    <div class="card-body">
+                        <span class="badge text-bg-light mb-2">@g.Category</span>
+                        <h2 class="h6"><a asp-action="Detail" asp-route-slug="@g.Slug" class="stretched-link text-decoration-none">@g.Title</a></h2>
+                        <p class="small text-muted mb-0">@g.Summary</p>
+                        @if (g.LastReviewedAtUtc is { } reviewed)
+                        {
+                            <p class="content-list-meta mb-0 mt-2">Son güncelleme: @reviewed.ToLocalDisplay()</p>
+                        }
+                    </div>
+                </article>
+            </div>
         }
-    </ul>
+    </div>
 }

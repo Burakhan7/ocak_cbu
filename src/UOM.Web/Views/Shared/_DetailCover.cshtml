@@ -1,0 +1,7 @@
+@model UOM.Web.Models.CoverImageModel
+@if (!string.IsNullOrWhiteSpace(Model.Url))
+{
+    <figure class="detail-cover @Model.ModifierClass">
+        <img src="@Model.Url" alt="@Model.Alt" class="detail-cover__img" />
+    </figure>
+}
