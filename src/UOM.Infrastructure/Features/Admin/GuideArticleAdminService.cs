@@ -81,4 +81,7 @@ public sealed class GuideArticleAdminService(
         await db.SaveChangesAsync(cancellationToken);
         return Result.Ok();
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<GuideArticle>(db, auditLogger, id, "Makale bulunamadı.", cancellationToken);
 }

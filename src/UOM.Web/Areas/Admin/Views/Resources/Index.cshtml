@@ -7,7 +7,10 @@
 {
     <li class="list-group-item d-flex justify-content-between">
         <span>@r.Title <small class="text-muted">@r.Status · indirme: @r.DownloadCount</small></span>
-        <a asp-action="Edit" asp-route-id="@r.Id">Düzenle</a>
+        <span>
+            <a asp-action="Edit" asp-route-id="@r.Id">Düzenle</a>
+            <partial name="_AdminDeleteForm" model="r.Id" />
+        </span>
     </li>
 }
 </ul>

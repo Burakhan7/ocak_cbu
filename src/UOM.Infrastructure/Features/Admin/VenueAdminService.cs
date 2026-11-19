@@ -46,4 +46,7 @@ public sealed class VenueAdminService(AppDbContext db, IAuditLogger auditLogger)
         await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(Venue), model.Id, new { model.Name }, cancellationToken);
         return Result<Venue>.Ok(model);
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<Venue>(db, auditLogger, id, "Mekan bulunamadı.", cancellationToken);
 }

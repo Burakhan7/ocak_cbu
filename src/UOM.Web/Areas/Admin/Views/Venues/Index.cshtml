@@ -7,7 +7,10 @@
 {
     <li class="list-group-item d-flex justify-content-between">
         <span>@v.Name</span>
-        <a asp-action="Edit" asp-route-id="@v.Id">Düzenle</a>
+        <span>
+            <a asp-action="Edit" asp-route-id="@v.Id">Düzenle</a>
+            <partial name="_AdminDeleteForm" model="v.Id" />
+        </span>
     </li>
 }
 </ul>

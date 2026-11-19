@@ -48,7 +48,7 @@ public sealed class QuotesController(QuoteAdminService quoteService) : Controlle
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var result = await quoteService.DeleteAsync(id, cancellationToken);
-        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Silindi." : result.Error;
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
         return RedirectToAction(nameof(Index));
     }
 }

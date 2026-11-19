@@ -126,4 +126,7 @@ public sealed class NewsPostAdminService(
         await auditLogger.LogAsync("Reject", nameof(NewsPost), id, new { note }, cancellationToken);
         return Result.Ok();
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<NewsPost>(db, auditLogger, id, "Haber bulunamadı.", cancellationToken);
 }

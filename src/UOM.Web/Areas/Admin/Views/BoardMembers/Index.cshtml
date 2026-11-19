@@ -7,7 +7,10 @@
 {
     <li class="list-group-item d-flex justify-content-between">
         <span>@m.FullName — @m.Title <small class="text-muted">@(m.ConsentOnFile ? "foto onaylı" : "foto yok")</small></span>
-        <a asp-action="Edit" asp-route-id="@m.Id">Düzenle</a>
+        <span>
+            <a asp-action="Edit" asp-route-id="@m.Id">Düzenle</a>
+            <partial name="_AdminDeleteForm" model="m.Id" />
+        </span>
     </li>
 }
 </ul>

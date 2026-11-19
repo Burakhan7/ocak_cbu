@@ -93,4 +93,13 @@ public sealed class AnnouncementsController(AnnouncementAdminService announcemen
         TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Yayınlandı." : result.Error;
         return RedirectToAction(nameof(Edit), new { id });
     }
+
+    [HttpPost("{id:int}/sil")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await announcementService.DeleteAsync(id, cancellationToken);
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
+        return RedirectToAction(nameof(Index));
+    }
 }

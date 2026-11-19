@@ -74,4 +74,7 @@ public sealed class AnnouncementAdminService(
 
     public Task<Result> PublishAsync(int id, CancellationToken cancellationToken = default) =>
         PublishableContentAdmin.PublishAsync<Announcement>(db, auditLogger, clock, id, cancellationToken);
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<Announcement>(db, auditLogger, id, "Duyuru bulunamadı.", cancellationToken);
 }

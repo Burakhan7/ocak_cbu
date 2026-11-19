@@ -47,6 +47,9 @@ public sealed class ParentNewsLinkAdminService(AppDbContext db, IAuditLogger aud
         return Result<ParentNewsLink>.Ok(model);
     }
 
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<ParentNewsLink>(db, auditLogger, id, "Kayıt bulunamadı.", cancellationToken);
+
     private static void Copy(ParentNewsLink existing, ParentNewsLink model)
     {
         existing.Title = model.Title.Trim();
@@ -105,6 +108,9 @@ public sealed class ParentProjectAdminService(AppDbContext db, IAuditLogger audi
         await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(ParentProject), model.Id, new { model.Name }, cancellationToken);
         return Result<ParentProject>.Ok(model);
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<ParentProject>(db, auditLogger, id, "Kayıt bulunamadı.", cancellationToken);
 }
 
 public sealed class MagazineIssueAdminService(AppDbContext db, IAuditLogger auditLogger)
@@ -151,6 +157,9 @@ public sealed class MagazineIssueAdminService(AppDbContext db, IAuditLogger audi
         await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(MagazineIssue), model.Id, new { model.Title }, cancellationToken);
         return Result<MagazineIssue>.Ok(model);
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<MagazineIssue>(db, auditLogger, id, "Kayıt bulunamadı.", cancellationToken);
 }
 
 public sealed class VideoAdminService(AppDbContext db, IAuditLogger auditLogger)
@@ -201,6 +210,9 @@ public sealed class VideoAdminService(AppDbContext db, IAuditLogger auditLogger)
         await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(Video), model.Id, new { model.Title }, cancellationToken);
         return Result<Video>.Ok(model);
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<Video>(db, auditLogger, id, "Kayıt bulunamadı.", cancellationToken);
 
     public static string? NormalizeYouTubeId(string? raw)
     {
