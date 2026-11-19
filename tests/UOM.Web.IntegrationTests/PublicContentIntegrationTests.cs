@@ -1,6 +1,8 @@
 using System.Net;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -133,5 +135,57 @@ public class PublicContentIntegrationTests
         var response = await client.PostAsync("/iletisim", new FormUrlEncodedContent(form));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         (await response.Content.ReadAsStringAsync()).Should().Contain("Mesajınız alındı");
+    }
+
+    [Fact]
+    public async Task Published_news_cover_image_url_is_served_from_uploads()
+    {
+        const string originalPath = "images/test/cover.webp";
+        const string largePath = "images/test/cover-large.webp";
+        var variantsJson = JsonSerializer.Serialize(new Dictionary<string, string> { ["large"] = largePath });
+
+        using var factory = CreateFactory(Guid.NewGuid().ToString());
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        await db.Database.EnsureCreatedAsync();
+
+        var media = new MediaFile
+        {
+            StoragePath = originalPath,
+            OriginalFileName = "cover.webp",
+            ContentType = "image/webp",
+            SizeBytes = 4,
+            AltText = "Kapak",
+            Variants = variantsJson,
+        };
+        db.MediaFiles.Add(media);
+        await db.SaveChangesAsync();
+
+        db.NewsPosts.Add(new NewsPost
+        {
+            Title = "Kapaklı haber",
+            Slug = "kapakli-haber",
+            BodyHtml = "<p>gövde</p>",
+            Status = PublishStatus.Published,
+            PublishedAtUtc = DateTime.UtcNow.AddHours(-1),
+            Scope = NewsScope.Province,
+            CoverImageId = media.Id,
+        });
+        await db.SaveChangesAsync();
+
+        foreach (var relative in new[] { originalPath, largePath })
+        {
+            var diskPath = Path.Combine(env.WebRootPath, "uploads", relative.Replace('/', Path.DirectorySeparatorChar));
+            Directory.CreateDirectory(Path.GetDirectoryName(diskPath)!);
+            await File.WriteAllBytesAsync(diskPath, [0x52, 0x49, 0x46, 0x46]);
+        }
+
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = true });
+        var detailHtml = await client.GetStringAsync("/haberler/kapakli-haber");
+        var imageUrl = "/uploads/" + largePath;
+
+        detailHtml.Should().Contain(imageUrl);
+        (await client.GetAsync(imageUrl)).StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

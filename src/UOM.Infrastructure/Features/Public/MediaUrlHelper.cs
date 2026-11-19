@@ -2,8 +2,14 @@ using System.Text.Json;
 
 namespace UOM.Infrastructure.Features.Public;
 
-internal static class MediaUrlHelper
+public static class MediaUrlHelper
 {
+    /// <summary>
+    /// URL path segment under wwwroot where <see cref="LocalFileStorage"/> writes files
+    /// (see Storage:LocalRoot, default "wwwroot/uploads").
+    /// </summary>
+    public const string PublicUploadsPath = "uploads";
+
     public static string? ResolveUrl(string? storagePath, string? variantsJson, string variant = "medium")
     {
         if (!string.IsNullOrWhiteSpace(variantsJson))
@@ -13,7 +19,7 @@ internal static class MediaUrlHelper
                 var map = JsonSerializer.Deserialize<Dictionary<string, string>>(variantsJson);
                 if (map is not null && map.TryGetValue(variant, out var path) && !string.IsNullOrWhiteSpace(path))
                 {
-                    return "/" + path.TrimStart('/');
+                    return ToPublicUrl(path);
                 }
             }
             catch (JsonException)
@@ -22,6 +28,23 @@ internal static class MediaUrlHelper
             }
         }
 
-        return string.IsNullOrWhiteSpace(storagePath) ? null : "/" + storagePath.TrimStart('/');
+        return ToPublicUrl(storagePath);
+    }
+
+    public static string? ToPublicUrl(string? relativeStoragePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativeStoragePath))
+        {
+            return null;
+        }
+
+        var normalized = relativeStoragePath.TrimStart('/').Replace('\\', '/');
+        if (normalized.StartsWith(PublicUploadsPath + "/", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(normalized, PublicUploadsPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return "/" + normalized;
+        }
+
+        return "/" + PublicUploadsPath + "/" + normalized;
     }
 }
