@@ -24,11 +24,7 @@ public sealed class PublicNewsService : IPublicNewsService
 
     public async Task<PagedResult<NewsListItemDto>> ListAsync(NewsListQuery query, CancellationToken cancellationToken = default)
     {
-        var baseQuery = _db.NewsPosts
-            .AsNoTracking()
-            .Include(n => n.Category)
-            .Include(n => n.CoverImage)
-            .WherePubliclyVisible(_clock);
+        var baseQuery = VisibleNewsPosts();
 
         if (query.Scope is { } scope)
         {
@@ -41,12 +37,12 @@ public sealed class PublicNewsService : IPublicNewsService
         }
 
         var total = await baseQuery.CountAsync(cancellationToken);
-        var items = await baseQuery
+        var posts = await baseQuery
             .OrderByDescending(n => n.PublishedAtUtc)
             .Skip(Math.Max(0, query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Select(n => MapList(n))
             .ToListAsync(cancellationToken);
+        var items = posts.Select(MapList).ToList();
 
         return new PagedResult<NewsListItemDto>
         {
@@ -59,11 +55,7 @@ public sealed class PublicNewsService : IPublicNewsService
 
     public async Task<NewsDetailDto?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
-        var post = await _db.NewsPosts
-            .AsNoTracking()
-            .Include(n => n.Category)
-            .Include(n => n.CoverImage)
-            .WherePubliclyVisible(_clock)
+        var post = await VisibleNewsPosts()
             .FirstOrDefaultAsync(n => n.Slug == slug, cancellationToken);
 
         return post is null ? null : MapDetail(post);
@@ -80,11 +72,7 @@ public sealed class PublicNewsService : IPublicNewsService
             return [];
         }
 
-        var candidates = await _db.NewsPosts
-            .AsNoTracking()
-            .Include(n => n.Category)
-            .Include(n => n.CoverImage)
-            .WherePubliclyVisible(_clock)
+        var candidates = await VisibleNewsPosts()
             .OrderByDescending(n => n.IsFeatured)
             .ThenByDescending(n => n.PublishedAtUtc)
             .Take(take + featuredCount)
@@ -103,11 +91,7 @@ public sealed class PublicNewsService : IPublicNewsService
         int count,
         CancellationToken cancellationToken = default)
     {
-        var items = await _db.NewsPosts
-            .AsNoTracking()
-            .Include(n => n.Category)
-            .Include(n => n.CoverImage)
-            .WherePubliclyVisible(_clock)
+        var items = await VisibleNewsPosts()
             .Where(n => n.CategoryId == categoryId && n.Id != excludeId)
             .OrderByDescending(n => n.PublishedAtUtc)
             .Take(count)
@@ -115,6 +99,13 @@ public sealed class PublicNewsService : IPublicNewsService
 
         return items.Select(MapList).ToList();
     }
+
+    private IQueryable<NewsPost> VisibleNewsPosts() =>
+        _db.NewsPosts
+            .AsNoTracking()
+            .Include(n => n.Category)
+            .Include(n => n.CoverImage)
+            .WherePubliclyVisible(_clock);
 
     private NewsListItemDto MapList(NewsPost n) =>
         new(
