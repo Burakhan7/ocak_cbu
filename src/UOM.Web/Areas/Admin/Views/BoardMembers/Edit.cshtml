@@ -1,0 +1,30 @@
+@model UOM.Domain.Entities.BoardMember
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni üye" : "Üye düzenle"; }
+<form method="post" asp-action="Save" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PhotoImageId" />
+    <section class="mb-3">
+        <label asp-for="FullName" class="form-label">Ad soyad</label>
+        <input asp-for="FullName" class="form-control" required />
+    </section>
+    <section class="mb-3">
+        <label asp-for="Title" class="form-label">Unvan</label>
+        <input asp-for="Title" class="form-control" required />
+    </section>
+    <section class="mb-3">
+        <label asp-for="Order" class="form-label">Sıra</label>
+        <input asp-for="Order" type="number" class="form-control" />
+    </section>
+    <p class="text-muted small">Fotoğraf yalnızca KVKK rızası dosyada ise yayınlanır.</p>
+    <div class="form-check mb-3">
+        <input asp-for="ConsentOnFile" class="form-check-input" />
+        <label asp-for="ConsentOnFile" class="form-check-label">Fotoğraf için rıza dosyada</label>
+    </div>
+    <partial name="_AdminCoverImageField" />
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label">Aktif</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

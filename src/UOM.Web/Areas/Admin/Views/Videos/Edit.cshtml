@@ -1,0 +1,32 @@
+@model UOM.Domain.Entities.Video
+@using UOM.Domain.Enums
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni video" : "Video düzenle"; }
+<form method="post" asp-action="Save">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <section class="mb-3">
+        <label asp-for="Title" class="form-label">Başlık</label>
+        <input asp-for="Title" class="form-control" required />
+    </section>
+    <section class="mb-3">
+        <label asp-for="YouTubeVideoId" class="form-label">YouTube kimliği veya URL</label>
+        <input asp-for="YouTubeVideoId" class="form-control" required />
+    </section>
+    <section class="mb-3">
+        <label asp-for="Source" class="form-label">Kaynak</label>
+        <select asp-for="Source" asp-items="Html.GetEnumSelectList<VideoSource>()" class="form-select"></select>
+    </section>
+    <section class="mb-3">
+        <label asp-for="PublishedDate" class="form-label">Yayın tarihi</label>
+        <input asp-for="PublishedDate" type="date" class="form-control" />
+    </section>
+    <section class="mb-3">
+        <label asp-for="Order" class="form-label">Sıra</label>
+        <input asp-for="Order" type="number" class="form-control" />
+    </section>
+    <div class="form-check mb-3">
+        <input asp-for="IsFeatured" class="form-check-input" />
+        <label asp-for="IsFeatured" class="form-check-label">Öne çıkan</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>

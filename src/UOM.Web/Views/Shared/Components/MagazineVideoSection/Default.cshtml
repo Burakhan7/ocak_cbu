@@ -1,0 +1,32 @@
+@model UOM.Application.Features.Public.Models.MagazineVideoHomeDto
+@if (Model.LatestMagazine is null && Model.FeaturedVideo is null)
+{
+    return;
+}
+<section class="home-section py-4">
+    <div class="row g-4 align-items-stretch">
+        @if (Model.LatestMagazine is { } magazine)
+        {
+            <div class="col-md-6">
+                <h2 class="h6">Son dergi</h2>
+                <a class="card h-100 text-decoration-none content-card" href="@magazine.ExternalUrl" rel="noopener noreferrer" target="_blank">
+                    @if (!string.IsNullOrWhiteSpace(magazine.CoverUrl))
+                    {
+                        <img src="@magazine.CoverUrl" alt="@(magazine.CoverAlt ?? magazine.Title)" class="card-img-top" loading="lazy" />
+                    }
+                    <div class="card-body">
+                        <strong>@magazine.Title</strong>
+                        <p class="small text-muted mb-0">@magazine.IssueDate.ToString("MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</p>
+                    </div>
+                </a>
+            </div>
+        }
+        @if (Model.FeaturedVideo is { } video)
+        {
+            <div class="col-md-6">
+                <h2 class="h6">OCAK TV</h2>
+                <partial name="_YouTubeLite" model="video" />
+            </div>
+        }
+    </div>
+</section>

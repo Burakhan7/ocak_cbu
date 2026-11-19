@@ -1,0 +1,23 @@
+@model IReadOnlyList<UOM.Application.Features.Public.Models.QuoteDto>
+@if (Model.Count == 0)
+{
+    return;
+}
+<section class="quote-band home-section" aria-label="Alıntılar" data-quote-band>
+    <div class="quote-band__inner">
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            var q = Model[i];
+            <blockquote class="quote-band__item@(i == 0 ? " is-active" : "")" data-quote-item>
+                <p class="quote-band__text mb-1">@q.Text</p>
+                <footer class="quote-band__author small text-muted mb-0">
+                    — @q.AuthorLabel
+                    @if (!string.IsNullOrWhiteSpace(q.SourceNote))
+                    {
+                        <span class="quote-band__source"> (@q.SourceNote)</span>
+                    }
+                </footer>
+            </blockquote>
+        }
+    </div>
+</section>

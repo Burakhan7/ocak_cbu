@@ -1,0 +1,22 @@
+@model IReadOnlyList<UOM.Application.Features.Public.Models.VideoListItemDto>
+@{
+    ViewData["Title"] = "Videolar";
+}
+@section PageBanner {
+    <partial name="_PageBanner" model='new UOM.Web.Models.PageBannerModel("Videolar", "OCAK TV ve il videoları", ModifierClass: "page-banner--list")' />
+}
+@if (Model.Count == 0)
+{
+    <p class="text-muted"><!-- TODO(spec): video listesi --></p>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var v in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <partial name="_YouTubeLite" model="v" />
+            </div>
+        }
+    </div>
+}

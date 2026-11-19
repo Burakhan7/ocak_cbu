@@ -1,0 +1,26 @@
+@model IReadOnlyList<UOM.Application.Features.Public.Models.ParentProjectCardDto>
+@if (Model.Count == 0)
+{
+    return;
+}
+<section class="home-section py-4">
+    <h2 class="h5 mb-3">Projeler</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-3 parent-project-grid">
+        @foreach (var p in Model)
+        {
+            <div class="col">
+                <a class="card h-100 text-center text-decoration-none content-card p-3" href="@p.ExternalUrl" rel="noopener noreferrer" target="_blank">
+                    @if (!string.IsNullOrWhiteSpace(p.LogoUrl))
+                    {
+                        <img src="@p.LogoUrl" alt="@(p.LogoAlt ?? p.Name)" class="parent-project-grid__logo mb-2" loading="lazy" />
+                    }
+                    <strong class="d-block small">@p.Name</strong>
+                    @if (!string.IsNullOrWhiteSpace(p.ShortDescription))
+                    {
+                        <span class="small text-muted d-block mt-1">@p.ShortDescription</span>
+                    }
+                </a>
+            </div>
+        }
+    </div>
+</section>

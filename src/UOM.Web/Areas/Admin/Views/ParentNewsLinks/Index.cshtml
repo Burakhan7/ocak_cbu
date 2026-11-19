@@ -1,0 +1,13 @@
+@model IReadOnlyList<UOM.Domain.Entities.ParentNewsLink>
+@{ ViewData["Title"] = "Genel Merkez haberleri"; }
+<h1 class="h3 mb-3">Genel Merkez haberleri</h1>
+<a class="btn btn-primary mb-3" asp-action="Create">Yeni</a>
+<ul class="list-group">
+@foreach (var n in Model)
+{
+    <li class="list-group-item d-flex justify-content-between">
+        <span>@n.Title <small class="text-muted">@(n.IsActive ? "aktif" : "pasif")</small></span>
+        <a asp-action="Edit" asp-route-id="@n.Id">Düzenle</a>
+    </li>
+}
+</ul>

@@ -56,6 +56,10 @@ public static class DependencyInjection
             services.AddSingleton<IPublicGuideService, EmptyPublicGuideService>();
             services.AddSingleton<IPublicResourceService, EmptyPublicResourceService>();
             services.AddSingleton<IPublicAnnouncementService, EmptyPublicAnnouncementService>();
+            services.AddSingleton<IPublicQuoteService, EmptyPublicQuoteService>();
+            services.AddSingleton<IPublicParentHubService, EmptyPublicParentHubService>();
+            services.AddSingleton<IPublicOrganizationService, EmptyPublicOrganizationService>();
+            services.AddSingleton<IPublicVideoService, EmptyPublicVideoService>();
             return services;
         }
 
@@ -89,6 +93,17 @@ public static class DependencyInjection
         services.AddScoped<GuideArticleAdminService>();
         services.AddScoped<ResourceAdminService>();
         services.AddScoped<AnnouncementAdminService>();
+        services.AddScoped<QuoteAdminService>();
+        services.AddScoped<ParentNewsLinkAdminService>();
+        services.AddScoped<ParentProjectAdminService>();
+        services.AddScoped<MagazineIssueAdminService>();
+        services.AddScoped<VideoAdminService>();
+        services.AddScoped<DistrictAdminService>();
+        services.AddScoped<BoardMemberAdminService>();
+        services.AddScoped<IPublicQuoteService, PublicQuoteService>();
+        services.AddScoped<IPublicParentHubService, PublicParentHubService>();
+        services.AddScoped<IPublicOrganizationService, PublicOrganizationService>();
+        services.AddScoped<IPublicVideoService, PublicVideoService>();
         services.AddScoped<IPublicNewsService, PublicNewsService>();
         services.AddScoped<IPublicEventService, PublicEventService>();
         services.AddScoped<IPublicPageService, PublicPageService>();

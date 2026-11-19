@@ -1,0 +1,118 @@
+@model UOM.Application.Features.Public.Models.ParentHubPageDto
+@{
+    ViewData["Title"] = "Genel Merkez";
+}
+@section PageBanner {
+    <partial name="_PageBanner" model='new UOM.Web.Models.PageBannerModel("Genel Merkez", "Ana sitedeki seçilmiş içeriklerin özeti")' />
+}
+<p class="mb-4">
+    <a class="btn btn-outline-primary" href="https://ulkuocaklari.org.tr" rel="noopener noreferrer" target="_blank">Ana siteye git ↗</a>
+</p>
+<p class="text-muted small"><!-- TODO(spec): Genel Başkan resmi ve unvanı (SiteSettings veya ayrı alan) --></p>
+
+<section class="mb-5">
+    <h2 class="h4">Genel Merkez haberleri</h2>
+    @if (Model.News.Items.Count == 0)
+    {
+        <p class="text-muted"><!-- TODO(spec): ParentNewsLink içerikleri --></p>
+    }
+    else
+    {
+        <div class="list-group list-group-flush mb-3">
+        @foreach (var n in Model.News.Items)
+        {
+            <article class="list-group-item px-0">
+                <h3 class="h6 mb-1">@n.Title</h3>
+                @if (!string.IsNullOrWhiteSpace(n.Summary))
+                {
+                    <p class="small mb-1">@n.Summary</p>
+                }
+                <a href="@n.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku ↗</a>
+            </article>
+        }
+        </div>
+        @if (Model.News.TotalPages > 1)
+        {
+            <nav aria-label="Sayfalama">
+                <ul class="pagination pagination-sm">
+                    @for (var p = 1; p <= Model.News.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == Model.News.Page ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-sayfa="@p">@p</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+</section>
+
+<section class="mb-5">
+    <h2 class="h4">Projeler</h2>
+    @if (Model.Projects.Count == 0)
+    {
+        <p class="text-muted small mb-0"><!-- TODO(spec): projeler --></p>
+    }
+    else
+    {
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var p in Model.Projects)
+            {
+                <div class="col">
+                    <a class="card h-100 text-center text-decoration-none p-3" href="@p.ExternalUrl" rel="noopener noreferrer" target="_blank">
+                        @if (!string.IsNullOrWhiteSpace(p.LogoUrl))
+                        {
+                            <img src="@p.LogoUrl" alt="@(p.LogoAlt ?? p.Name)" class="parent-project-grid__logo mb-2" loading="lazy" />
+                        }
+                        <strong class="small d-block">@p.Name</strong>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<section class="mb-5">
+    <h2 class="h4">Dergiler</h2>
+    @if (Model.Magazines.Count == 0)
+    {
+        <p class="text-muted small mb-0"><!-- TODO(spec): dergi kapakları --></p>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var m in Model.Magazines)
+            {
+                <div class="col-sm-6 col-md-4">
+                    <a class="card h-100 text-decoration-none content-card" href="@m.ExternalUrl" rel="noopener noreferrer" target="_blank">
+                        @if (!string.IsNullOrWhiteSpace(m.CoverUrl))
+                        {
+                            <img src="@m.CoverUrl" alt="@(m.CoverAlt ?? m.Title)" class="card-img-top" loading="lazy" />
+                        }
+                        <div class="card-body py-2"><strong class="small">@m.Title</strong></div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<section>
+    <h2 class="h4">OCAK TV</h2>
+    <p class="small"><a asp-controller="Video" asp-action="Index">Tüm videolar</a></p>
+    @if (Model.Videos.Count == 0)
+    {
+        <p class="text-muted small mb-0"><!-- TODO(spec): YouTube videoları --></p>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var v in Model.Videos.Take(6))
+            {
+                <div class="col-md-6">
+                    <partial name="_YouTubeLite" model="v" />
+                </div>
+            }
+        </div>
+    }
+</section>

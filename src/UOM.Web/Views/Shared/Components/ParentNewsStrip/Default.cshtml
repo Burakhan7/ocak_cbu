@@ -1,0 +1,35 @@
+@model IReadOnlyList<UOM.Application.Features.Public.Models.ParentNewsCardDto>
+<section class="home-section parent-news-strip py-4">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <h2 class="h5 mb-0">Genel Merkez'den</h2>
+        <a asp-controller="Parent" asp-action="Index">Tümü</a>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <p class="text-muted small mb-0"><!-- TODO(spec): Genel Merkez haber özetleri il başkanlığından --></p>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var item in Model)
+            {
+                <div class="col-6 col-lg-3">
+                    <article class="card h-100 content-card">
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="" class="card-img-top" loading="lazy" />
+                        }
+                        <div class="card-body py-3">
+                            <h3 class="h6">@item.Title</h3>
+                            @if (!string.IsNullOrWhiteSpace(item.Summary))
+                            {
+                                <p class="small text-muted mb-2">@item.Summary</p>
+                            }
+                            <a class="small stretched-link" href="@item.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku ↗</a>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</section>

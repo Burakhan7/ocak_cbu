@@ -122,3 +122,43 @@ internal sealed class EmptyPublicAnnouncementService : IPublicAnnouncementServic
     public Task<AnnouncementListItemDto?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
         Task.FromResult<AnnouncementListItemDto?>(null);
 }
+
+internal sealed class EmptyPublicQuoteService : IPublicQuoteService
+{
+    public Task<IReadOnlyList<QuoteDto>> GetActiveQuotesAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<QuoteDto>>([]);
+}
+
+internal sealed class EmptyPublicParentHubService : IPublicParentHubService
+{
+    public Task<ParentHubPageDto> GetHubPageAsync(int newsPage, int newsPageSize, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new ParentHubPageDto(
+            new PagedResult<ParentNewsCardDto> { Items = [], Page = newsPage, PageSize = newsPageSize, TotalCount = 0 },
+            [],
+            [],
+            []));
+
+    public Task<IReadOnlyList<ParentNewsCardDto>> GetNewsStripForHomeAsync(int count, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<ParentNewsCardDto>>([]);
+
+    public Task<IReadOnlyList<ParentProjectCardDto>> GetActiveProjectsAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<ParentProjectCardDto>>([]);
+
+    public Task<MagazineVideoHomeDto> GetMagazineAndFeaturedVideoForHomeAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(new MagazineVideoHomeDto(null, null));
+}
+
+internal sealed class EmptyPublicOrganizationService : IPublicOrganizationService
+{
+    public Task<OrganizationPageDto> GetOrganizationPageAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(new OrganizationPageDto([], [], []));
+
+    public Task<DistrictDetailDto?> GetDistrictBySlugAsync(string slug, CancellationToken cancellationToken = default) =>
+        Task.FromResult<DistrictDetailDto?>(null);
+}
+
+internal sealed class EmptyPublicVideoService : IPublicVideoService
+{
+    public Task<IReadOnlyList<VideoListItemDto>> ListAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<VideoListItemDto>>([]);
+}

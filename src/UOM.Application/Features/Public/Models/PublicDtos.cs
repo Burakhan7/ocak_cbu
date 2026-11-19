@@ -1,3 +1,4 @@
+using UOM.Application.Common;
 using UOM.Domain.Enums;
 
 namespace UOM.Application.Features.Public.Models;
@@ -207,3 +208,80 @@ public sealed class ContactFormRequest
 
     public string? TurnstileToken { get; set; }
 }
+
+public sealed record QuoteDto(int Id, string Text, QuoteAuthor Author, string AuthorLabel, string? SourceNote);
+
+public sealed record ParentNewsCardDto(
+    int Id,
+    string Title,
+    string? Summary,
+    string ExternalUrl,
+    DateOnly PublishedDate,
+    string? ImageUrl);
+
+public sealed record ParentProjectCardDto(
+    int Id,
+    string Name,
+    string? ShortDescription,
+    string ExternalUrl,
+    string? LogoUrl,
+    string? LogoAlt);
+
+public sealed record MagazineCardDto(
+    int Id,
+    string Title,
+    DateOnly IssueDate,
+    string ExternalUrl,
+    string? CoverUrl,
+    string? CoverAlt);
+
+public sealed record VideoListItemDto(
+    int Id,
+    string Title,
+    string YouTubeVideoId,
+    VideoSource Source,
+    DateOnly PublishedDate,
+    bool IsFeatured);
+
+public sealed record MagazineVideoHomeDto(MagazineCardDto? LatestMagazine, VideoListItemDto? FeaturedVideo);
+
+public sealed record ParentHubPageDto(
+    PagedResult<ParentNewsCardDto> News,
+    IReadOnlyList<ParentProjectCardDto> Projects,
+    IReadOnlyList<MagazineCardDto> Magazines,
+    IReadOnlyList<VideoListItemDto> Videos);
+
+public sealed record BoardMemberPublicDto(
+    int Id,
+    string FullName,
+    string Title,
+    string? PhotoUrl,
+    string? PhotoAlt,
+    bool ShowPhoto);
+
+public sealed record DistrictMapPinDto(
+    int Id,
+    string Name,
+    string Slug,
+    double Latitude,
+    double Longitude,
+    string? PresidentName,
+    string? Address,
+    string? Phone,
+    bool IsActive);
+
+public sealed record DistrictDetailDto(
+    int Id,
+    string Name,
+    string Slug,
+    string? PresidentName,
+    string? Address,
+    string? Phone,
+    double? Latitude,
+    double? Longitude,
+    bool IsActive);
+
+public sealed record OrganizationPageDto(
+    IReadOnlyList<BoardMemberPublicDto> BoardMembers,
+    IReadOnlyList<DistrictMapPinDto> DistrictsForMap,
+    IReadOnlyList<DistrictMapPinDto> DistrictList);
