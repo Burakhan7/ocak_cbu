@@ -9,10 +9,7 @@
         <span>@(q.Text.Length > 80 ? q.Text[..80] + "…" : q.Text) <small class="text-muted">@q.Author @(q.IsActive ? "" : "· pasif")</small></span>
         <span>
             <a asp-action="Edit" asp-route-id="@q.Id">Düzenle</a>
-            <form asp-action="Delete" asp-route-id="@q.Id" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-link btn-sm text-danger" onclick="return confirm('Silinsin mi?');">Sil</button>
-            </form>
+            <partial name="_AdminDeleteForm" model="q.Id" />
         </span>
     </li>
 }

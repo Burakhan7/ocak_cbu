@@ -106,4 +106,13 @@ public sealed class ResourcesController(
 
     private async Task LoadFacultiesAsync(CancellationToken cancellationToken) =>
         ViewBag.Faculties = await campusService.ListFacultiesAsync(cancellationToken);
+
+    [HttpPost("{id:int}/sil")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await resourceService.DeleteAsync(id, cancellationToken);
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
+        return RedirectToAction(nameof(Index));
+    }
 }

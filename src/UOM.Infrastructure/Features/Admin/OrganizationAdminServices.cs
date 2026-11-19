@@ -56,6 +56,9 @@ public sealed class DistrictAdminService(AppDbContext db, IAuditLogger auditLogg
         return Result<District>.Ok(model);
     }
 
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<District>(db, auditLogger, id, "İlçe bulunamadı.", cancellationToken);
+
     private async Task<string> GenerateDistrictSlugAsync(string name, int? excludeId, CancellationToken cancellationToken) =>
         await slugService.GenerateSlugAsync(
             name,
@@ -115,4 +118,7 @@ public sealed class BoardMemberAdminService(AppDbContext db, IAuditLogger auditL
         await auditLogger.LogAsync(model.Id == 0 ? "Create" : "Update", nameof(BoardMember), model.Id, new { model.FullName }, cancellationToken);
         return Result<BoardMember>.Ok(model);
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<BoardMember>(db, auditLogger, id, "Kayıt bulunamadı.", cancellationToken);
 }

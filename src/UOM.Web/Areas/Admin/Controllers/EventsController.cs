@@ -141,4 +141,13 @@ public sealed class EventsController(
         var venues = await db.Venues.OrderBy(v => v.Name).ToListAsync(cancellationToken);
         ViewBag.Venues = new SelectList(venues, "Id", "Name");
     }
+
+    [HttpPost("{id:int}/sil")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await eventService.DeleteAsync(id, cancellationToken);
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
+        return RedirectToAction(nameof(Index));
+    }
 }

@@ -7,7 +7,10 @@
 {
     <li class="list-group-item d-flex justify-content-between">
         <span>@a.Title <small class="text-muted">@a.Status · bitiş @a.ExpiresAtUtc.ToLocalTime().ToString("d")</small></span>
-        <a asp-action="Edit" asp-route-id="@a.Id">Düzenle</a>
+        <span>
+            <a asp-action="Edit" asp-route-id="@a.Id">Düzenle</a>
+            <partial name="_AdminDeleteForm" model="a.Id" />
+        </span>
     </li>
 }
 </ul>

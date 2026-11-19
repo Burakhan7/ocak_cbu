@@ -74,4 +74,7 @@ public sealed class ResourceAdminService(
 
     public Task<Result> PublishAsync(int id, CancellationToken cancellationToken = default) =>
         PublishableContentAdmin.PublishAsync<Resource>(db, auditLogger, clock, id, cancellationToken);
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<Resource>(db, auditLogger, id, "Kaynak bulunamadı.", cancellationToken);
 }

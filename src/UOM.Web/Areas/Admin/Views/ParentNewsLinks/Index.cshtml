@@ -7,7 +7,10 @@
 {
     <li class="list-group-item d-flex justify-content-between">
         <span>@n.Title <small class="text-muted">@(n.IsActive ? "aktif" : "pasif")</small></span>
-        <a asp-action="Edit" asp-route-id="@n.Id">Düzenle</a>
+        <span>
+            <a asp-action="Edit" asp-route-id="@n.Id">Düzenle</a>
+            <partial name="_AdminDeleteForm" model="n.Id" />
+        </span>
     </li>
 }
 </ul>

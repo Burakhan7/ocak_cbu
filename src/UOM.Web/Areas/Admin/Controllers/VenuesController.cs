@@ -69,4 +69,13 @@ public sealed class VenuesController(VenueAdminService venueService, MediaAdminS
         TempData["Success"] = "Mekan kaydedildi.";
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost("{id:int}/sil")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await venueService.DeleteAsync(id, cancellationToken);
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
+        return RedirectToAction(nameof(Index));
+    }
 }

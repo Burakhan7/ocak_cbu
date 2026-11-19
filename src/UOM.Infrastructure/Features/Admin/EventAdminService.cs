@@ -123,4 +123,7 @@ public sealed class EventAdminService(
         await auditLogger.LogAsync("Reject", nameof(Event), id, new { note }, cancellationToken);
         return Result.Ok();
     }
+
+    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default) =>
+        AdminSoftDelete.DeleteAsync<Event>(db, auditLogger, id, "Etkinlik bulunamadı.", cancellationToken);
 }

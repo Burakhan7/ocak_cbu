@@ -51,16 +51,12 @@ public sealed class QuoteAdminService(AppDbContext db, IAuditLogger auditLogger,
 
     public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        var quote = await db.Quotes.FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
-        if (quote is null)
+        var result = await AdminSoftDelete.DeleteAsync<Quote>(db, auditLogger, id, "Alıntı bulunamadı.", cancellationToken);
+        if (result.Succeeded)
         {
-            return Result.Fail("Alıntı bulunamadı.");
+            cache.Remove(PublicQuoteService.CacheKey);
         }
 
-        quote.IsDeleted = true;
-        await db.SaveChangesAsync(cancellationToken);
-        cache.Remove(PublicQuoteService.CacheKey);
-        await auditLogger.LogAsync("Delete", nameof(Quote), id, null, cancellationToken);
-        return Result.Ok();
+        return result;
     }
 }

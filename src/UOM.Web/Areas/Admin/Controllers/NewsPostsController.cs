@@ -131,4 +131,13 @@ public sealed class NewsPostsController(
         TempData["PreviewUrl"] = url;
         return RedirectToAction(nameof(Edit), new { id });
     }
+
+    [HttpPost("{id:int}/sil")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await newsService.DeleteAsync(id, cancellationToken);
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
+        return RedirectToAction(nameof(Index));
+    }
 }

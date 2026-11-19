@@ -22,7 +22,10 @@
             <td>@item.Title</td>
             <td>@item.Status</td>
             <td>@item.Scope</td>
-            <td><a href="@Url.Action("Edit", new { id = item.Id })">Düzenle</a></td>
+            <td class="text-nowrap">
+                <a href="@Url.Action("Edit", new { id = item.Id })">Düzenle</a>
+                <partial name="_AdminDeleteForm" model="item.Id" />
+            </td>
         </tr>
     }
     </tbody>

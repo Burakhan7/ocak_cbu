@@ -43,4 +43,13 @@ public sealed class VideosController(VideoAdminService service) : Controller
         TempData["Success"] = "Video kaydedildi.";
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost("{id:int}/sil")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await service.DeleteAsync(id, cancellationToken);
+        TempData[result.Succeeded ? "Success" : "Error"] = result.Succeeded ? "Kayıt silindi." : result.Error;
+        return RedirectToAction(nameof(Index));
+    }
 }
