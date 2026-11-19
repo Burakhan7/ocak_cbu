@@ -149,7 +149,6 @@ public static class AdminMediaFormBinding
         }
 
         viewData["ResourceFileName"] = file.OriginalFileName;
-        viewData["ResourceFileUrl"] = AdminMediaUrl.Resolve(file.StoragePath, file.Variants)
-            ?? (string.IsNullOrWhiteSpace(file.StoragePath) ? null : "/" + file.StoragePath.TrimStart('/'));
+        viewData["ResourceFileUrl"] = AdminMediaUrl.Resolve(file.StoragePath, file.Variants);
     }
 }
