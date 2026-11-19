@@ -5,7 +5,9 @@
     ViewData["Title"] = "Kaynak arşivi";
     var faculties = (IReadOnlyList<FacultyOptionDto>)ViewBag.Faculties;
 }
-<h1 class="h2 mb-3">Kaynak arşivi</h1>
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel("Kaynak arşivi", "Ders notları ve bağlantılar", ModifierClass: "page-banner--cbu"))" />
+}
 <form method="get" class="row g-2 mb-4">
     <div class="col-md-4">
         <select name="fakulte" class="form-select">

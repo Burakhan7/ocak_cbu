@@ -124,14 +124,18 @@ public sealed record CampusMapPinDto(
     string? ShortName,
     double Latitude,
     double Longitude,
-    double? DistanceToLodgeKm);
+    double? DistanceToLodgeKm,
+    string? CoverImageUrl,
+    string? CoverImageAlt);
 
 public sealed record GuideListItemDto(
     string Title,
     string Slug,
     string? Summary,
     GuideCategory Category,
-    DateTime? LastReviewedAtUtc);
+    DateTime? LastReviewedAtUtc,
+    string? CoverImageUrl,
+    string? CoverImageAlt);
 
 public sealed record GuideDetailDto(
     string Title,
@@ -140,6 +144,8 @@ public sealed record GuideDetailDto(
     string BodyHtml,
     GuideCategory Category,
     DateTime? LastReviewedAtUtc,
+    string? CoverImageUrl,
+    string? CoverImageAlt,
     string? MetaTitle,
     string? MetaDescription);
 
@@ -174,7 +180,9 @@ public sealed record AnnouncementListItemDto(
     DateTime ExpiresAtUtc,
     string? ExternalUrl,
     bool IsPinned,
-    bool IsUrgent);
+    bool IsUrgent,
+    string? CoverImageUrl,
+    string? CoverImageAlt);
 
 public sealed class ContactFormRequest
 {

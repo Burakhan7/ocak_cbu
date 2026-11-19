@@ -2,21 +2,32 @@
 @{
     ViewData["Title"] = "Haberler";
 }
-<h1 class="h2 mb-3">Haberler</h1>
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel("Haberler", "İl ve CBÜ haberleri", ModifierClass: "page-banner--list"))" />
+}
 @if (Model.Items.Count == 0)
 {
     <p class="text-muted">Yayınlanmış haber yok.</p>
 }
 else
 {
-    <div class="row g-3">
+    <div class="row g-4">
         @foreach (var item in Model.Items)
         {
-            <div class="col-md-4">
-                <article class="card h-100">
-                    <div class="card-body">
+            <div class="col-md-6 col-lg-4">
+                <article class="card h-100 content-card">
+                    <partial name="_CardCover" model="@(new CoverImageModel(item.CoverImageUrl, item.CoverImageAlt ?? item.Title))" />
+                    <div class="card-body d-flex flex-column">
+                        @if (!string.IsNullOrWhiteSpace(item.CategoryName))
+                        {
+                            <span class="badge text-bg-light align-self-start mb-2">@item.Scope · @item.CategoryName</span>
+                        }
                         <h2 class="h6"><a asp-action="Detail" asp-route-slug="@item.Slug" class="stretched-link text-decoration-none">@item.Title</a></h2>
-                        <p class="small text-muted">@item.Summary</p>
+                        <p class="small text-muted mb-0 flex-grow-1">@item.Summary</p>
+                        @if (item.PublishedAtUtc is { } published)
+                        {
+                            <p class="content-list-meta mb-0 mt-2">@published.ToLocalDisplay()</p>
+                        }
                     </div>
                 </article>
             </div>

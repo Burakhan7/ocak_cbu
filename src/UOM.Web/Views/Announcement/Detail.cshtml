@@ -2,12 +2,18 @@
 @{
     ViewData["Title"] = Model.Title;
 }
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.Type.ToString(), Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail page-banner--cbu"))" />
+}
 <p><a asp-action="Index">← Duyurular</a></p>
-<h1 class="h2">@Model.Title</h1>
-<p>@Model.Body</p>
+@if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+{
+    <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title))" />
+}
+<div class="content-body mb-3">@Model.Body</div>
 @if (Model.DeadlineUtc is { } dl)
 {
-    <p class="text-muted">Son başvuru: @dl.ToLocalTime().ToString("f")</p>
+    <p class="text-muted">Son başvuru: @dl.ToLocalDisplay()</p>
 }
 @if (!string.IsNullOrWhiteSpace(Model.ExternalUrl))
 {

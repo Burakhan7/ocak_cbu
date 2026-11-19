@@ -3,19 +3,42 @@
     ViewData["Title"] = Model.Title;
     var related = ViewBag.Related as IReadOnlyList<UOM.Application.Features.Public.Models.NewsListItemDto> ?? [];
 }
+@section PageBanner {
+    <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.Summary, Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail"))" />
+}
 <article>
-    <h1 class="h2">@Model.Title</h1>
+    @if (Model.PublishedAtUtc is { } published)
+    {
+        <p class="text-muted small mb-3">
+            @published.ToLocalDisplay()
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
+            {
+                <span> · @Model.Scope · @Model.CategoryName</span>
+            }
+        </p>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+    {
+        <partial name="_DetailCover" model="@(new CoverImageModel(Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title))" />
+    }
     <div class="content-body mb-4">@Html.Raw(Model.BodyHtml)</div>
 </article>
 @if (related.Count > 0)
 {
-    <section class="mt-4">
-        <h2 class="h5">İlgili haberler</h2>
-        <ul>
+    <section class="mt-5 pt-4 border-top">
+        <h2 class="h5 mb-3">İlgili haberler</h2>
+        <div class="row g-3">
             @foreach (var n in related)
             {
-                <li><a asp-action="Detail" asp-route-slug="@n.Slug">@n.Title</a></li>
+                <div class="col-md-4">
+                    <article class="card h-100 content-card">
+                        <partial name="_CardCover" model="@(new CoverImageModel(n.CoverImageUrl, n.CoverImageAlt ?? n.Title))" />
+                        <div class="card-body">
+                            <h3 class="h6 mb-0"><a asp-action="Detail" asp-route-slug="@n.Slug" class="stretched-link text-decoration-none">@n.Title</a></h3>
+                        </div>
+                    </article>
+                </div>
             }
-        </ul>
+        </div>
     </section>
 }

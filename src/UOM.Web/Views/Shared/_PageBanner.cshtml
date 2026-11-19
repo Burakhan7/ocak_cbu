@@ -1,0 +1,15 @@
+@model UOM.Web.Models.PageBannerModel
+@{
+    var hasCover = !string.IsNullOrWhiteSpace(Model.CoverImageUrl);
+    var bannerClass = "page-banner" + (hasCover ? " page-banner--has-cover" : "") +
+                    (string.IsNullOrWhiteSpace(Model.ModifierClass) ? "" : " " + Model.ModifierClass);
+}
+<header class="@bannerClass" @if (hasCover) { <text>style="--page-banner-cover: url('@Model.CoverImageUrl')"</text> }>
+    <div class="page-banner__inner container" style="max-width: var(--container-max);">
+        <h1 class="page-banner__title">@Model.Title</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+        {
+            <p class="page-banner__subtitle">@Model.Subtitle</p>
+        }
+    </div>
+</header>
