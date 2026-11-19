@@ -4,14 +4,36 @@ namespace UOM.Application.Formatting;
 
 public static class DisplayDateTimeExtensions
 {
-    private static readonly TimeZoneInfo Istanbul =
-        TimeZoneInfo.FindSystemTimeZoneById(
-            OperatingSystem.IsWindows() ? "Turkey Standard Time" : "Europe/Istanbul");
+    private static readonly Lazy<TimeZoneInfo?> Istanbul = new(TryResolveIstanbul);
 
-    public static DateTime ToIstanbul(this DateTime utc) =>
-        TimeZoneInfo.ConvertTimeFromUtc(
-            DateTime.SpecifyKind(utc, DateTimeKind.Utc),
-            Istanbul);
+    public static DateTime ToIstanbul(this DateTime utc)
+    {
+        var istanbul = Istanbul.Value;
+        var normalized = DateTime.SpecifyKind(utc, DateTimeKind.Utc);
+        if (istanbul is null)
+        {
+            return normalized;
+        }
+
+        return TimeZoneInfo.ConvertTimeFromUtc(normalized, istanbul);
+    }
+
+    private static TimeZoneInfo? TryResolveIstanbul()
+    {
+        try
+        {
+            var id = OperatingSystem.IsWindows() ? "Turkey Standard Time" : "Europe/Istanbul";
+            return TimeZoneInfo.FindSystemTimeZoneById(id);
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return null;
+        }
+        catch (InvalidTimeZoneException)
+        {
+            return null;
+        }
+    }
 
     public static string ToLocalDisplay(this DateTime utc)
     {

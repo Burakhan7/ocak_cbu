@@ -50,6 +50,28 @@ public class NewsPostAdminServiceTests
         saved.BodyHtml.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task PublishAsync_publishes_draft_without_submit_step()
+    {
+        await using var db = CreateDbContext();
+        var clock = new SystemClock();
+        var service = new NewsPostAdminService(db, new SlugService(), clock, new AuditLogger(db, new NullAuditUserProvider(), clock));
+        var saved = await service.SaveAsync(new NewsPost
+        {
+            Title = "Yayına alınacak",
+            BodyHtml = "<p>i</p>",
+            Scope = NewsScope.Province,
+        });
+        saved.Succeeded.Should().BeTrue();
+
+        var published = await service.PublishAsync(saved.Value!.Id);
+        published.Succeeded.Should().BeTrue();
+
+        var post = await db.NewsPosts.SingleAsync();
+        post.Status.Should().Be(PublishStatus.Published);
+        post.PublishedAtUtc.Should().NotBeNull();
+    }
+
     private static AppDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()

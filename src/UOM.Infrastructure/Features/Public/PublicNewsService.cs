@@ -74,26 +74,25 @@ public sealed class PublicNewsService : IPublicNewsService
         int regularCount,
         CancellationToken cancellationToken = default)
     {
-        var featured = await _db.NewsPosts
+        var take = Math.Max(0, featuredCount) + Math.Max(0, regularCount);
+        if (take == 0)
+        {
+            return [];
+        }
+
+        var candidates = await _db.NewsPosts
             .AsNoTracking()
             .Include(n => n.Category)
             .Include(n => n.CoverImage)
             .WherePubliclyVisible(_clock)
-            .Where(n => n.IsFeatured)
-            .OrderByDescending(n => n.PublishedAtUtc)
-            .Take(featuredCount)
+            .OrderByDescending(n => n.IsFeatured)
+            .ThenByDescending(n => n.PublishedAtUtc)
+            .Take(take + featuredCount)
             .ToListAsync(cancellationToken);
 
+        var featured = candidates.Where(n => n.IsFeatured).Take(featuredCount).ToList();
         var featuredIds = featured.Select(f => f.Id).ToHashSet();
-        var regular = await _db.NewsPosts
-            .AsNoTracking()
-            .Include(n => n.Category)
-            .Include(n => n.CoverImage)
-            .WherePubliclyVisible(_clock)
-            .Where(n => !featuredIds.Contains(n.Id))
-            .OrderByDescending(n => n.PublishedAtUtc)
-            .Take(regularCount)
-            .ToListAsync(cancellationToken);
+        var regular = candidates.Where(n => !featuredIds.Contains(n.Id)).Take(regularCount);
 
         return featured.Concat(regular).Select(MapList).ToList();
     }

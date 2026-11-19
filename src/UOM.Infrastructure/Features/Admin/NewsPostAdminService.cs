@@ -94,9 +94,9 @@ public sealed class NewsPostAdminService(
             return Result.Fail("Haber bulunamadı.");
         }
 
-        if (post.Status != PublishStatus.PendingApproval)
+        if (post.Status is not (PublishStatus.Draft or PublishStatus.PendingApproval))
         {
-            return Result.Fail("Yalnızca onay bekleyen haber yayınlanabilir.");
+            return Result.Fail("Yalnızca taslak veya onay bekleyen haber yayınlanabilir.");
         }
 
         post.Status = PublishStatus.Published;
