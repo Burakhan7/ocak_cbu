@@ -2,6 +2,36 @@
 
 body.bg-light {
   background-color: var(--color-surface) !important;
+  overflow-x: clip;
+}
+
+.admin-header {
+  max-width: 100%;
+}
+
+.admin-navbar {
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  max-width: 100%;
+}
+
+.admin-nav-scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.admin-nav-scroll .navbar-nav {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+.admin-nav-scroll .nav-link {
+  white-space: nowrap;
 }
 
 header.border-bottom.bg-white {

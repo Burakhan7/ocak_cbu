@@ -10,10 +10,11 @@
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 </head>
 <body class="bg-light">
-<header class="border-bottom bg-white mb-4">
-    <nav class="navbar navbar-expand-lg container">
-        <a class="navbar-brand" href="/yonetim">Ülkü Ocakları Manisa — Yönetim</a>
-        <div class="navbar-nav ms-auto">
+<header class="border-bottom bg-white mb-4 admin-header">
+    <nav class="navbar navbar-expand-lg container admin-navbar">
+        <a class="navbar-brand flex-shrink-0" href="/yonetim">Ülkü Ocakları Manisa — Yönetim</a>
+        <div class="admin-nav-scroll ms-lg-auto">
+        <div class="navbar-nav flex-row flex-nowrap">
             <a class="nav-link" href="/yonetim/haberler">Haberler</a>
             <a class="nav-link" href="/yonetim/etkinlikler">Etkinlikler</a>
             <a class="nav-link" href="/yonetim/rehber">CBÜ Rehber</a>
@@ -30,10 +31,11 @@
             <a class="nav-link" href="/yonetim/mekanlar">Mekanlar</a>
             <a class="nav-link" href="/yonetim/medya">Medya</a>
             <a class="nav-link" href="/yonetim/site-ayarlari">Site Ayarları</a>
-            <form method="post" action="/yonetim/hesap/cikis" class="d-inline ms-3">
+            <form method="post" action="/yonetim/hesap/cikis" class="d-inline ms-3 flex-shrink-0">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-link nav-link">Çıkış</button>
+                <button type="submit" class="btn btn-link nav-link text-nowrap">Çıkış</button>
             </form>
+        </div>
         </div>
     </nav>
 </header>
