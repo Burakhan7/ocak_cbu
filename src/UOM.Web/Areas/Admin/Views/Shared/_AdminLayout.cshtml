@@ -32,6 +32,7 @@
             <a class="nav-link" href="/yonetim/medya">Medya</a>
             <a class="nav-link" href="/yonetim/yonlendirmeler">Yönlendirmeler</a>
             <a class="nav-link" href="/yonetim/site-ayarlari">Site Ayarları</a>
+            <a class="nav-link" href="/yonetim/kvkk-talepleri">KVKK</a>
             <form method="post" action="/yonetim/hesap/cikis" class="d-inline ms-3 flex-shrink-0">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-link nav-link text-nowrap">Çıkış</button>
@@ -57,6 +58,7 @@
 </main>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/admin.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

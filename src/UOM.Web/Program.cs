@@ -12,8 +12,10 @@ using UOM.Infrastructure.Persistence;
 using UOM.Web.Authorization;
 using UOM.Web.Caching;
 using UOM.Web.Filters;
+using UOM.Web.Hosting;
 using UOM.Web.Middleware;
 using UOM.Web.Routing;
+using UOM.Web.Security;
 
 var turkishCulture = new CultureInfo("tr-TR");
 CultureInfo.DefaultThreadCurrentCulture = turkishCulture;
@@ -25,6 +27,12 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    if (MigrateCommand.IsRequested(args))
+    {
+        Environment.ExitCode = await MigrateCommand.RunAsync(args);
+        return;
+    }
+
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
@@ -51,6 +59,15 @@ try
     builder.Services.AddRateLimiter(options =>
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.OnRejected = async (context, cancellationToken) =>
+        {
+            context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            context.HttpContext.Response.ContentType = "text/plain; charset=utf-8";
+            context.HttpContext.Response.Headers.RetryAfter = "60";
+            await context.HttpContext.Response.WriteAsync(
+                "Çok fazla istek gönderildi. Lütfen bir dakika sonra yeniden deneyin.",
+                cancellationToken);
+        };
         var partitionKey = (HttpContext ctx) => ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         options.AddPolicy("login", httpContext =>
             RateLimitPartition.GetFixedWindowLimiter(
@@ -83,6 +100,12 @@ try
     builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
     builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 
+    builder.Services.AddHsts(options =>
+    {
+        options.MaxAge = TimeSpan.FromDays(365);
+        options.IncludeSubDomains = true;
+    });
+
     builder.Services.AddOutputCache();
     builder.Services.AddSingleton<ICacheInvalidator, OutputCacheInvalidator>();
 
@@ -111,6 +134,7 @@ try
     }
 
     app.UseResponseCompression();
+    app.UseMiddleware<SecurityHeadersMiddleware>();
     app.UseSerilogRequestLogging();
 
     if (!app.Environment.IsDevelopment())
@@ -132,6 +156,7 @@ try
     }
 
     app.UseMiddleware<RobotsNoIndexMiddleware>();
+    app.UseMiddleware<UploadGuardMiddleware>();
     app.UseStaticFiles(new StaticFileOptions
     {
         OnPrepareResponse = ctx =>
@@ -154,10 +179,21 @@ try
     app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseMiddleware<CspNonceMiddleware>();
     app.UseOutputCache();
 
     app.MapStaticAssets();
-    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health").AddEndpointFilter(async (context, next) =>
+    {
+        var env = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+        var config = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+        if (!HealthCheckAccess.IsAllowed(context.HttpContext, env, config))
+        {
+            return Results.StatusCode(StatusCodes.Status403Forbidden);
+        }
+
+        return await next(context);
+    });
 
     app.MapAreaControllerRoute(
         name: "yonetim",

@@ -46,8 +46,12 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Default: Server=sqlserver,1433;Database=UOM;User Id=sa;Password=${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd};TrustServerCertificate=True;Encrypt=False
       Database__AutoMigrate: "true"
+      Health__AccessKey: ${HEALTH_ACCESS_KEY:-}
     ports:
       - "8080:8080"
+    volumes:
+      - uom-uploads:/app/wwwroot/uploads
 
 volumes:
   uom-sql-data:
+  uom-uploads:

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
 using UOM.Web.Models;
+using UOM.Web.Security;
 using UOM.Web.Seo;
 
 namespace UOM.Web.TagHelpers;
@@ -59,6 +60,6 @@ public sealed class JsonLdTagHelper : TagHelper
         output.TagName = null;
         var json = JsonLdBuilder.Graph(graph);
         output.Content.SetHtmlContent(new HtmlString(
-            "<script type=\"application/ld+json\">" + json + "</script>"));
+            "<script type=\"application/ld+json\" nonce=\"" + CspNonce.Placeholder + "\">" + json + "</script>"));
     }
 }

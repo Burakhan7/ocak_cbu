@@ -12,6 +12,7 @@ using UOM.Infrastructure.Identity;
 using UOM.Infrastructure.Imaging;
 using UOM.Infrastructure.Persistence;
 using UOM.Infrastructure.Persistence.Seed;
+using UOM.Infrastructure.Privacy;
 using UOM.Infrastructure.Security;
 using UOM.Infrastructure.Slugs;
 using UOM.Infrastructure.Storage;
@@ -130,6 +131,9 @@ public static class DependencyInjection
         services.AddScoped<IFeedService, FeedService>();
         services.AddScoped<IMediaAssetReader, MediaAssetReader>();
         services.AddScoped<RedirectAdminService>();
+        services.AddScoped<KvkkRetentionService>();
+        services.AddScoped<DataSubjectRequestService>();
+        services.AddHostedService<KvkkRetentionHostedService>();
 
         return services;
     }
