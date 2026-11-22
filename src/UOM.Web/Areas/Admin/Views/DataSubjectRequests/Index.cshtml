@@ -1,0 +1,59 @@
+@model UOM.Web.Areas.Admin.Controllers.DataSubjectPageModel
+@{
+    ViewData["Title"] = "KVKK veri talebi";
+}
+<h1 class="h3 mb-3">KVKK veri talebi</h1>
+<p class="text-muted">İlgili kişinin e-postası ile iletişim mesajlarını ve etkinlik ilgi kayıtlarını bulun. Silme kalıcıdır.</p>
+<form asp-action="Search" method="post" class="card card-body mb-4" style="max-width: 36rem;">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <label class="form-label" for="email">E-posta</label>
+    <div class="input-group">
+        <input class="form-control" id="email" name="email" type="email" value="@Model.Email" autocomplete="off" required />
+        <button type="submit" class="btn btn-primary">Ara</button>
+    </div>
+</form>
+@if (Model.Result is { } result)
+{
+    <h2 class="h5">İletişim mesajları (@result.Contacts.Count)</h2>
+    @if (result.Contacts.Count == 0)
+    {
+        <p class="text-muted">Eşleşen iletişim mesajı yok.</p>
+    }
+    else
+    {
+        <ul class="list-group mb-4">
+        @foreach (var row in result.Contacts)
+        {
+            <li class="list-group-item">
+                <strong>@row.FullName</strong>
+                <span class="text-muted">· @row.Email</span>
+                <div class="small">@row.Subject · @row.ReceivedDisplay</div>
+            </li>
+        }
+        </ul>
+    }
+    <h2 class="h5">Etkinlik ilgi kayıtları (@result.Interests.Count)</h2>
+    @if (result.Interests.Count == 0)
+    {
+        <p class="text-muted">Eşleşen etkinlik ilgi kaydı yok.</p>
+    }
+    else
+    {
+        <ul class="list-group mb-4">
+        @foreach (var row in result.Interests)
+        {
+            <li class="list-group-item">
+                <strong>@row.FullName</strong>
+                <span class="text-muted">· @row.Email</span>
+                <div class="small">@row.EventTitle · @row.ReceivedDisplay</div>
+            </li>
+        }
+        </ul>
+    }
+    <form asp-action="Erase" method="post" class="mt-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="email" value="@result.Email" />
+        <button type="submit" class="btn btn-danger" data-confirm="Bu e-postaya ait kişisel kayıtlar kalıcı olarak silinsin mi?">Kayıtları kalıcı olarak sil</button>
+    </form>
+}

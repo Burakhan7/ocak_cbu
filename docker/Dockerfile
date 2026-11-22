@@ -23,4 +23,5 @@ RUN mkdir -p /app/wwwroot/uploads && chown -R app:app /app/wwwroot/uploads
 USER app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+# Production: Database__AutoMigrate=false, then `dotnet UOM.Web.dll --migrate` before serving.
 ENTRYPOINT ["dotnet", "UOM.Web.dll"]

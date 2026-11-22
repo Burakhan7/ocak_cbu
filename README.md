@@ -54,7 +54,7 @@ Seed, migration sonrası `DatabaseSeeder` ile çalışır (`DatabaseInitializer.
 |------|----------|
 | Roller | `SuperAdmin`, `ProvinceAdmin`, `Editor`, `CampusEditor` |
 | 17 ilçe | `IsActive=false`, diğer alanlar boş |
-| Statik sayfalar | `hakkimizda`, `kvkk-aydinlatma-metni`, `cerez-politikasi`, `kullanim-kosullari` — gövde `TODO: İl başkanlığından alınacak`, `Draft` |
+| Statik sayfalar | `hakkimizda`, `kvkk-aydinlatma-metni`, `cerez-politikasi`, `kullanim-kosullari` — gövde `TODO(spec): İl başkanlığından alınacak aydınlatma ve yasal metin.`, `Draft` |
 | Rehber | Her `GuideCategory` için bir boş taslak |
 | SiteSettings | Tek boş satır |
 
@@ -101,7 +101,7 @@ cp docker/.env.example docker/.env
 docker compose --project-directory docker -f docker/docker-compose.yml --env-file docker/.env up --build
 ```
 
-İlk çalıştırmada volume daha önce **SEED** olmadan migrate edildiyse SuperAdmin oluşmamış olabilir; bir kez `down -v` ile sıfırlayın veya kullanıcıyı elle ekleyin. Admin: `http://localhost:8080/admin` — `docker/.env.example` içindeki geliştirme e-posta/şifre (girişten sonra şifre değişimi zorunlu).
+İlk çalıştırmada volume daha önce **SEED** olmadan migrate edildiyse SuperAdmin oluşmamış olabilir; bir kez `down -v` ile sıfırlayın veya kullanıcıyı elle ekleyin. Yönetim: `http://localhost:8080/yonetim` — `docker/.env.example` içindeki geliştirme e-posta/şifre (girişten sonra şifre değişimi zorunlu).
 
 `web` konteyneri SQL Server **sağlıklı** olana kadar bekler (`depends_on: service_healthy`). İlk migrate, SQL henüz hazır değilken veya `UOM` veritabanı zaten varken oluşan kısa süreli **SQL 1801** yarışına karşı uygulama tarafında geri denemeli migrate yapar.
 
@@ -116,10 +116,11 @@ docker compose --project-directory docker -f docker/docker-compose.yml --env-fil
 
 **ImageSharp (görsel işleme):** NuGet denetimi açıkken Release derlemesi paket güvenlik uyarılarını hata sayar. Şu an `SixLabors.ImageSharp` **3.1.12** kullanılıyor; güvenlik yamaları **3.2.0+** ile gelir ve doğrudan referans için ücretsiz [Six Labors Community](https://licensing.sixlabors.com) build lisansı gerekir (`UOM.Infrastructure`, `UOM.Application.Tests` assembly adları). İleride `sixlabors.lic` köke eklenip sürüm 3.2.0’a çıkıldığında `Directory.Build.props` içindeki geçici `NuGetAuditSuppress` satırları kaldırılmalıdır.
 
-- Web: http://localhost:8080 — yer tutucu **Merhaba** sayfası
-- Sağlık: http://localhost:8080/health — SQL bağlıysa `sqlserver` kontrolü sağlıklı; bağlantı yoksa *Degraded* (yine **200**)
+- Web: http://localhost:8080
+- Sağlık: konteyner içinden `http://127.0.0.1:8080/health` (loopback). Makineden yayınlanan porta erişirken `X-Health-Key` başlığı gerekir; değer `HEALTH_ACCESS_KEY` / `Health:AccessKey`. SQL bağlıysa `sqlserver` kontrolü sağlıklı; bağlantı yoksa *Degraded* (yine **200**)
 - SQL Server: `localhost:1433` (geliştirme parolası `docker/.env.example` içinde)
-- `Database__AutoMigrate=true` ile web konteyneri açılışta migrate + seed yapar
+- Yüklenen dosyalar `uom-uploads` volume’unda (`/app/wwwroot/uploads`)
+- Yerel Docker profili `Database__AutoMigrate=true` ile açılışta migrate + seed yapar. Production’da bu kapalı kalır; migration için `--migrate` kullanın
 
 ### Docker sorun giderme
 
@@ -196,8 +197,48 @@ Migration (Faz 2): `AddContentApprovalRejectionNotes`
 - [x] Faz 3 — Public çekirdek sayfalar (layout, ana sayfa, haber/etkinlik, iletişim, statik slug, 404/500)
 - [x] Faz 4 — CBÜ katmanı: Hub, rehber/kaynak/duyuru public + admin (`CanWriteCampusContent`), kampüs haritası (Leaflet)
 - [x] Faz 5 — Genel Merkez + teşkilat: alıntı bandı, `/genel-merkez`, `/teskilat`, Leaflet, lite YouTube, admin CRUD (`CanManageParentLayer`)
-- [ ] Faz 6+ — SEO, arama, performans (`ARCHITECTURE.md` Bölüm 13)
+- [x] Faz 6 — SEO, arama, sitemap/RSS, output cache
+- [x] Faz 7 — Güvenlik başlıkları, CSP, rate limit, KVKK saklama işi, veri talebi aracı, `--migrate`, Docker volume
+
+## Yayına hazırlık (Faz 7)
+
+### Güvenlik başlıkları
+
+Her HTML yanıtında `Content-Security-Policy` (nonce’lu `script-src`; `style-src` içinde `unsafe-inline` yalnızca stil öznitelikleri için), `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` ve `X-Frame-Options` vardır. `Strict-Transport-Security` yalnızca production ve HTTPS’te eklenir. Harita betiği `wwwroot/lib/leaflet` altından sunulur (unpkg yok). `/uploads` yalnızca bilinen uzantıları (`webp`, `jpg`, `png`, `gif`, `pdf`, `docx`, `pptx`, `xlsx`, `zip`) ve `nosniff` ile verir.
+
+`/health` yalnızca loopback’ten veya `X-Health-Key` başlığı `Health:AccessKey` ile eşleşirse açılır.
+
+### KVKK
+
+- İletişim kaydının `DeleteAfterUtc` değeri `Kvkk:ContactRetentionDays` (varsayılan 180) ile hesaplanır.
+- Etkinlik ilgi kaydı, etkinlik bitişinden `Kvkk:EventInterestRetentionDaysAfterEvent` gün sonra (bitiş yoksa başlangıç) silinir.
+- `KvkkRetentionHostedService` her gece 03:00 `Europe/Istanbul` saatinde süresi dolan satırları **kalıcı** siler.
+- Yönetim: `/yonetim/kvkk-talepleri` (ProvinceAdmin / SuperAdmin). E-posta ile arar, eşleşen iletişim ve etkinlik ilgi kayıtlarını siler. Denetim kaydına e-posta yazılmaz.
+- Aydınlatma metni yer tutucudur. `// TODO(spec):` — veri sorumlusu unvanı ve metin hukuk biriminden gelene kadar gerçek metin yoktur.
+- `// TODO(spec):` SMTP sağlayıcısı bilinmiyor. `Email:Enabled` false kalır; host uydurulmaz.
+
+### Migration (`--migrate`)
+
+Production’da açılışta migration çalışmaz (`Database:AutoMigrate` false). Ayrı komut migrate eder, mevcut seed’i çalıştırır ve süreçten çıkar:
+
+```bash
+dotnet publish src/UOM.Web/UOM.Web.csproj -c Release -o ./publish
+cd publish
+# ConnectionStrings__Default ortam değişkeni veya ortamın kendi ayarı
+dotnet UOM.Web.dll --migrate
+dotnet UOM.Web.dll
+```
+
+Docker imajında aynı argüman geçerlidir (`ENTRYPOINT` `dotnet UOM.Web.dll`):
+
+```bash
+docker compose --project-directory docker -f docker/docker-compose.yml run --rm -e Database__AutoMigrate=false web --migrate
+```
+
+### IIS
+
+`dotnet publish -c Release` çıktısındaki `web.config` ve uygulama klasörü site kökü olarak yeterlidir. İstekler ASP.NET Core modülünden geçer; güvenlik başlıkları uygulama middleware’indedir.
 
 ## TODO(spec)
 
-Kurumsal kimlik, logo, domain, KVKK metinleri ve içerikler için bkz. [`docs/ISTENECEK-VERILER.md`](docs/ISTENECEK-VERILER.md).
+Kurumsal kimlik, logo, domain, KVKK aydınlatma metni, SMTP sağlayıcısı ve içerikler için bkz. [`docs/ISTENECEK-VERILER.md`](docs/ISTENECEK-VERILER.md). Gerçek yasal metin ve SMTP sunucusu yazılmamıştır.

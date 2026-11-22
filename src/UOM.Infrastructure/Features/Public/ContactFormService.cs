@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using UOM.Application.Abstractions;
 using UOM.Application.Common;
 using UOM.Application.Features.Public;
+using UOM.Application.Privacy;
 using UOM.Application.Features.Public.Models;
 using UOM.Domain.Entities;
 using UOM.Infrastructure.Persistence;
@@ -83,7 +84,7 @@ public sealed class ContactFormService : IContactFormService
             FacultyId = request.IsStudentAtCbu ? request.FacultyId : null,
             KvkkConsentAtUtc = _clock.UtcNow,
             IpHash = _ipHasher.Hash(ipAddress),
-            DeleteAfterUtc = _clock.UtcNow.AddDays(retentionDays),
+            DeleteAfterUtc = KvkkRetentionCalendar.ContactDeleteAfterUtc(_clock.UtcNow, retentionDays),
         };
 
         _db.ContactMessages.Add(entity);

@@ -11,7 +11,8 @@ namespace UOM.Infrastructure.Persistence.Seed;
 
 public sealed class DatabaseSeeder
 {
-    private const string PlaceholderBody = "TODO: İl başkanlığından alınacak";
+    // TODO(spec): KVKK veri sorumlusu unvanı ve aydınlatma metni hukuk biriminden gelecek (ARCHITECTURE.md §15.4). Yasal metin uydurulmadı.
+    private const string PlaceholderBody = "TODO(spec): İl başkanlığından alınacak aydınlatma ve yasal metin.";
 
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
