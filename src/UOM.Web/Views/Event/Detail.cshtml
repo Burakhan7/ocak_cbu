@@ -16,7 +16,7 @@
 @section PageBanner {
     <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.StartsAtUtc.ToLocalDisplay(), Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail"))" />
 }
-<article class="event-detail reading-article">
+<article class="event-detail">
     @if (!string.IsNullOrWhiteSpace(Model.Summary))
     {
         <p class="lead">@Model.Summary</p>

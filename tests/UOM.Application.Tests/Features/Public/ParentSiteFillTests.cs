@@ -1,4 +1,9 @@
+using System.Net;
+using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
 using UOM.Infrastructure.Features.Public;
@@ -43,6 +48,90 @@ public class ParentSiteFillTests
         items[0].ImageUrl.Should().Be("https://ulkuocaklari.org.tr/uploads/blog/20261117124228-kapak.jpg");
         items[0].ExternalUrl.Should().Be("https://ulkuocaklari.org.tr/blog/i/ornek-haber");
         items[0].Summary.Should().NotContain("GIZLI-SON");
+    }
+
+    [Fact]
+    public void Listing_card_image_is_used_when_the_cover_is_an_img()
+    {
+        const string html = """
+            <div class="blogs-item">
+              <a href="/blog/i/turnuva">
+                <img src="https://ulkuocaklari.org.tr/theme/img/preloader.png" data-src="https://ulkuocaklari.org.tr/uploads/blog/kapak.jpg" alt="">
+              </a>
+              <h5>İL TURNUVASI</h5>
+            </div>
+            """;
+
+        var items = ParentSiteListingParser.ParseListingHtml(html, "https://ulkuocaklari.org.tr/blog");
+
+        items.Should().ContainSingle();
+        items[0].Kind.Should().Be(ParentSiteItemKind.Event);
+        items[0].ImageUrl.Should().Be("https://ulkuocaklari.org.tr/uploads/blog/kapak.jpg");
+        var hero = HomeSlotComposer.Hero(null, items);
+        hero!.ImageUrl.Should().Be("https://ulkuocaklari.org.tr/uploads/blog/kapak.jpg");
+        hero.ExternalUrl.Should().Be("https://ulkuocaklari.org.tr/blog/i/turnuva");
+    }
+
+    [Fact]
+    public void Detail_og_image_is_absolute_https_and_preloader_is_ignored()
+    {
+        const string html = """
+            <html><head>
+              <meta content="https://ulkuocaklari.org.tr/uploads/blog/kapak.jpg" property="og:image" />
+            </head></html>
+            """;
+
+        ParentSiteListingParser.ParseDetailImage(html, "https://ulkuocaklari.org.tr/blog/i/turnuva")
+            .Should().Be("https://ulkuocaklari.org.tr/uploads/blog/kapak.jpg");
+
+        const string relative = """
+            <meta property="og:image" content="/uploads/blog/goreli.jpg" />
+            """;
+        ParentSiteListingParser.ParseDetailImage(relative, "https://ulkuocaklari.org.tr/blog/i/turnuva")
+            .Should().Be("https://ulkuocaklari.org.tr/uploads/blog/goreli.jpg");
+
+        const string preloader = """
+            <meta property="og:image" content="https://ulkuocaklari.org.tr/theme/img/preloader.png" />
+            """;
+        ParentSiteListingParser.ParseDetailImage(preloader, "https://ulkuocaklari.org.tr/blog/i/turnuva")
+            .Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Feed_reads_og_image_only_when_the_listing_card_has_no_image()
+    {
+        var handler = new ParentPageHandler();
+        handler.Pages["https://ulkuocaklari.org.tr/blog"] = """
+            <div class="blogs-item">
+              <a href="https://ulkuocaklari.org.tr/blog/i/turnuva"></a>
+              <h5>İL TURNUVASI</h5>
+              <div class="blogs-desc">Final</div>
+            </div>
+            <div class="blogs-item">
+              <a href="https://ulkuocaklari.org.tr/blog/i/haber">
+                <div class="blogs-img" data-background-image="https://ulkuocaklari.org.tr/uploads/blog/haber.jpg"></div>
+              </a>
+              <h5>Yeni atama</h5>
+            </div>
+            """;
+        handler.Pages["https://ulkuocaklari.org.tr/blog/i/turnuva"] = """
+            <meta property="og:image" content="https://ulkuocaklari.org.tr/uploads/blog/turnuva.jpg" />
+            """;
+
+        var feed = new ParentSiteFeed(
+            new ParentClientFactory(handler),
+            new MemoryCache(new MemoryCacheOptions()),
+            Options.Create(new ParentSiteOptions { Enabled = true, Origins = ["https://ulkuocaklari.org.tr"] }),
+            NullLogger<ParentSiteFeed>.Instance);
+
+        var snapshot = await feed.GetAsync();
+
+        snapshot.Items.Should().HaveCount(2);
+        snapshot.Items[0].ImageUrl.Should().Be("https://ulkuocaklari.org.tr/uploads/blog/turnuva.jpg");
+        snapshot.Items[1].ImageUrl.Should().Be("https://ulkuocaklari.org.tr/uploads/blog/haber.jpg");
+        handler.Requests.Should().Contain("https://ulkuocaklari.org.tr/blog/i/turnuva");
+        handler.Requests.Should().NotContain("https://ulkuocaklari.org.tr/blog/i/haber");
+        handler.Requests.Should().NotContain(url => url.Contains(".jpg", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -187,6 +276,34 @@ public class ParentSiteFillTests
 
     private static ParentSiteItem Item(string title, string url, ParentSiteItemKind kind = ParentSiteItemKind.News) =>
         new(title, "özet", null, url, new DateOnly(2026, 11, 17), kind);
+
+    private sealed class ParentClientFactory(HttpMessageHandler handler) : IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name) => new(handler, disposeHandler: false);
+    }
+
+    private sealed class ParentPageHandler : HttpMessageHandler
+    {
+        public Dictionary<string, string> Pages { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+        public List<string> Requests { get; } = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var url = request.RequestUri!.GetLeftPart(UriPartial.Path).TrimEnd('/');
+            Requests.Add(url);
+            if (!Pages.TryGetValue(url, out var body))
+            {
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound) { RequestMessage = request });
+            }
+
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new StringContent(body, Encoding.UTF8, "text/html"),
+            });
+        }
+    }
 
     private static HomeFeedCardDto Card(string title, string path) =>
         new(title, null, null, title, null, path, null, null);

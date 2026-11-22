@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
 using UOM.Application.Features.Public;
@@ -29,7 +30,7 @@ public static partial class ParentSiteListingParser
                 var href = FirstBlogHref(chunk) ?? FirstHref(chunk);
                 var title = InnerText(H5Pattern().Match(chunk));
                 var summary = InnerText(DescPattern().Match(chunk));
-                var image = Attribute(ImagePattern().Match(chunk));
+                var image = FirstContentImage(chunk);
                 var item = Build(title, href, summary, image, ParentSiteText.DateFromImageUrl(image), origin);
                 if (item is null)
                 {
@@ -220,6 +221,37 @@ public static partial class ParentSiteListingParser
         }
     }
 
+    public static string? ParseDetailImage(string? html, string pageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+        {
+            return null;
+        }
+
+        try
+        {
+            var origin = OriginOf(pageUrl);
+            var raw = Attribute(OgImagePattern().Match(html)) ?? Attribute(OgImageContentFirstPattern().Match(html));
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return null;
+            }
+
+            var decoded = WebUtility.HtmlDecode(raw.Trim());
+            if (IsDecorative(decoded))
+            {
+                return null;
+            }
+
+            var absolute = Absolute(decoded, origin) ?? decoded;
+            return ParentSiteText.SafeImageUrl(absolute);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return null;
+        }
+    }
+
     private static ParentSiteItem? Build(
         string? title,
         string? href,
@@ -247,6 +279,11 @@ public static partial class ParentSiteListingParser
 
         var summary = ParentSiteText.Summarize(summaryRaw);
         var image = Absolute(imageRaw, origin) ?? imageRaw?.Trim();
+        if (image is not null && IsDecorative(image))
+        {
+            image = null;
+        }
+
         var kind = ParentSiteText.IsEvent(cleanTitle, summary)
             ? ParentSiteItemKind.Event
             : ParentSiteItemKind.News;
@@ -333,6 +370,36 @@ public static partial class ParentSiteListingParser
         }
     }
 
+    private static string? FirstContentImage(string chunk)
+    {
+        var background = Attribute(ImagePattern().Match(chunk));
+        if (!string.IsNullOrWhiteSpace(background) && !IsDecorative(background))
+        {
+            return background;
+        }
+
+        foreach (Match match in ImgSrcPattern().Matches(chunk))
+        {
+            var src = match.Groups[1].Value.Trim();
+            if (!IsDecorative(src))
+            {
+                return src;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsDecorative(string url)
+    {
+        var lower = url.ToLowerInvariant();
+        return lower.Contains("/theme/", StringComparison.Ordinal)
+            || lower.Contains("preloader", StringComparison.Ordinal)
+            || lower.Contains("logo", StringComparison.Ordinal)
+            || lower.Contains("data:image", StringComparison.Ordinal)
+            || lower.EndsWith(".svg", StringComparison.Ordinal);
+    }
+
     private static string? InnerText(Match match) =>
         match.Success ? match.Groups[1].Value : null;
 
@@ -367,6 +434,15 @@ public static partial class ParentSiteListingParser
 
     [GeneratedRegex("data-background-image\\s*=\\s*[\"']([^\"']+)[\"']", RegexOptions.IgnoreCase, 1000)]
     private static partial Regex ImagePattern();
+
+    [GeneratedRegex("\\b(?:data-src|src)\\s*=\\s*[\"']([^\"']+)[\"']", RegexOptions.IgnoreCase, 1000)]
+    private static partial Regex ImgSrcPattern();
+
+    [GeneratedRegex("<meta\\b[^>]*\\bproperty\\s*=\\s*[\"']og:image[\"'][^>]*\\bcontent\\s*=\\s*[\"']([^\"']+)[\"']", RegexOptions.IgnoreCase, 1000)]
+    private static partial Regex OgImagePattern();
+
+    [GeneratedRegex("<meta\\b[^>]*\\bcontent\\s*=\\s*[\"']([^\"']+)[\"'][^>]*\\bproperty\\s*=\\s*[\"']og:image[\"']", RegexOptions.IgnoreCase, 1000)]
+    private static partial Regex OgImageContentFirstPattern();
 
     [GeneratedRegex("href\\s*=\\s*[\"']([^\"']+)[\"']", RegexOptions.IgnoreCase, 1000)]
     private static partial Regex HrefPattern();

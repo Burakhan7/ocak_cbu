@@ -16,7 +16,7 @@
 @section PageBanner {
     <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.Summary, Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail page-banner--cbu"))" />
 }
-<article class="reading-article">
+<article>
     <p><a asp-action="Index">← Rehber listesi</a></p>
     <p class="text-muted small mb-3">
         <span class="badge text-bg-light">@Model.Category</span>

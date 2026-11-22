@@ -17,48 +17,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1020;
-  /* Sayfa zemini beyaz olduğu için beyaz cam blur göstermez. Lacivert cam hem dururken hem içerik altından kayarken okunur. */
-  background-color: rgba(13, 27, 51, 0.72);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  backdrop-filter: blur(16px) saturate(1.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .site-header {
-    background-color: #0d1b33;
-  }
-}
-
-.site-header .public-nav a,
-.site-header .navbar-brand,
-.site-header .btn-link {
-  --bs-btn-color: #fff;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-active-color: #fff;
-  color: #fff;
-}
-
-.site-header .public-nav a:hover,
-.site-header .public-nav a:focus-visible,
-.site-header .btn-link:hover,
-.site-header .btn-link:focus-visible {
-  color: #fff;
-}
-
-.site-header .public-nav a:hover,
-.site-header .public-nav a:focus-visible {
-  border-bottom-color: var(--color-brand-accent);
-}
-
-.site-header .site-brand-title {
-  background: none;
-  color: #fff;
-  -webkit-text-fill-color: #fff;
+  background-color: var(--color-bg);
+  border-color: var(--color-border) !important;
+  border-bottom: 3px solid var(--color-brand-accent);
 }
 
 .site-brand-title {
@@ -265,15 +226,12 @@ body.public-site {
   border-color: var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-a.card:hover,
-.card:has(a.stretched-link):hover,
-.site-main .card:hover {
+a.card:hover {
   border-color: var(--color-brand-secondary);
-  box-shadow: 0 8px 18px rgba(13, 27, 51, 0.12);
-  transform: translateY(-4px);
+  box-shadow: 0 4px 14px rgba(13, 27, 51, 0.12);
 }
 
 a.card:hover .card-body strong {
@@ -505,51 +463,5 @@ a.card:hover .card-body strong {
   .cbu-home__aside > .card {
     flex: 1 1 auto;
     justify-content: center;
-  }
-}
-
-.reading-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  z-index: 1040;
-  display: none;
-  pointer-events: none;
-  background: transparent;
-}
-
-.reading-progress.is-active {
-  display: block;
-}
-
-.reading-progress__bar {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: var(--color-brand-accent);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .reading-progress__bar {
-    transition: width 0.08s linear;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  a.card:hover,
-  .card:has(a.stretched-link):hover,
-  .site-main .card:hover {
-    transform: none;
   }
 }
