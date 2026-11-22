@@ -20,6 +20,8 @@ public class GoogleMapsAndParentFillTests
         await SeedDistrictAsync(missingKey.Services);
         var withoutKey = await missingKey.CreateClient().GetStringAsync("/teskilat");
         withoutKey.Should().Contain("Google Haritalar anahtarı tanımlı değil. Harita gösterilemiyor.");
+        withoutKey.Should().Contain("alert-warning");
+        withoutKey.Should().NotContain("data-uom-map");
         withoutKey.Should().NotContain("leaflet");
         withoutKey.Should().NotContain("maps/api/js");
 
@@ -38,6 +40,8 @@ public class GoogleMapsAndParentFillTests
         loader.Should().Contain("maps.googleapis.com/maps/api/js");
         loader.Should().Contain("loading=async");
         loader.Should().Contain("v=weekly");
+        loader.Should().Contain("38.6191");
+        loader.Should().Contain("27.4289");
         loader.Should().NotContain("eval(");
     }
 
