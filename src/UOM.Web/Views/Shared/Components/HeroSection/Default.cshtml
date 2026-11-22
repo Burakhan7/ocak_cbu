@@ -1,60 +1,10 @@
-@model UOM.Application.Features.Public.Models.HomeFeedCardDto?
-<section class="home-hero py-5">
-    <div class="row align-items-center g-4">
-        <div class="col-md-7">
-            <p class="text-uppercase small fw-semibold text-muted mb-1">Manisa İl Başkanlığı</p>
-            <h1 class="display-6">Ülkü Ocakları Manisa ile tanış</h1>
-            <p class="lead text-muted">CBÜ öğrencileri için etkinlikler, haberler ve iletişim tek çatı altında.</p>
-        </div>
-        <div class="col-md-5">
-            @if (Model is null)
-            {
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="mb-0 text-muted">Yaklaşan etkinlik yakında burada.</p>
-                    </div>
-                </div>
-            }
-            else if (!string.IsNullOrWhiteSpace(Model.ExternalUrl))
-            {
-                var parentCover = Model.ImageUrl;
-                var hasParentCover = !string.IsNullOrWhiteSpace(parentCover)
-                    && parentCover.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
-                <article class="card shadow-sm overflow-hidden home-hero-event">
-                    @if (hasParentCover)
-                    {
-                        <img src="@parentCover" alt="@(Model.ImageAlt ?? Model.Title)" class="media-cover" decoding="async" />
-                    }
-                    else
-                    {
-                        <div class="card-cover__placeholder" role="img" aria-label="@((Model.ImageAlt ?? Model.Title) + " — görsel yok")"></div>
-                    }
-                    <div class="card-body">
-                        <p class="small text-muted mb-1">Genel Merkez</p>
-                        <h2 class="h5"><a href="@Model.ExternalUrl" rel="noopener noreferrer" target="_blank">@Model.Title</a></h2>
-                        @if (!string.IsNullOrWhiteSpace(Model.WhenText))
-                        {
-                            <p class="small mb-3">@Model.WhenText</p>
-                        }
-                        <a class="btn btn-primary btn-sm" href="@Model.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku</a>
-                    </div>
-                </article>
-            }
-            else
-            {
-                <article class="card shadow-sm overflow-hidden home-hero-event">
-                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-                    {
-                        <img src="@Model.ImageUrl" alt="@(Model.ImageAlt ?? Model.Title)" class="media-cover" decoding="async" />
-                    }
-                    <div class="card-body">
-                        <p class="small text-muted mb-1">Yaklaşan etkinlik</p>
-                        <h2 class="h5"><a href="@Model.LocalPath">@Model.Title</a></h2>
-                        <p class="small mb-3">@Model.WhenText</p>
-                        <a class="btn btn-primary btn-sm" href="@Model.LocalPath">Etkinliğe katıl</a>
-                    </div>
-                </article>
-            }
-        </div>
-    </div>
+<section class="home-hero">
+    <h1 class="visually-hidden">Ülkü Ocakları Manisa</h1>
+    <img class="home-hero__photo"
+         src="@Url.Content("~/images/hero-ataturk.jpg")"
+         alt="Atatürk, beraberindekilerle yürürken."
+         width="2688"
+         height="1592"
+         decoding="async"
+         fetchpriority="high" />
 </section>

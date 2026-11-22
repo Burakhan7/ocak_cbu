@@ -1,35 +1,86 @@
 @using UOM.Application.Features.Public
 @model IReadOnlyList<string>
-@foreach (var section in Model)
-{
-    switch (section)
+@{
+    string BandFor(string section) => section switch
     {
-        case HomeSectionIds.Hero:
-            @await Component.InvokeAsync("HeroSection");
-            break;
-        case HomeSectionIds.QuoteBand:
-            @await Component.InvokeAsync("QuoteBand")
-            break;
-        case HomeSectionIds.CbuQuickLinks:
-            @await Component.InvokeAsync("CbuHubHome")
-            break;
-        case HomeSectionIds.UpcomingEvents:
-            @await Component.InvokeAsync("UpcomingEventsSection");
-            break;
-        case HomeSectionIds.News:
-            @await Component.InvokeAsync("NewsHomeSection");
-            break;
-        case HomeSectionIds.ParentNews:
-            @await Component.InvokeAsync("ParentNewsStrip")
-            break;
-        case HomeSectionIds.Projects:
-            @await Component.InvokeAsync("ParentProjectsSection")
-            break;
-        case HomeSectionIds.MagazineVideo:
-            @await Component.InvokeAsync("MagazineVideoSection")
-            break;
-        case HomeSectionIds.VisitUs:
-            @await Component.InvokeAsync("VisitUsSection");
-            break;
+        HomeSectionIds.Hero => "hero",
+        HomeSectionIds.QuoteBand or HomeSectionIds.CbuQuickLinks => "ink",
+        HomeSectionIds.UpcomingEvents => "events",
+        HomeSectionIds.News or HomeSectionIds.ParentNews => "news",
+        HomeSectionIds.Projects or HomeSectionIds.MagazineVideo => "projects",
+        HomeSectionIds.VisitUs => "footer",
+        _ => "paper",
+    };
+
+    var groups = new List<(string Band, List<string> Sections)>();
+    foreach (var section in Model)
+    {
+        var band = BandFor(section);
+        if (groups.Count == 0 || groups[^1].Band != band)
+        {
+            groups.Add((band, new List<string>()));
+        }
+
+        groups[^1].Sections.Add(section);
     }
+
+    async Task RenderHomeSection(string section)
+    {
+        switch (section)
+        {
+            case HomeSectionIds.Hero:
+                Write(await Component.InvokeAsync("HeroSection"));
+                break;
+            case HomeSectionIds.QuoteBand:
+                Write(await Component.InvokeAsync("QuoteBand"));
+                break;
+            case HomeSectionIds.CbuQuickLinks:
+                Write(await Component.InvokeAsync("CbuHubHome"));
+                break;
+            case HomeSectionIds.UpcomingEvents:
+                Write(await Component.InvokeAsync("UpcomingEventsSection"));
+                break;
+            case HomeSectionIds.News:
+                Write(await Component.InvokeAsync("NewsHomeSection"));
+                break;
+            case HomeSectionIds.ParentNews:
+                Write(await Component.InvokeAsync("ParentNewsStrip"));
+                break;
+            case HomeSectionIds.Projects:
+                Write(await Component.InvokeAsync("ParentProjectsSection"));
+                break;
+            case HomeSectionIds.MagazineVideo:
+                Write(await Component.InvokeAsync("MagazineVideoSection"));
+                break;
+            case HomeSectionIds.VisitUs:
+                Write(await Component.InvokeAsync("VisitUsSection"));
+                break;
+        }
+    }
+}
+
+@for (var i = 0; i < groups.Count; i++)
+{
+    var group = groups[i];
+    var overlap = i > 0 && groups[i - 1].Band == "hero";
+    var bandClass = "home-band home-band--" + group.Band + (overlap ? " home-band--overlap" : "");
+
+    <div class="@bandClass">
+        @if (group.Band == "hero")
+        {
+            foreach (var section in group.Sections)
+            {
+                await RenderHomeSection(section);
+            }
+        }
+        else
+        {
+            <div class="container home-band__inner" style="max-width: var(--container-max);">
+                @foreach (var section in group.Sections)
+                {
+                    await RenderHomeSection(section);
+                }
+            </div>
+        }
+    </div>
 }
