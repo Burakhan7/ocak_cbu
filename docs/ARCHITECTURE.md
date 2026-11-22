@@ -560,7 +560,7 @@ Her içerik tipi için: liste (arama, durum filtresi, sayfalama), oluştur/düze
 
 ### 11.6 Güvenlik header'ları
 Middleware ile:
-- `Content-Security-Policy` (nonce tabanlı. İzinli kaynaklar: self, youtube-nocookie.com, maps.googleapis.com, maps.gstatic.com, challenges.cloudflare.com. `unsafe-eval` yok.)
+- `Content-Security-Policy` (nonce tabanlı. İzinli kaynaklar: self, youtube-nocookie.com, maps.googleapis.com, maps.gstatic.com, harita karoları için `*.google.com` ve `*.googleusercontent.com`, challenges.cloudflare.com. `unsafe-eval` yok.)
 - `Strict-Transport-Security` (production)
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`

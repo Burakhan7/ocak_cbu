@@ -166,6 +166,9 @@ public class Faz7SecurityTests
         scriptSrc.Should().Contain("https://challenges.cloudflare.com");
         scriptSrc.Should().Contain("https://maps.googleapis.com");
         scriptSrc.Should().Contain("https://maps.gstatic.com");
+        csp.Should().Contain("img-src");
+        csp.Should().Contain("https://*.google.com");
+        csp.Should().Contain("https://*.googleusercontent.com");
         csp.Should().Contain("https://www.youtube-nocookie.com");
         csp.Should().NotContain("openstreetmap");
 
