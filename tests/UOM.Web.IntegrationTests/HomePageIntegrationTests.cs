@@ -55,15 +55,18 @@ public class HomePageIntegrationTests
         html.Should().Contain("/etkinlikler/kapakli-etkinlik");
         html.Should().NotContain("görsel yok");
 
-        var introAt = html.IndexOf("Ülkü Ocakları Manisa ile tanış", StringComparison.Ordinal);
-        var heroImageAt = html.IndexOf("src=\"/uploads/images/events/kapak-large.webp\"", StringComparison.Ordinal);
-        var heroLabelAt = html.IndexOf("Yaklaşan etkinlik", StringComparison.Ordinal);
+        var heroAt = html.IndexOf("/images/hero-ataturk.jpg", StringComparison.Ordinal);
         var cbuAt = html.IndexOf("müsün?", StringComparison.Ordinal);
-        introAt.Should().BeGreaterThanOrEqualTo(0);
-        heroImageAt.Should().BeGreaterThan(introAt);
-        heroLabelAt.Should().BeGreaterThan(introAt);
-        cbuAt.Should().BeGreaterThan(heroImageAt);
-        cbuAt.Should().BeGreaterThan(heroLabelAt);
+        heroAt.Should().BeGreaterThanOrEqualTo(0);
+        html.Should().Contain("Atatürk, beraberindekilerle yürürken.");
+        cbuAt.Should().BeGreaterThan(heroAt);
+        eventsAt.Should().BeGreaterThan(cbuAt);
+        html.Should().NotContain("Ülkü Ocakları Manisa ile tanış");
+        html.Should().NotContain("home-hero-event");
+        html.Should().NotContain("Yaklaşan etkinlik yakında burada.");
+        html.Should().NotContain("/uploads/images/events/kapak-large.webp");
+        html.Should().Contain("cbu-home__row");
+        html.Should().Contain("cbu-home__aside");
         html.Should().Contain("cbu-home__cover--placeholder");
         html.Should().Contain("/cbu/rehber");
         html.Should().Contain("/cbu/kaynaklar");

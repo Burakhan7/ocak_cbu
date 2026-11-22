@@ -145,7 +145,7 @@ public class GoogleMapsAndParentFillTests
     }
 
     [Fact]
-    public async Task Parent_hero_hotlinks_https_cover_and_keeps_placeholder_without_one()
+    public async Task Homepage_hero_is_local_photo_and_parent_cover_stays_in_the_events_list()
     {
         const string cover = "https://ulkuocaklari.org.tr/uploads/blog/turnuva.jpg";
         using var withCover = CreateFactory(Guid.NewGuid().ToString(), feed: new StubParentSiteFeed(
@@ -154,11 +154,16 @@ public class GoogleMapsAndParentFillTests
         ]));
         await SeedEmptySiteAsync(withCover.Services);
         var covered = await withCover.CreateClient().GetStringAsync("/");
-        var coveredHero = HeroHtml(covered);
-        coveredHero.Should().Contain("src=\"" + cover + "\"");
-        coveredHero.Should().Contain("media-cover");
-        coveredHero.Should().NotContain("card-cover__placeholder");
-        coveredHero.Should().NotContain("src=\"/uploads/");
+        var hero = HeroHtml(covered);
+        hero.Should().Contain("src=\"/images/hero-ataturk.jpg\"");
+        hero.Should().Contain("Atatürk, beraberindekilerle yürürken.");
+        hero.Should().NotContain(cover);
+        hero.Should().NotContain("home-hero-event");
+        hero.Should().NotContain("src=\"/uploads/");
+
+        var eventsAt = covered.IndexOf("Yaklaşan etkinlikler", StringComparison.Ordinal);
+        eventsAt.Should().BeGreaterThan(hero.Length);
+        covered.IndexOf(cover, eventsAt, StringComparison.Ordinal).Should().BeGreaterThan(eventsAt);
 
         using var withoutCover = CreateFactory(Guid.NewGuid().ToString(), feed: new StubParentSiteFeed(
         [
@@ -167,19 +172,22 @@ public class GoogleMapsAndParentFillTests
         await SeedEmptySiteAsync(withoutCover.Services);
         var plain = await withoutCover.CreateClient().GetStringAsync("/");
         var plainHero = HeroHtml(plain);
-        plainHero.Should().Contain("card-cover__placeholder");
-        plainHero.Should().Contain("g&#xF6;rsel yok");
-        plainHero.Should().NotContain("<img");
+        plainHero.Should().Contain("src=\"/images/hero-ataturk.jpg\"");
+        plainHero.Should().NotContain("card-cover__placeholder");
+        plainHero.Should().NotContain(cover);
+        var plainEvents = plain.IndexOf("Yaklaşan etkinlikler", StringComparison.Ordinal);
+        plainEvents.Should().BeGreaterThan(plainHero.Length);
+        plain.IndexOf("görsel yok", plainEvents, StringComparison.Ordinal).Should().BeGreaterThan(plainEvents);
         plain.Should().NotContain("/uploads/");
     }
 
     private static string HeroHtml(string home)
     {
-        var intro = home.IndexOf("Ülkü Ocakları Manisa ile tanış", StringComparison.Ordinal);
-        var hub = home.IndexOf("müsün?", intro, StringComparison.Ordinal);
-        intro.Should().BeGreaterThanOrEqualTo(0);
-        hub.Should().BeGreaterThan(intro);
-        return home[intro..hub];
+        var photo = home.IndexOf("/images/hero-ataturk.jpg", StringComparison.Ordinal);
+        var hub = home.IndexOf("müsün?", StringComparison.Ordinal);
+        photo.Should().BeGreaterThanOrEqualTo(0);
+        hub.Should().BeGreaterThan(photo);
+        return home[..hub];
     }
 
     private static async Task SeedEmptySiteAsync(IServiceProvider services)

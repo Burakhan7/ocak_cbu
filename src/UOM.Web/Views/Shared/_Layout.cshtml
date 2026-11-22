@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/UOM.Web.styles.css" asp-append-version="true" />
 </head>
-<body class="public-site">
+<body class="public-site @ViewData["BodyClass"]">
 @await Component.InvokeAsync("PublicLayout")
     <header class="site-header border-bottom">
         <div class="container d-flex align-items-center justify-content-between py-2" style="max-width: var(--container-max);">
@@ -46,11 +46,18 @@
         </div>
     </header>
 
-    <main class="site-main pb-5">
+    <main class="site-main@(ViewData["FullBleed"] as bool? == true ? " site-main--bleed" : " pb-5")">
         @await RenderSectionAsync("PageBanner", required: false)
-        <div class="site-main__content container" style="max-width: var(--container-max);">
+        @if (ViewData["FullBleed"] as bool? == true)
+        {
             @RenderBody()
-        </div>
+        }
+        else
+        {
+            <div class="site-main__content container" style="max-width: var(--container-max);">
+                @RenderBody()
+            </div>
+        }
     </main>
 
     <footer class="site-footer border-top mt-auto">
