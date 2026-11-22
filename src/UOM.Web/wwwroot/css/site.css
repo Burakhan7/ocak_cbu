@@ -20,10 +20,45 @@ h1, h2, h3, h4, h5, h6 {
   position: sticky;
   top: 0;
   z-index: 1020;
-  background-color: rgba(255, 255, 255, 0.78);
-  -webkit-backdrop-filter: saturate(1.4) blur(16px);
-  backdrop-filter: saturate(1.4) blur(16px);
-  border-bottom: 3px solid var(--color-brand-accent);
+  /* Sayfa zemini beyaz olduğu için beyaz cam blur göstermez. Lacivert cam hem dururken hem içerik altından kayarken okunur. */
+  background-color: rgba(13, 27, 51, 0.72);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header {
+    background-color: #0d1b33;
+  }
+}
+
+.site-header .public-nav a,
+.site-header .navbar-brand,
+.site-header .btn-link {
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  color: #fff;
+}
+
+.site-header .public-nav a:hover,
+.site-header .public-nav a:focus-visible,
+.site-header .btn-link:hover,
+.site-header .btn-link:focus-visible {
+  color: #fff;
+}
+
+.site-header .public-nav a:hover,
+.site-header .public-nav a:focus-visible {
+  border-bottom-color: var(--color-brand-accent);
+}
+
+.site-header .site-brand-title {
+  background: none;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
 }
 
 .site-brand-title {
@@ -411,6 +446,66 @@ a.card:hover .card-body strong {
     var(--color-brand-secondary) 58%,
     var(--color-brand-accent) 100%
   );
+}
+
+.cbu-home__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.cbu-home__lead {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  color: inherit;
+}
+
+.cbu-home__lead .card-body {
+  flex: 0 0 auto;
+}
+
+.cbu-home__media {
+  position: relative;
+  flex: 0 0 auto;
+  height: 9rem;
+  overflow: hidden;
+}
+
+.cbu-home__media .media-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+}
+
+.cbu-home__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+@media (min-width: 992px) {
+  .cbu-home__row {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .cbu-home__media {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 7.5rem;
+  }
+
+  .cbu-home__aside > .card {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
 }
 
 .reading-progress {
