@@ -4,7 +4,9 @@
 <form method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="LogoImageId" />
+    <input type="hidden" asp-for="CbuHubCoverImageId" />
     <partial name="_AdminLogoImageField" />
+    <partial name="_AdminCbuHubCoverField" />
     <div class="row g-3">
         <div class="col-md-6"><label asp-for="SiteName" class="form-label">Site adı</label><input asp-for="SiteName" class="form-control" /></div>
         <div class="col-md-6"><label asp-for="Tagline" class="form-label">Slogan</label><input asp-for="Tagline" class="form-control" /></div>

@@ -1,0 +1,49 @@
+@model UOM.Application.Features.Public.Models.SiteSettingsDto
+<section class="home-section cbu-home py-4" aria-labelledby="cbu-home-title">
+    <div class="row g-3 align-items-stretch">
+        <div class="col-12 col-lg-7">
+            <a class="card h-100 text-decoration-none content-card cbu-home__lead" asp-controller="Campus" asp-action="Index">
+                @if (!string.IsNullOrWhiteSpace(Model.CbuHubCoverUrl))
+                {
+                    <img src="@Model.CbuHubCoverUrl" alt="" class="media-cover" loading="lazy" decoding="async" />
+                }
+                else
+                {
+                    <div class="media-cover cbu-home__cover--placeholder" role="img" aria-label="CBÜ Hub"></div>
+                }
+                <div class="card-body">
+                    <h2 id="cbu-home-title" class="h4 mb-2">CBÜ’lü müsün?</h2>
+                    <p class="mb-0 text-muted">Rehber, duyuru ve kaynaklar için CBÜ Hub’a gir.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="row g-3">
+                <div class="col-12">
+                    <a class="card text-decoration-none content-card" asp-controller="Guide" asp-action="Index">
+                        <div class="card-body">
+                            <strong>Öğrenci rehberi</strong>
+                            <p class="small text-muted mb-0">Kampüse yeni geldiysen kısa notlar burada.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-12">
+                    <a class="card text-decoration-none content-card" asp-controller="Announcement" asp-action="Index">
+                        <div class="card-body">
+                            <strong>Duyurular</strong>
+                            <p class="small text-muted mb-0">Burs, staj ve sınav duyuruları.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-12">
+                    <a class="card text-decoration-none content-card" asp-controller="Resource" asp-action="Index">
+                        <div class="card-body">
+                            <strong>Kaynak arşivi</strong>
+                            <p class="small text-muted mb-0">Fakültene göre belge ve notlar.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

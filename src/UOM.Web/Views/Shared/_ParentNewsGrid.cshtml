@@ -1,0 +1,26 @@
+@model IReadOnlyList<ParentNewsCardDto>
+<div class="row g-3 parent-news-grid">
+    @foreach (var item in Model)
+    {
+        <div class="col-12 col-lg-6">
+            <article class="card h-100 content-card parent-news-card">
+                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                {
+                    <img src="@item.ImageUrl" alt="" class="media-cover" loading="lazy" decoding="async" />
+                }
+                <div class="card-body">
+                    <h3 class="h6">@item.Title</h3>
+                    @if (item.PublishedDate.Year >= 2000)
+                    {
+                        <p class="small text-muted mb-2">@item.PublishedDate.ToString("d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(item.Summary))
+                    {
+                        <p class="small text-muted mb-2">@item.Summary</p>
+                    }
+                    <a class="small stretched-link" href="@item.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku ↗</a>
+                </div>
+            </article>
+        </div>
+    }
+</div>

@@ -29,9 +29,14 @@ public sealed class SiteSettingsProvider : ISiteSettingsProvider
         var row = await _db.SiteSettings
             .AsNoTracking()
             .Include(s => s.LogoImage)
+            .Include(s => s.CbuHubCoverImage)
             .OrderBy(s => s.Id)
             .FirstOrDefaultAsync(cancellationToken);
         var logoUrl = MediaUrlHelper.ResolveUrl(row?.LogoImage?.StoragePath, row?.LogoImage?.Variants, "thumb");
+        var cbuHubCoverUrl = MediaUrlHelper.ResolveUrl(
+            row?.CbuHubCoverImage?.StoragePath,
+            row?.CbuHubCoverImage?.Variants,
+            "medium");
         var dto = new SiteSettingsDto(
             row?.SiteName ?? "Ülkü Ocakları Manisa",
             row?.Tagline,
@@ -44,7 +49,8 @@ public sealed class SiteSettingsProvider : ISiteSettingsProvider
             row?.MapLng,
             row?.TurnstileEnabled == true,
             logoUrl,
-            row?.SocialLinks);
+            row?.SocialLinks,
+            cbuHubCoverUrl);
 
         _cache.Set(CacheKey, dto, TimeSpan.FromMinutes(5));
         return dto;

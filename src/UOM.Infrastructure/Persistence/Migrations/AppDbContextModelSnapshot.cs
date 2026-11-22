@@ -1687,6 +1687,9 @@ namespace UOM.Infrastructure.Persistence.Migrations
                     b.Property<bool>("AnalyticsEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("CbuHubCoverImageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -1756,6 +1759,8 @@ namespace UOM.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CbuHubCoverImageId");
 
                     b.HasIndex("LogoImageId");
 
@@ -2286,10 +2291,17 @@ namespace UOM.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("UOM.Domain.Entities.SiteSettings", b =>
                 {
+                    b.HasOne("UOM.Domain.Entities.MediaFile", "CbuHubCoverImage")
+                        .WithMany()
+                        .HasForeignKey("CbuHubCoverImageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("UOM.Domain.Entities.MediaFile", "LogoImage")
                         .WithMany()
                         .HasForeignKey("LogoImageId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CbuHubCoverImage");
 
                     b.Navigation("LogoImage");
                 });

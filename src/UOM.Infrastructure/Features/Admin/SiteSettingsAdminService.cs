@@ -46,6 +46,7 @@ public sealed class SiteSettingsAdminService(AppDbContext db, IAuditLogger audit
         existing.AnalyticsEnabled = model.AnalyticsEnabled;
         existing.TurnstileEnabled = model.TurnstileEnabled;
         existing.LogoImageId = model.LogoImageId;
+        existing.CbuHubCoverImageId = model.CbuHubCoverImageId;
 
         await db.SaveChangesAsync(cancellationToken);
         cache.Remove(SiteSettingsProvider.CacheKey);

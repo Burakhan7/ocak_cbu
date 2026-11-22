@@ -19,6 +19,7 @@ public sealed class SiteSettingsController(SiteSettingsAdminService settingsServ
     {
         var settings = await settingsService.GetSingleAsync(cancellationToken);
         await AdminMediaFormBinding.SetLogoImagePreviewAsync(mediaAdmin, ViewData, settings.LogoImageId, cancellationToken);
+        await AdminMediaFormBinding.SetCbuHubCoverPreviewAsync(mediaAdmin, ViewData, settings.CbuHubCoverImageId, cancellationToken);
         return View(settings);
     }
 
@@ -29,20 +30,35 @@ public sealed class SiteSettingsController(SiteSettingsAdminService settingsServ
         IFormFile? logoImageUpload,
         string? logoImageAlt,
         bool removeLogoImage,
+        IFormFile? cbuHubCoverUpload,
+        string? cbuHubCoverAlt,
+        bool removeCbuHubCover,
         CancellationToken cancellationToken)
     {
-        if (!await AdminMediaFormBinding.TryBindLogoImageAsync(
-                mediaAdmin,
-                ModelState,
-                model.LogoImageId,
-                removeLogoImage,
-                logoImageUpload,
-                logoImageAlt,
-                $"Logo: {model.SiteName ?? "Ülkü Ocakları Manisa"}",
-                id => model.LogoImageId = id,
-                cancellationToken))
+        var logoOk = await AdminMediaFormBinding.TryBindLogoImageAsync(
+            mediaAdmin,
+            ModelState,
+            model.LogoImageId,
+            removeLogoImage,
+            logoImageUpload,
+            logoImageAlt,
+            $"Logo: {model.SiteName ?? "Ülkü Ocakları Manisa"}",
+            id => model.LogoImageId = id,
+            cancellationToken);
+        var coverOk = await AdminMediaFormBinding.TryBindCbuHubCoverAsync(
+            mediaAdmin,
+            ModelState,
+            model.CbuHubCoverImageId,
+            removeCbuHubCover,
+            cbuHubCoverUpload,
+            cbuHubCoverAlt,
+            "CBÜ Hub kapak görseli",
+            id => model.CbuHubCoverImageId = id,
+            cancellationToken);
+        if (!logoOk || !coverOk)
         {
             await AdminMediaFormBinding.SetLogoImagePreviewAsync(mediaAdmin, ViewData, model.LogoImageId, cancellationToken);
+            await AdminMediaFormBinding.SetCbuHubCoverPreviewAsync(mediaAdmin, ViewData, model.CbuHubCoverImageId, cancellationToken);
             return View(model);
         }
 
@@ -51,6 +67,7 @@ public sealed class SiteSettingsController(SiteSettingsAdminService settingsServ
         {
             ModelState.AddModelError(string.Empty, result.Error ?? "Kayıt başarısız.");
             await AdminMediaFormBinding.SetLogoImagePreviewAsync(mediaAdmin, ViewData, model.LogoImageId, cancellationToken);
+            await AdminMediaFormBinding.SetCbuHubCoverPreviewAsync(mediaAdmin, ViewData, model.CbuHubCoverImageId, cancellationToken);
             return View(model);
         }
 

@@ -112,7 +112,8 @@ public sealed record SiteSettingsDto(
     double? MapLng,
     bool TurnstileEnabled,
     string? LogoUrl,
-    string? SocialLinksJson = null);
+    string? SocialLinksJson = null,
+    string? CbuHubCoverUrl = null);
 
 public sealed record FacultyOptionDto(int Id, string Name);
 

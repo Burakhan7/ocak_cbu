@@ -31,14 +31,18 @@
             }
             else
             {
-                <div class="card shadow-sm">
+                <article class="card shadow-sm overflow-hidden home-hero-event">
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="@(Model.ImageAlt ?? Model.Title)" class="media-cover" decoding="async" />
+                    }
                     <div class="card-body">
                         <p class="small text-muted mb-1">Yaklaşan etkinlik</p>
                         <h2 class="h5"><a href="@Model.LocalPath">@Model.Title</a></h2>
                         <p class="small mb-3">@Model.WhenText</p>
                         <a class="btn btn-primary btn-sm" href="@Model.LocalPath">Etkinliğe katıl</a>
                     </div>
-                </div>
+                </article>
             }
         </div>
     </div>
