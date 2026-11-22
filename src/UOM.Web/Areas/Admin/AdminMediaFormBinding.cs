@@ -131,6 +131,48 @@ public static class AdminMediaFormBinding
         viewData["LogoImageAltText"] = file.AltText;
     }
 
+    public static Task<bool> TryBindCbuHubCoverAsync(
+        MediaAdminService mediaAdmin,
+        ModelStateDictionary modelState,
+        int? currentCoverImageId,
+        bool removeCoverImage,
+        IFormFile? coverImageUpload,
+        string? coverImageAlt,
+        string defaultAltText,
+        Action<int?> setCoverImageId,
+        CancellationToken cancellationToken) =>
+        TryBindCoverImageAsync(
+            mediaAdmin,
+            modelState,
+            currentCoverImageId,
+            removeCoverImage,
+            coverImageUpload,
+            coverImageAlt,
+            defaultAltText,
+            setCoverImageId,
+            cancellationToken);
+
+    public static async Task SetCbuHubCoverPreviewAsync(
+        MediaAdminService mediaAdmin,
+        ViewDataDictionary viewData,
+        int? coverImageId,
+        CancellationToken cancellationToken)
+    {
+        if (coverImageId is null)
+        {
+            return;
+        }
+
+        var file = await mediaAdmin.GetByIdAsync(coverImageId.Value, cancellationToken);
+        if (file is null)
+        {
+            return;
+        }
+
+        viewData["CbuHubCoverPreviewUrl"] = AdminMediaUrl.Resolve(file.StoragePath, file.Variants, "medium");
+        viewData["CbuHubCoverAltText"] = file.AltText;
+    }
+
     public static async Task SetResourceFilePreviewAsync(
         MediaAdminService mediaAdmin,
         ViewDataDictionary viewData,

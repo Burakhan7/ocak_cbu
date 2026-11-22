@@ -1,0 +1,25 @@
+@{
+    var previewUrl = ViewData["CbuHubCoverPreviewUrl"] as string;
+    var altText = ViewData["CbuHubCoverAltText"] as string;
+}
+<div class="card card-body mb-3">
+    <h2 class="h6 mb-3">CBÜ Hub kapak görseli</h2>
+    <p class="form-text text-muted mt-0">Ana sayfadaki “CBÜ’lü müsün?” kartında görünür. Görsel yoksa renk geçişi kullanılır.</p>
+    @if (!string.IsNullOrWhiteSpace(previewUrl))
+    {
+        <img src="@previewUrl" alt="@(altText ?? "Mevcut kapak")" class="img-thumbnail mb-2" style="max-height: 160px; object-fit: cover;" />
+    }
+    <div class="mb-2">
+        <label for="cbuHubCoverUpload" class="form-label">Yeni kapak yükle</label>
+        <input type="file" class="form-control" id="cbuHubCoverUpload" name="cbuHubCoverUpload" accept="image/jpeg,image/png,image/webp" />
+        <div class="form-text text-muted">JPEG, PNG veya WebP — en fazla 10 MB</div>
+    </div>
+    <div class="mb-2">
+        <label for="cbuHubCoverAlt" class="form-label">Alt metin (yükleme yapıyorsanız)</label>
+        <input type="text" class="form-control" id="cbuHubCoverAlt" name="cbuHubCoverAlt" value="@altText" maxlength="300" />
+    </div>
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="removeCbuHubCover" name="removeCbuHubCover" value="true" />
+        <label class="form-check-label" for="removeCbuHubCover">Kapağı kaldır (renk geçişi kullanılır)</label>
+    </div>
+</div>

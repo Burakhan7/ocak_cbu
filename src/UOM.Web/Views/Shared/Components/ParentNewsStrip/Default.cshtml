@@ -10,30 +10,6 @@
     }
     else
     {
-        <div class="row g-3">
-            @foreach (var item in Model)
-            {
-                <div class="col-6 col-lg-3">
-                    <article class="card h-100 content-card">
-                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                        {
-                            <img src="@item.ImageUrl" alt="" class="card-img-top parent-news-thumb" loading="lazy" />
-                        }
-                        <div class="card-body py-3">
-                            <h3 class="h6">@item.Title</h3>
-                            @if (item.PublishedDate.Year >= 2000)
-                            {
-                                <p class="small text-muted mb-2">@item.PublishedDate.ToString("d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</p>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(item.Summary))
-                            {
-                                <p class="small text-muted mb-2">@item.Summary</p>
-                            }
-                            <a class="small stretched-link" href="@item.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku ↗</a>
-                        </div>
-                    </article>
-                </div>
-            }
-        </div>
+        <partial name="_ParentNewsGrid" model="Model" />
     }
 </section>

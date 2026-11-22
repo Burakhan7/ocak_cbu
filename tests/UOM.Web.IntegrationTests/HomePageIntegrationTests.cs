@@ -54,6 +54,47 @@ public class HomePageIntegrationTests
         newsAt.Should().BeGreaterThan(imageAt);
         html.Should().Contain("/etkinlikler/kapakli-etkinlik");
         html.Should().NotContain("görsel yok");
+
+        var introAt = html.IndexOf("Ülkü Ocakları Manisa ile tanış", StringComparison.Ordinal);
+        var heroImageAt = html.IndexOf("src=\"/uploads/images/events/kapak-large.webp\"", StringComparison.Ordinal);
+        var heroLabelAt = html.IndexOf("Yaklaşan etkinlik", StringComparison.Ordinal);
+        var cbuAt = html.IndexOf("müsün?", StringComparison.Ordinal);
+        introAt.Should().BeGreaterThanOrEqualTo(0);
+        heroImageAt.Should().BeGreaterThan(introAt);
+        heroLabelAt.Should().BeGreaterThan(introAt);
+        cbuAt.Should().BeGreaterThan(heroImageAt);
+        cbuAt.Should().BeGreaterThan(heroLabelAt);
+        html.Should().Contain("cbu-home__cover--placeholder");
+        html.Should().Contain("/cbu/rehber");
+        html.Should().Contain("/cbu/kaynaklar");
+        html.Should().Contain("/duyurular");
+    }
+
+    [Fact]
+    public async Task Home_cbu_hub_uses_settings_cover_and_parent_news_is_two_columns()
+    {
+        const string coverPath = "images/cbu/hub-medium.webp";
+        using var factory = CreateFactory(Guid.NewGuid().ToString());
+        await SeedHubAndParentNewsAsync(factory.Services, coverPath);
+
+        var client = factory.CreateClient();
+        var home = await client.GetStringAsync("/");
+        var hub = await client.GetStringAsync("/genel-merkez");
+
+        home.Should().Contain("src=\"/uploads/" + coverPath + "\"");
+        home.Should().NotContain("cbu-home__cover--placeholder");
+        home.Should().Contain("col-12 col-lg-6");
+        home.Should().Contain("parent-news-grid");
+        home.Should().Contain("Panel ozeti");
+        home.Should().Contain("media-cover");
+        home.Should().NotContain("parent-news-thumb");
+        home.Should().NotContain("col-6 col-lg-3");
+
+        hub.Should().Contain("parent-news-grid");
+        hub.Should().Contain("col-12 col-lg-6");
+        hub.Should().Contain("Panel ozeti");
+        hub.Should().Contain("media-cover");
+        hub.Should().NotContain("parent-news-thumb");
     }
 
   private static async Task SeedAsync(IServiceProvider services)
@@ -120,6 +161,46 @@ public class HomePageIntegrationTests
             StartsAtUtc = DateTime.UtcNow.AddDays(2),
             EndsAtUtc = DateTime.UtcNow.AddDays(2).AddHours(2),
             CoverImageId = media.Id,
+        });
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task SeedHubAndParentNewsAsync(IServiceProvider services, string coverPath)
+    {
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureCreatedAsync();
+
+        var media = new MediaFile
+        {
+            StoragePath = "images/cbu/hub.webp",
+            OriginalFileName = "hub.webp",
+            ContentType = "image/webp",
+            SizeBytes = 8,
+            AltText = "CBÜ kampüsü",
+            Variants = JsonSerializer.Serialize(new Dictionary<string, string>
+            {
+                ["thumb"] = "images/cbu/hub-thumb.webp",
+                ["medium"] = coverPath,
+                ["large"] = "images/cbu/hub-large.webp",
+            }),
+        };
+        db.MediaFiles.Add(media);
+        await db.SaveChangesAsync();
+
+        db.SiteSettings.Add(new SiteSettings
+        {
+            SiteName = "Test Site",
+            CbuHubCoverImageId = media.Id,
+        });
+        db.ParentNewsLinks.Add(new ParentNewsLink
+        {
+            Title = "GM kart basligi",
+            Summary = "Panel ozeti",
+            ImageUrl = "https://ulkuocaklari.org.tr/ornek.jpg",
+            ExternalUrl = "https://ulkuocaklari.org.tr/blog/i/ornek",
+            PublishedDate = new DateOnly(2026, 11, 2),
+            IsActive = true,
         });
         await db.SaveChangesAsync();
     }

@@ -16,7 +16,7 @@
 @section PageBanner {
     <partial name="_PageBanner" model="@(new PageBannerModel(Model.Title, Model.Summary, Model.CoverImageUrl, Model.CoverImageAlt ?? Model.Title, "page-banner--detail"))" />
 }
-<article>
+<article class="reading-article">
     @if (Model.PublishedAtUtc is { } published)
     {
         <p class="text-muted small mb-3">

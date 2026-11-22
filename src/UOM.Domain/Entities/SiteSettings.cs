@@ -10,6 +10,11 @@ public class SiteSettings : BaseEntity
 
     public MediaFile? LogoImage { get; set; }
 
+    /// <summary>Cover photo for the homepage CBÜ Hub lead card. Null shows a gradient.</summary>
+    public int? CbuHubCoverImageId { get; set; }
+
+    public MediaFile? CbuHubCoverImage { get; set; }
+
     public string? Tagline { get; set; }
 
     public string? Address { get; set; }
