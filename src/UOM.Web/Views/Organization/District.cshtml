@@ -34,17 +34,9 @@
     <p>
         <a class="btn btn-outline-primary btn-sm" href="https://www.google.com/maps/dir/?api=1&amp;destination=@lat.ToString(System.Globalization.CultureInfo.InvariantCulture),@lng.ToString(System.Globalization.CultureInfo.InvariantCulture)" rel="noopener noreferrer" target="_blank">Yol tarifi al</a>
     </p>
-    <div id="district-map" class="rounded border" style="height: 280px;"></div>
-    @section Scripts {
-        <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" asp-append-version="true" />
-        <script src="~/lib/leaflet/leaflet.js" asp-append-version="true"></script>
-        <script>
-            (function () {
-                var map = L.map('district-map').setView([@lat.ToString(System.Globalization.CultureInfo.InvariantCulture), @lng.ToString(System.Globalization.CultureInfo.InvariantCulture)], 14);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
-                L.marker([@lat.ToString(System.Globalization.CultureInfo.InvariantCulture), @lng.ToString(System.Globalization.CultureInfo.InvariantCulture)]).addTo(map);
-            })();
-        </script>
-    }
+    <partial name="_GoogleMap" model="@(new GoogleMapRequest {
+        Size = "mini",
+        Pins = new[] { new GoogleMapPin(Model.Name, lat, lng, Model.Address, Model.Phone, null, null) }
+    })" />
 }
 <p class="mt-3"><a asp-action="Index">← Teşkilat</a></p>

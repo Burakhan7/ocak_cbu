@@ -28,6 +28,13 @@
     @if (Model.Venue is not null)
     {
         <p class="mb-3"><strong>Mekan:</strong> @Model.Venue.Name@if (!string.IsNullOrWhiteSpace(Model.Venue.Address)){<text> — @Model.Venue.Address</text>}</p>
+        @if (Model.Venue.Latitude is double lat && Model.Venue.Longitude is double lng)
+        {
+            <partial name="_GoogleMap" model="@(new GoogleMapRequest {
+                Size = "mini",
+                Pins = new[] { new GoogleMapPin(Model.Venue.Name, lat, lng, Model.Venue.Address, null, null, null) }
+            })" />
+        }
     }
     <div class="content-body mb-4">@Html.Raw(Model.BodyHtml)</div>
     <partial name="_EventCta" model="Model" />

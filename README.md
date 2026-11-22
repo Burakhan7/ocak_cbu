@@ -189,14 +189,46 @@ dotnet run --project src/UOM.Web/UOM.Web.csproj
 
 Migration (Faz 2): `AddContentApprovalRejectionNotes`
 
+## Google Haritalar
+
+İlçe, kampüs, mekan ve il merkezi konumu haritadan seçilir; enlem ve boylam yine kayıtlarda durur. Teşkilat, ilçe, kampüs, etkinlik, iletişim ve “Ocağa uğra” haritaları da Google Maps kullanır. Sayfa başına tek harita yüklenir. Konum tıklayarak pinlenir; Places veya Geocoder çağrısı yoktur.
+
+Anahtar repoya yazılmaz. Boşsa sayfa çökmez, haritanın yerinde kısa bir Türkçe uyarı görünür.
+
+Yerel `dotnet run`:
+
+```bash
+dotnet user-secrets set "GoogleMaps:ApiKey" "ANAHTAR" --project src/UOM.Web
+```
+
+veya aynı süreçte:
+
+```bash
+export GOOGLE_MAPS_API_KEY="ANAHTAR"
+```
+
+Docker: `docker/.env.example` dosyasını `docker/.env` olarak kopyalayıp anahtarı ekleyin. `docker-compose.yml` değeri web konteynerine `GOOGLE_MAPS_API_KEY` ve `GoogleMaps__ApiKey` olarak geçirir.
+
+```env
+GOOGLE_MAPS_API_KEY=ANAHTAR
+```
+
+Google Cloud’da anahtarı sitenin HTTP referrer’ı ile kısıtlayın. Yalnızca Maps JavaScript API yeterlidir.
+
+## Ana sayfa ve Genel Merkez
+
+Haber (5 kart), yaklaşan etkinlik (3), kahraman alandaki etkinlik ve “Genel Merkez’den” şeridi (4) önce panelde yayınlanan kayıtları gösterir. Slot eksikse `https://ulkuocaklari.org.tr` ve `https://ulkuocaklari.gov.tr` yoklanır. Resmi RSS/Atom varsa o kullanılır; yoksa `/blog` liste sayfasından başlık, tarih, görsel ve kısa özet alınır. Tam metin kopyalanmaz. Bağlantı “Ana sitede oku” olur. Başarılı sonuç yaklaşık 30 dakika bellekte tutulur. Ana site kapalıysa yalnızca yerel kayıtlar görünür.
+
+`/genel-merkez` yalnızca Genel Merkez bağlantıları, OCAK TV videoları ve bu listeden gelen kayıtları gösterir. Manisa haberleri, etkinlikleri ve il videoları o sayfaya karışmaz.
+
 ## Faz durumu
 
 - [x] Faz 0 — İskelet, Serilog, `/health`, Docker
 - [x] Faz 1 — Domain, EF Core, global soft-delete, audit alanları, seed, SQL health
 - [x] Faz 2 — `/yonetim` Identity+2FA, policy’ler, haber/etkinlik/mekan/site/medya CRUD, onay akışı, önizleme, audit log
 - [x] Faz 3 — Public çekirdek sayfalar (layout, ana sayfa, haber/etkinlik, iletişim, statik slug, 404/500)
-- [x] Faz 4 — CBÜ katmanı: Hub, rehber/kaynak/duyuru public + admin (`CanWriteCampusContent`), kampüs haritası (Leaflet)
-- [x] Faz 5 — Genel Merkez + teşkilat: alıntı bandı, `/genel-merkez`, `/teskilat`, Leaflet, lite YouTube, admin CRUD (`CanManageParentLayer`)
+- [x] Faz 4 — CBÜ katmanı: Hub, rehber/kaynak/duyuru public + admin (`CanWriteCampusContent`), kampüs haritası (Google Maps)
+- [x] Faz 5 — Genel Merkez + teşkilat: alıntı bandı, `/genel-merkez`, `/teskilat`, Google Maps, lite YouTube, admin CRUD (`CanManageParentLayer`)
 - [x] Faz 6 — SEO, arama, sitemap/RSS, output cache
 - [x] Faz 7 — Güvenlik başlıkları, CSP, rate limit, KVKK saklama işi, veri talebi aracı, `--migrate`, Docker volume
 
@@ -204,7 +236,7 @@ Migration (Faz 2): `AddContentApprovalRejectionNotes`
 
 ### Güvenlik başlıkları
 
-Her HTML yanıtında `Content-Security-Policy` (nonce’lu `script-src`; `style-src` içinde `unsafe-inline` yalnızca stil öznitelikleri için), `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` ve `X-Frame-Options` vardır. `Strict-Transport-Security` yalnızca production ve HTTPS’te eklenir. Harita betiği `wwwroot/lib/leaflet` altından sunulur (unpkg yok). `/uploads` yalnızca bilinen uzantıları (`webp`, `jpg`, `png`, `gif`, `pdf`, `docx`, `pptx`, `xlsx`, `zip`) ve `nosniff` ile verir.
+Her HTML yanıtında `Content-Security-Policy` (nonce’lu `script-src`; `style-src` içinde `unsafe-inline` yalnızca stil öznitelikleri ve Google Haritalar’ın eklediği stiller için), `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` ve `X-Frame-Options` vardır. `Strict-Transport-Security` yalnızca production ve HTTPS’te eklenir. Harita, `maps.googleapis.com` üzerindeki Maps JavaScript API ile açılır (`v=weekly`, `loading=async`). Bu yükleyici `unsafe-eval` istemez; politika `unsafe-eval` eklemez. Ayrıntı `src/UOM.Web/Security/CspPolicy.cs` içindedir. `/uploads` yalnızca bilinen uzantıları (`webp`, `jpg`, `png`, `gif`, `pdf`, `docx`, `pptx`, `xlsx`, `zip`) ve `nosniff` ile verir.
 
 `/health` yalnızca loopback’ten veya `X-Health-Key` başlığı `Health:AccessKey` ile eşleşirse açılır.
 

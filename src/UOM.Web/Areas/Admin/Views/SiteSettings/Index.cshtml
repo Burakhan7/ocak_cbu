@@ -12,6 +12,11 @@
         <div class="col-md-6"><label asp-for="Email" class="form-label">E-posta</label><input asp-for="Email" class="form-control" /></div>
         <div class="col-12"><label asp-for="Address" class="form-label">Adres</label><textarea asp-for="Address" class="form-control" rows="2"></textarea></div>
         <div class="col-12"><label asp-for="OpeningHoursText" class="form-label">Çalışma saatleri</label><textarea asp-for="OpeningHoursText" class="form-control" rows="2"></textarea></div>
+        <div class="col-12">
+            <input type="hidden" asp-for="MapLat" />
+            <input type="hidden" asp-for="MapLng" />
+            <partial name="_GoogleMap" model="@(new UOM.Web.Models.GoogleMapRequest { Picker = true, LatFieldId = "MapLat", LngFieldId = "MapLng", Latitude = Model.MapLat, Longitude = Model.MapLng, Size = "tall" })" />
+        </div>
     </div>
     <button type="submit" class="btn btn-primary mt-3">Kaydet</button>
 </form>

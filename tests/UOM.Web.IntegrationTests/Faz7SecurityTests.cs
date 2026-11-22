@@ -162,9 +162,12 @@ public class Faz7SecurityTests
         var scriptSrc = Regex.Match(csp, @"script-src ([^;]+)").Groups[1].Value;
         scriptSrc.Should().NotContain("unsafe-inline");
         scriptSrc.Should().NotContain("unsafe-eval");
+        csp.Should().NotContain("unsafe-eval");
         scriptSrc.Should().Contain("https://challenges.cloudflare.com");
+        scriptSrc.Should().Contain("https://maps.googleapis.com");
+        scriptSrc.Should().Contain("https://maps.gstatic.com");
         csp.Should().Contain("https://www.youtube-nocookie.com");
-        csp.Should().Contain("https://*.tile.openstreetmap.org");
+        csp.Should().NotContain("openstreetmap");
 
         var html = await response.Content.ReadAsStringAsync();
         html.Should().NotContain(CspNonce.Placeholder);

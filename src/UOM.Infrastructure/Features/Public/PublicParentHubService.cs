@@ -3,26 +3,24 @@ using UOM.Application.Common;
 using UOM.Application.Features.Public;
 using UOM.Application.Features.Public.Models;
 using UOM.Domain.Entities;
+using UOM.Domain.Enums;
 using UOM.Infrastructure.Persistence;
 
 namespace UOM.Infrastructure.Features.Public;
 
-public sealed class PublicParentHubService(AppDbContext db) : IPublicParentHubService
+public sealed class PublicParentHubService(AppDbContext db, IParentSiteFeed parentFeed) : IPublicParentHubService
 {
     public async Task<ParentHubPageDto> GetHubPageAsync(int newsPage, int newsPageSize, CancellationToken cancellationToken = default)
     {
         newsPage = Math.Max(1, newsPage);
         newsPageSize = Math.Clamp(newsPageSize, 1, 48);
 
-        var newsQuery = db.ParentNewsLinks.AsNoTracking().Where(n => n.IsActive);
-        var total = await newsQuery.CountAsync(cancellationToken);
-        var newsRows = await newsQuery
-            .Include(n => n.Image)
-            .OrderBy(n => n.Order)
-            .ThenByDescending(n => n.PublishedDate)
+        var mergedNews = await LoadMergedNewsAsync(cancellationToken);
+        var total = mergedNews.Count;
+        var newsRows = mergedNews
             .Skip((newsPage - 1) * newsPageSize)
             .Take(newsPageSize)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         var projects = await GetActiveProjectRowsAsync(cancellationToken);
         var magazines = await db.MagazineIssues
@@ -34,6 +32,7 @@ public sealed class PublicParentHubService(AppDbContext db) : IPublicParentHubSe
 
         var videos = await db.Videos
             .AsNoTracking()
+            .Where(v => v.Source == VideoSource.OcakTV)
             .OrderByDescending(v => v.IsFeatured)
             .ThenBy(v => v.Order)
             .ThenByDescending(v => v.PublishedDate)
@@ -42,7 +41,7 @@ public sealed class PublicParentHubService(AppDbContext db) : IPublicParentHubSe
         return new ParentHubPageDto(
             new PagedResult<ParentNewsCardDto>
             {
-                Items = newsRows.Select(MapNews).ToList(),
+                Items = newsRows,
                 Page = newsPage,
                 PageSize = newsPageSize,
                 TotalCount = total,
@@ -55,16 +54,22 @@ public sealed class PublicParentHubService(AppDbContext db) : IPublicParentHubSe
     public async Task<IReadOnlyList<ParentNewsCardDto>> GetNewsStripForHomeAsync(int count, CancellationToken cancellationToken = default)
     {
         count = Math.Clamp(count, 1, 12);
+        var merged = await LoadMergedNewsAsync(cancellationToken);
+        return merged.Take(count).ToList();
+    }
+
+    private async Task<IReadOnlyList<ParentNewsCardDto>> LoadMergedNewsAsync(CancellationToken cancellationToken)
+    {
         var rows = await db.ParentNewsLinks
             .AsNoTracking()
             .Where(n => n.IsActive)
             .Include(n => n.Image)
             .OrderBy(n => n.Order)
             .ThenByDescending(n => n.PublishedDate)
-            .Take(count)
             .ToListAsync(cancellationToken);
 
-        return rows.Select(MapNews).ToList();
+        var feed = await parentFeed.GetAsync(cancellationToken);
+        return HomeSlotComposer.MergeHubNews(rows.Select(MapNews).ToList(), feed.Items);
     }
 
     public async Task<IReadOnlyList<ParentProjectCardDto>> GetActiveProjectsAsync(CancellationToken cancellationToken = default)

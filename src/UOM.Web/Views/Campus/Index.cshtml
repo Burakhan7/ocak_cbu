@@ -100,7 +100,21 @@
     {
         <section class="mb-4">
             <h2 class="h4">Kampüsler</h2>
-            <div id="cbu-map" class="rounded border" style="height: 360px;"></div>
+            @{
+                var campusPins = Model.Campuses.Select(c => new GoogleMapPin(
+                    c.Name,
+                    c.Latitude,
+                    c.Longitude,
+                    c.DistanceToLodgeKm is { } km ? $"Ocağa ~{km.ToString("0.#", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))} km" : null,
+                    null,
+                    null,
+                    null)).ToList();
+                if (Model.LodgeLatitude is double lodgeLat && Model.LodgeLongitude is double lodgeLng)
+                {
+                    campusPins.Add(new GoogleMapPin("Ülkü Ocakları Manisa", lodgeLat, lodgeLng, null, null, "/iletisim", "İletişim"));
+                }
+            }
+            <partial name="_GoogleMap" model="@(new GoogleMapRequest { Pins = campusPins, AnnounceEmpty = true })" />
             <div class="row g-3 mt-2">
                 @foreach (var c in Model.Campuses)
                 {
@@ -130,31 +144,3 @@
         <p class="mt-4"><a class="btn btn-outline-primary" href="@Model.WhatsAppChannelUrl" rel="noopener noreferrer">WhatsApp duyuru kanalı</a></p>
     }
 </div>
-
-@section Scripts {
-@if (Model.Campuses.Count > 0)
-{
-    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" asp-append-version="true" />
-    <script src="~/lib/leaflet/leaflet.js" asp-append-version="true"></script>
-    <script>
-        (function () {
-            var campuses = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Campuses.Select(c => new { c.Name, c.Latitude, c.Longitude })));
-            var lodgeLat = @(Model.LodgeLatitude?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null");
-            var lodgeLng = @(Model.LodgeLongitude?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null");
-            var map = L.map('cbu-map');
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
-            var bounds = [];
-            campuses.forEach(function (c) {
-                var m = L.marker([c.Latitude, c.Longitude]).addTo(map).bindPopup(c.Name);
-                bounds.push([c.Latitude, c.Longitude]);
-            });
-            if (lodgeLat !== null && lodgeLng !== null) {
-                L.marker([lodgeLat, lodgeLng], { title: 'Ocağa uğra' }).addTo(map).bindPopup('Ülkü Ocakları Manisa');
-                bounds.push([lodgeLat, lodgeLng]);
-            }
-            if (bounds.length) map.fitBounds(bounds, { padding: [24, 24] });
-            else map.setView([38.6191, 27.4289], 12);
-        })();
-    </script>
-}
-}

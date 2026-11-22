@@ -209,6 +209,18 @@ internal sealed class EmptyMediaAssetReader : IMediaAssetReader
         Task.FromResult<ResponsiveImageDto?>(null);
 }
 
+internal sealed class EmptyHomeFeedService : IHomeFeedService
+{
+    public Task<IReadOnlyList<HomeFeedCardDto>> GetNewsAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<HomeFeedCardDto>>([]);
+
+    public Task<IReadOnlyList<HomeFeedCardDto>> GetUpcomingEventsAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<HomeFeedCardDto>>([]);
+
+    public Task<HomeFeedCardDto?> GetHeroAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<HomeFeedCardDto?>(null);
+}
+
 internal sealed class EmptyPublicRedirectService : IPublicRedirectService
 {
     public Task<RedirectMatch?> FindAsync(string requestPath, CancellationToken cancellationToken = default) =>
