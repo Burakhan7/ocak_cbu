@@ -17,7 +17,18 @@
             }
             else if (!string.IsNullOrWhiteSpace(Model.ExternalUrl))
             {
-                <div class="card shadow-sm">
+                var parentCover = Model.ImageUrl;
+                var hasParentCover = !string.IsNullOrWhiteSpace(parentCover)
+                    && parentCover.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+                <article class="card shadow-sm overflow-hidden home-hero-event">
+                    @if (hasParentCover)
+                    {
+                        <img src="@parentCover" alt="@(Model.ImageAlt ?? Model.Title)" class="media-cover" decoding="async" />
+                    }
+                    else
+                    {
+                        <div class="card-cover__placeholder" role="img" aria-label="@((Model.ImageAlt ?? Model.Title) + " — görsel yok")"></div>
+                    }
                     <div class="card-body">
                         <p class="small text-muted mb-1">Genel Merkez</p>
                         <h2 class="h5"><a href="@Model.ExternalUrl" rel="noopener noreferrer" target="_blank">@Model.Title</a></h2>
@@ -27,7 +38,7 @@
                         }
                         <a class="btn btn-primary btn-sm" href="@Model.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku</a>
                     </div>
-                </div>
+                </article>
             }
             else
             {

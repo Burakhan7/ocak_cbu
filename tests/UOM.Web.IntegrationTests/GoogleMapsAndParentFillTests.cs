@@ -144,6 +144,53 @@ public class GoogleMapsAndParentFillTests
         home.Should().NotContain("Henüz yayınlanmış yaklaşan etkinlik yok.");
     }
 
+    [Fact]
+    public async Task Parent_hero_hotlinks_https_cover_and_keeps_placeholder_without_one()
+    {
+        const string cover = "https://ulkuocaklari.org.tr/uploads/blog/turnuva.jpg";
+        using var withCover = CreateFactory(Guid.NewGuid().ToString(), feed: new StubParentSiteFeed(
+        [
+            new("GM Turnuva", "final", cover, "https://ulkuocaklari.org.tr/blog/i/turnuva", new DateOnly(2026, 11, 2), ParentSiteItemKind.Event),
+        ]));
+        await SeedEmptySiteAsync(withCover.Services);
+        var covered = await withCover.CreateClient().GetStringAsync("/");
+        var coveredHero = HeroHtml(covered);
+        coveredHero.Should().Contain("src=\"" + cover + "\"");
+        coveredHero.Should().Contain("media-cover");
+        coveredHero.Should().NotContain("card-cover__placeholder");
+        coveredHero.Should().NotContain("src=\"/uploads/");
+
+        using var withoutCover = CreateFactory(Guid.NewGuid().ToString(), feed: new StubParentSiteFeed(
+        [
+            new("GM Seminer", "seminer", null, "https://ulkuocaklari.org.tr/blog/i/seminer", new DateOnly(2026, 11, 3), ParentSiteItemKind.Event),
+        ]));
+        await SeedEmptySiteAsync(withoutCover.Services);
+        var plain = await withoutCover.CreateClient().GetStringAsync("/");
+        var plainHero = HeroHtml(plain);
+        plainHero.Should().Contain("card-cover__placeholder");
+        plainHero.Should().Contain("g&#xF6;rsel yok");
+        plainHero.Should().NotContain("<img");
+        plain.Should().NotContain("/uploads/");
+    }
+
+    private static string HeroHtml(string home)
+    {
+        var intro = home.IndexOf("Ülkü Ocakları Manisa ile tanış", StringComparison.Ordinal);
+        var hub = home.IndexOf("müsün?", intro, StringComparison.Ordinal);
+        intro.Should().BeGreaterThanOrEqualTo(0);
+        hub.Should().BeGreaterThan(intro);
+        return home[intro..hub];
+    }
+
+    private static async Task SeedEmptySiteAsync(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureCreatedAsync();
+        db.SiteSettings.Add(new SiteSettings { SiteName = "Test" });
+        await db.SaveChangesAsync();
+    }
+
     private static WebApplicationFactory<Program> CreateFactory(string dbName, string? mapsKey = null, IParentSiteFeed? feed = null) =>
         new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {

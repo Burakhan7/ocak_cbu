@@ -12,11 +12,8 @@
     <link rel="stylesheet" href="~/UOM.Web.styles.css" asp-append-version="true" />
 </head>
 <body class="public-site">
-    <div class="reading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Okuma ilerlemesi">
-        <span class="reading-progress__bar"></span>
-    </div>
 @await Component.InvokeAsync("PublicLayout")
-    <header class="site-header">
+    <header class="site-header border-bottom">
         <div class="container d-flex align-items-center justify-content-between py-2" style="max-width: var(--container-max);">
             <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" asp-controller="Home" asp-action="Index">
                 @if (!string.IsNullOrWhiteSpace(ViewBag.SiteLogoUrl as string))
