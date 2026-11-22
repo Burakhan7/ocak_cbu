@@ -1,6 +1,4 @@
-@using UOM.Application.Formatting
-@using UOM.Application.Features.Public.Models
-@model EventDetailDto?
+@model UOM.Application.Features.Public.Models.HomeFeedCardDto?
 <section class="home-hero py-5">
     <div class="row align-items-center g-4">
         <div class="col-md-7">
@@ -17,14 +15,28 @@
                     </div>
                 </div>
             }
+            else if (!string.IsNullOrWhiteSpace(Model.ExternalUrl))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="small text-muted mb-1">Genel Merkez</p>
+                        <h2 class="h5"><a href="@Model.ExternalUrl" rel="noopener noreferrer" target="_blank">@Model.Title</a></h2>
+                        @if (!string.IsNullOrWhiteSpace(Model.WhenText))
+                        {
+                            <p class="small mb-3">@Model.WhenText</p>
+                        }
+                        <a class="btn btn-primary btn-sm" href="@Model.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku</a>
+                    </div>
+                </div>
+            }
             else
             {
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <p class="small text-muted mb-1">Yaklaşan etkinlik</p>
-                        <h2 class="h5"><a asp-controller="Event" asp-action="Detail" asp-route-slug="@Model.Slug">@Model.Title</a></h2>
-                        <p class="small mb-3">@Model.StartsAtUtc.ToLocalDisplay()</p>
-                        <a class="btn btn-primary btn-sm" asp-controller="Event" asp-action="Detail" asp-route-slug="@Model.Slug">Etkinliğe katıl</a>
+                        <h2 class="h5"><a href="@Model.LocalPath">@Model.Title</a></h2>
+                        <p class="small mb-3">@Model.WhenText</p>
+                        <a class="btn btn-primary btn-sm" href="@Model.LocalPath">Etkinliğe katıl</a>
                     </div>
                 </div>
             }

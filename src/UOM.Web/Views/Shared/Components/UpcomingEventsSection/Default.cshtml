@@ -1,6 +1,4 @@
-@using UOM.Application.Formatting
-@using UOM.Application.Features.Public.Models
-@model IReadOnlyList<EventListItemDto>
+@model IReadOnlyList<UOM.Application.Features.Public.Models.HomeFeedCardDto>
 <section class="py-4 home-section">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h4 mb-0">Yaklaşan etkinlikler</h2>
@@ -17,10 +15,26 @@
             {
                 <div class="col-md-4">
                     <article class="card h-100 content-card">
-                        <partial name="_CardCover" model="@(new CoverImageModel(evt.CoverImageUrl, evt.Title, MediaId: evt.CoverImageId))" />
+                        <partial name="_CardCover" model="@(new CoverImageModel(evt.ImageUrl, evt.ImageAlt ?? evt.Title))" />
                         <div class="card-body">
-                            <h3 class="h6"><a asp-controller="Event" asp-action="Detail" asp-route-slug="@evt.Slug" class="stretched-link text-decoration-none">@evt.Title</a></h3>
-                            <p class="small text-muted mb-0">@evt.StartsAtUtc.ToLocalDisplay()</p>
+                            @if (!string.IsNullOrWhiteSpace(evt.Badge))
+                            {
+                                <span class="badge text-bg-light mb-2">@evt.Badge</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(evt.ExternalUrl))
+                            {
+                                <h3 class="h6">@evt.Title</h3>
+                                @if (!string.IsNullOrWhiteSpace(evt.WhenText))
+                                {
+                                    <p class="small text-muted mb-2">@evt.WhenText</p>
+                                }
+                                <a class="small stretched-link" href="@evt.ExternalUrl" rel="noopener noreferrer" target="_blank">Ana sitede oku ↗</a>
+                            }
+                            else
+                            {
+                                <h3 class="h6"><a href="@evt.LocalPath" class="stretched-link text-decoration-none">@evt.Title</a></h3>
+                                <p class="small text-muted mb-0">@evt.WhenText</p>
+                            }
                         </div>
                     </article>
                 </div>

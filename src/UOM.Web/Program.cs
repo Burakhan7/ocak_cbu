@@ -43,6 +43,15 @@ try
 
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.Configure<UOM.Web.Configuration.GoogleMapsOptions>(
+        builder.Configuration.GetSection(UOM.Web.Configuration.GoogleMapsOptions.SectionName));
+    builder.Services.PostConfigure<UOM.Web.Configuration.GoogleMapsOptions>(maps =>
+    {
+        if (string.IsNullOrWhiteSpace(maps.ApiKey))
+        {
+            maps.ApiKey = builder.Configuration["GOOGLE_MAPS_API_KEY"];
+        }
+    });
 
     var dbConnection = builder.Configuration.GetConnectionString("Default");
     if (!string.IsNullOrWhiteSpace(dbConnection))

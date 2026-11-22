@@ -16,5 +16,14 @@
                 <a class="btn btn-primary btn-sm ms-2" href="@maps" rel="noopener" target="_blank">Yol tarifi al</a>
             }
         </div>
+        @if (Model.MapLat is double mapLat && Model.MapLng is double mapLng)
+        {
+            <div class="col-md-6">
+                <partial name="_GoogleMap" model="@(new GoogleMapRequest {
+                    Size = "mini",
+                    Pins = new[] { new GoogleMapPin(Model.SiteName, mapLat, mapLng, Model.Address, Model.OpeningHoursText, null, null) }
+                })" />
+            </div>
+        }
     </div>
 </section>

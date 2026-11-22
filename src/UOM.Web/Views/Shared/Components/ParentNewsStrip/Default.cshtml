@@ -6,7 +6,7 @@
     </div>
     @if (Model.Count == 0)
     {
-        <p class="text-muted small mb-0"><!-- TODO(spec): Genel Merkez haber özetleri il başkanlığından --></p>
+        <p class="text-muted small mb-0">Genel Merkez haberleri şu an gösterilemiyor.</p>
     }
     else
     {
@@ -17,10 +17,14 @@
                     <article class="card h-100 content-card">
                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                         {
-                            <img src="@item.ImageUrl" alt="" class="card-img-top" loading="lazy" />
+                            <img src="@item.ImageUrl" alt="" class="card-img-top parent-news-thumb" loading="lazy" />
                         }
                         <div class="card-body py-3">
                             <h3 class="h6">@item.Title</h3>
+                            @if (item.PublishedDate.Year >= 2000)
+                            {
+                                <p class="small text-muted mb-2">@item.PublishedDate.ToString("d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</p>
+                            }
                             @if (!string.IsNullOrWhiteSpace(item.Summary))
                             {
                                 <p class="small text-muted mb-2">@item.Summary</p>

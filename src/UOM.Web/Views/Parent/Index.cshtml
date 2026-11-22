@@ -14,7 +14,7 @@
     <h2 class="h4">Genel Merkez haberleri</h2>
     @if (Model.News.Items.Count == 0)
     {
-        <p class="text-muted"><!-- TODO(spec): ParentNewsLink içerikleri --></p>
+        <p class="text-muted">Genel Merkez haberleri şu an gösterilemiyor.</p>
     }
     else
     {
@@ -22,7 +22,15 @@
         @foreach (var n in Model.News.Items)
         {
             <article class="list-group-item px-0">
+                @if (!string.IsNullOrWhiteSpace(n.ImageUrl))
+                {
+                    <img src="@n.ImageUrl" alt="" class="parent-news-thumb mb-2" loading="lazy" />
+                }
                 <h3 class="h6 mb-1">@n.Title</h3>
+                @if (n.PublishedDate.Year >= 2000)
+                {
+                    <p class="small text-muted mb-1">@n.PublishedDate.ToString("d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</p>
+                }
                 @if (!string.IsNullOrWhiteSpace(n.Summary))
                 {
                     <p class="small mb-1">@n.Summary</p>

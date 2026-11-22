@@ -7,6 +7,12 @@
     <div class="col-md-5" id="harita">
         <p>@(Model.Site.Address ?? "Adres yakında eklenecek.")</p>
         <p class="small text-muted">@Model.Site.Phone · @Model.Site.Email</p>
+        @if (Model.Site.MapLat is double lat && Model.Site.MapLng is double lng)
+        {
+            <partial name="_GoogleMap" model="@(new GoogleMapRequest {
+                Pins = new[] { new GoogleMapPin(Model.Site.SiteName, lat, lng, Model.Site.Address, Model.Site.OpeningHoursText, null, null) }
+            })" />
+        }
     </div>
     <div class="col-md-7">
         @if (Model.Submitted)

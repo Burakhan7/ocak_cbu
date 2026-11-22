@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -69,6 +70,7 @@ public static class DependencyInjection
             services.AddSingleton<IFeedService, EmptyFeedService>();
             services.AddSingleton<IMediaAssetReader, EmptyMediaAssetReader>();
             services.AddSingleton<IPublicRedirectService, EmptyPublicRedirectService>();
+            services.AddSingleton<IHomeFeedService, EmptyHomeFeedService>();
             return services;
         }
 
@@ -111,6 +113,25 @@ public static class DependencyInjection
         services.AddScoped<DistrictAdminService>();
         services.AddScoped<BoardMemberAdminService>();
         services.AddScoped<IPublicQuoteService, PublicQuoteService>();
+        services.Configure<ParentSiteOptions>(configuration.GetSection(ParentSiteOptions.SectionName));
+        services.AddHttpClient(ParentSiteFeed.HttpClientName, client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(8);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("UOM-Manisa/1.0");
+                client.DefaultRequestHeaders.Accept.ParseAdd("text/html");
+                client.DefaultRequestHeaders.Accept.ParseAdd("application/rss+xml");
+                client.DefaultRequestHeaders.Accept.ParseAdd("application/atom+xml");
+                client.DefaultRequestHeaders.Accept.ParseAdd("application/xml");
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = true,
+                MaxAutomaticRedirections = 3,
+                AutomaticDecompression = DecompressionMethods.All,
+                PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+            });
+        services.AddSingleton<IParentSiteFeed, ParentSiteFeed>();
+        services.AddScoped<IHomeFeedService, HomeFeedService>();
         services.AddScoped<IPublicParentHubService, PublicParentHubService>();
         services.AddScoped<IPublicOrganizationService, PublicOrganizationService>();
         services.AddScoped<IPublicVideoService, PublicVideoService>();

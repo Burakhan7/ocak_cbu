@@ -77,7 +77,7 @@ Her sayfa tipinde en az bir birincil CTA bulunmalı (Bölüm 7'de sayfa bazında
 | CSS | **Bootstrap 5.3** + özel CSS (design token'lar) | LibMan ile, Node gerektirmeden |
 | JS | Vanilla JS + gerekirse küçük modüller | jQuery yok |
 | Zengin metin editörü | **TinyMCE (self-hosted, community)** | Admin panelinde |
-| Harita | **Leaflet + OpenStreetMap** | API key gerektirmez |
+| Harita | **Google Maps JavaScript API** | Anahtar `GOOGLE_MAPS_API_KEY` / `GoogleMaps:ApiKey`. Sayfa başına tek harita. |
 | Görsel işleme | **SixLabors.ImageSharp** | WebP dönüştürme, yeniden boyutlandırma |
 | HTML sanitize | **Ganss.Xss (HtmlSanitizer)** | |
 | E-posta | **MailKit** | SMTP ile bildirim |
@@ -378,7 +378,7 @@ Sitenin en önemli sayfası. CBÜ öğrencisine "bu site benim için" hissini ve
 - **Bu hafta kampüste:** `Audience == CbuStudents` olan, önümüzdeki 7 gündeki etkinlikler.
 - **Son duyurular:** süresi geçmemiş burs, staj ve sınav duyuruları (deadline'a göre sıralı, 3 günden az kalanlar vurgulu).
 - **Kaynak arşivi**: fakülte seçici + arama kutusu.
-- **Kampüsler**: Campus tablosundan harita (Leaflet), her pinde en yakın ocak noktası ve uzaklığı.
+- **Kampüsler**: Campus tablosundan harita (Google Maps), her pinde en yakın ocak noktası ve uzaklığı.
 - Alt CTA: WhatsApp duyuru kanalı + Instagram.
 
 ### 7.3 Etkinlik detay (`/etkinlikler/{slug}`)
@@ -560,7 +560,7 @@ Her içerik tipi için: liste (arama, durum filtresi, sayfalama), oluştur/düze
 
 ### 11.6 Güvenlik header'ları
 Middleware ile:
-- `Content-Security-Policy` (nonce tabanlı. İzinli kaynaklar: self, youtube-nocookie.com, *.tile.openstreetmap.org, challenges.cloudflare.com)
+- `Content-Security-Policy` (nonce tabanlı. İzinli kaynaklar: self, youtube-nocookie.com, maps.googleapis.com, maps.gstatic.com, challenges.cloudflare.com. `unsafe-eval` yok.)
 - `Strict-Transport-Security` (production)
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`
@@ -652,7 +652,7 @@ Integration testleri için SQL Server Testcontainers kullanılır; mümkün değ
 - Bağış / ödeme
 - Çok dillilik
 - Mobil uygulama
-- Ana siteden otomatik haber çekme (scraping). Ana site resmi RSS/API sağlarsa v2'de eklenir.
+- Ana siteden tam metin kopyalama. Ana sayfa slotları ve `/genel-merkez` eksik kaldığında resmi RSS/Atom, yoksa liste sayfasından başlık, tarih, görsel ve kısa özet alınır; gövde metni saklanmaz.
 - Push bildirim
 
 ## 15. Açık Sorular (`TODO(spec)`)

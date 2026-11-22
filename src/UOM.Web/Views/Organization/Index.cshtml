@@ -1,5 +1,4 @@
 @model UOM.Application.Features.Public.Models.OrganizationPageDto
-@using System.Text.Json
 @{
     ViewData["Title"] = "Teşkilat";
 }
@@ -41,7 +40,17 @@
 
 <section class="mb-4">
     <h2 class="h4 mb-3">İlçe haritası</h2>
-    <div id="org-map" class="rounded border mb-3" style="height: 400px;"></div>
+    @{
+        var mapPins = Model.DistrictsForMap.Select(d => new GoogleMapPin(
+            d.Name,
+            d.Latitude,
+            d.Longitude,
+            d.Address,
+            d.Phone,
+            "/teskilat/" + d.Slug,
+            "Detay")).ToList();
+    }
+    <partial name="_GoogleMap" model="@(new GoogleMapRequest { Pins = mapPins, Size = "tall", AnnounceEmpty = true })" />
 </section>
 
 <section>
@@ -69,31 +78,3 @@
         }
     </ul>
 </section>
-
-@section Scripts {
-@if (Model.DistrictsForMap.Count > 0)
-{
-    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" asp-append-version="true" />
-    <script src="~/lib/leaflet/leaflet.js" asp-append-version="true"></script>
-    <script>
-        (function () {
-            var districts = @Html.Raw(JsonSerializer.Serialize(Model.DistrictsForMap.Select(d => new {
-                d.Name, d.Slug, d.Latitude, d.Longitude, d.Address, d.Phone
-            })));
-            var map = L.map('org-map');
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
-            var bounds = [];
-            districts.forEach(function (d) {
-                var popup = '<strong>' + d.Name + '</strong>';
-                if (d.Address) popup += '<br>' + d.Address;
-                if (d.Phone) popup += '<br>' + d.Phone;
-                popup += '<br><a href="/teskilat/' + d.Slug + '">Detay</a>';
-                L.marker([d.Latitude, d.Longitude]).addTo(map).bindPopup(popup);
-                bounds.push([d.Latitude, d.Longitude]);
-            });
-            if (bounds.length) map.fitBounds(bounds, { padding: [32, 32] });
-            else map.setView([38.6191, 27.4289], 9);
-        })();
-    </script>
-}
-}

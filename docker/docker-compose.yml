@@ -47,6 +47,8 @@ services:
       ConnectionStrings__Default: Server=sqlserver,1433;Database=UOM;User Id=sa;Password=${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd};TrustServerCertificate=True;Encrypt=False
       Database__AutoMigrate: "true"
       Health__AccessKey: ${HEALTH_ACCESS_KEY:-}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      GoogleMaps__ApiKey: ${GOOGLE_MAPS_API_KEY:-}
     ports:
       - "8080:8080"
     volumes:
