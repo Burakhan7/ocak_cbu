@@ -1,12 +1,14 @@
 @using System.Globalization
 @using System.Text.Json
 @using Microsoft.Extensions.Options
+@using UOM.Application.Features.Public
 @using UOM.Web.Configuration
 @model UOM.Web.Models.GoogleMapRequest
 @inject IOptions<GoogleMapsOptions> MapsOptions
 @{
     var key = MapsOptions.Value.ApiKey?.Trim();
-    var hasPins = Model.Pins.Count > 0;
+    var pins = Model.Pins.Where(pin => MapViewportMath.IsUsable(pin.Latitude, pin.Longitude)).ToList();
+    var hasPins = pins.Count > 0;
     var showMap = Model.Picker || hasPins;
     var sizeClass = Model.Size switch
     {
@@ -15,10 +17,16 @@
         _ => "uom-map",
     };
     var tr = CultureInfo.GetCultureInfo("tr-TR");
-    var coordText = Model.Latitude is double lat && Model.Longitude is double lng
-        ? $"Seçilen konum: {lat.ToString("0.######", tr)}, {lng.ToString("0.######", tr)}"
-        : "Henüz konum seçilmedi.";
-    var pinsJson = JsonSerializer.Serialize(Model.Pins.Select(pin => new
+    string? latText = null;
+    string? lngText = null;
+    var coordText = "Henüz konum seçilmedi.";
+    if (Model.Latitude is double mapLat && Model.Longitude is double mapLng && MapViewportMath.IsUsable(mapLat, mapLng))
+    {
+        latText = mapLat.ToString(CultureInfo.InvariantCulture);
+        lngText = mapLng.ToString(CultureInfo.InvariantCulture);
+        coordText = $"Seçilen konum: {mapLat.ToString("0.######", tr)}, {mapLng.ToString("0.######", tr)}";
+    }
+    var pinsJson = JsonSerializer.Serialize(pins.Select(pin => new
     {
         title = pin.Title,
         lat = pin.Latitude,
@@ -51,8 +59,8 @@ else if (showMap)
              data-pins="@pinsJson"
              data-lat-field="@Model.LatFieldId"
              data-lng-field="@Model.LngFieldId"
-             data-lat="@(Model.Latitude?.ToString(CultureInfo.InvariantCulture))"
-             data-lng="@(Model.Longitude?.ToString(CultureInfo.InvariantCulture))"
+             data-lat="@latText"
+             data-lng="@lngText"
              role="region"
              aria-label="Harita"></div>
         @if (Model.Picker)
@@ -60,5 +68,6 @@ else if (showMap)
             <p class="small text-muted mt-2 mb-0" data-uom-coord>@coordText</p>
         }
     </div>
+    <script src="~/js/map-viewport.js" asp-append-version="true"></script>
     <script src="~/js/google-maps.js" asp-append-version="true"></script>
 }
