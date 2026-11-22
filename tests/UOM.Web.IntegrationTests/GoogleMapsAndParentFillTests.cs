@@ -31,6 +31,7 @@ public class GoogleMapsAndParentFillTests
         var html = await client.GetStringAsync("/teskilat");
         html.Should().Contain("data-uom-map");
         html.Should().Contain("data-api-key=\"test-key\"");
+        html.Should().Contain("/js/map-viewport.js");
         html.Should().Contain("/js/google-maps.js");
         html.Should().NotContain("unsafe-eval");
         html.Should().NotContain("Google Haritalar anahtarı tanımlı değil");
@@ -40,9 +41,19 @@ public class GoogleMapsAndParentFillTests
         loader.Should().Contain("maps.googleapis.com/maps/api/js");
         loader.Should().Contain("loading=async");
         loader.Should().Contain("v=weekly");
-        loader.Should().Contain("38.6191");
-        loader.Should().Contain("27.4289");
+        loader.Should().Contain("importLibrary(\"maps\")");
+        loader.Should().Contain("importLibrary(\"marker\")");
+        loader.Should().Contain("RenderingType.RASTER");
+        loader.Should().Contain("panTo");
         loader.Should().NotContain("eval(");
+
+        var viewport = await client.GetStringAsync("/js/map-viewport.js");
+        viewport.Should().Contain("38.6191");
+        viewport.Should().Contain("27.4289");
+        viewport.Should().Contain("85.0511287798066");
+        viewport.Should().Contain("pointToLatLng");
+        viewport.Should().Contain("Math.pow(2, zoom)");
+        viewport.Should().NotContain("eval(");
     }
 
     [Fact]
