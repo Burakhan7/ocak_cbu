@@ -536,7 +536,7 @@ a.card:hover .card-body strong {
   position: relative;
   z-index: 1;
   /* Görselin alt %40'ı bir sonraki bandın altında kalır. Yüzde, içeren bloğun genişliğine göredir. */
-  margin-top: calc(100% * -0.4 * 1592 / 2688);
+  margin-top: calc(100% * -0.4 * 452 / 1788);
 }
 
 .home-page .home-band--ink {
