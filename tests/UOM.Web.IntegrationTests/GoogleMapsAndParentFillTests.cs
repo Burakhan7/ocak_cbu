@@ -100,8 +100,31 @@ public class GoogleMapsAndParentFillTests
         home.Should().Contain("Ana sitede oku");
         home.Should().Contain("Manisa Yerel Etkinlik");
         home.Should().Contain("GM Turnuva");
-        home.Should().NotContain("GM Haber 5");
         home.Should().NotContain("Ayni Link");
+        home.Should().Contain("home-showcase");
+        home.Should().NotContain("müsün?");
+        home.Should().NotContain("cbu-home");
+
+        var showcaseAt = home.IndexOf("home-showcase", StringComparison.Ordinal);
+        var eventsHeading = home.IndexOf("Yaklaşan etkinlikler", StringComparison.Ordinal);
+        showcaseAt.Should().BeGreaterThanOrEqualTo(0);
+        eventsHeading.Should().BeGreaterThan(showcaseAt);
+        var showcase = home[showcaseAt..eventsHeading];
+        showcase.IndexOf("Manisa Yerel Haber", StringComparison.Ordinal)
+            .Should().BeLessThan(showcase.IndexOf("Manisa Yerel Etkinlik", StringComparison.Ordinal));
+        showcase.IndexOf("Manisa Yerel Etkinlik", StringComparison.Ordinal)
+            .Should().BeLessThan(showcase.IndexOf("GM Haber 1", StringComparison.Ordinal));
+        showcase.Should().Contain("Önceki slayt");
+        showcase.Should().Contain("Sonraki slayt");
+        showcase.Should().Contain("aria-roledescription=\"carousel\"");
+
+        var newsHeading = home.IndexOf("<h2 class=\"h4 mb-0\">Haberler</h2>", StringComparison.Ordinal);
+        var parentHeading = home.IndexOf("Genel Merkez'den", newsHeading, StringComparison.Ordinal);
+        newsHeading.Should().BeGreaterThan(eventsHeading);
+        parentHeading.Should().BeGreaterThan(newsHeading);
+        var newsGrid = home[newsHeading..parentHeading];
+        newsGrid.Should().Contain("GM Haber 1");
+        newsGrid.Should().NotContain("GM Haber 5");
 
         var hub = await client.GetStringAsync("/genel-merkez");
         hub.Should().Contain("Elle Eklenen GM");
@@ -184,10 +207,15 @@ public class GoogleMapsAndParentFillTests
     private static string HeroHtml(string home)
     {
         var photo = home.IndexOf("/images/hero-banner.jpg", StringComparison.Ordinal);
-        var hub = home.IndexOf("müsün?", StringComparison.Ordinal);
+        var end = home.IndexOf("home-showcase", StringComparison.Ordinal);
+        if (end < 0)
+        {
+            end = home.IndexOf("Yaklaşan etkinlikler", StringComparison.Ordinal);
+        }
+
         photo.Should().BeGreaterThanOrEqualTo(0);
-        hub.Should().BeGreaterThan(photo);
-        return home[..hub];
+        end.Should().BeGreaterThan(photo);
+        return home[..end];
     }
 
     private static async Task SeedEmptySiteAsync(IServiceProvider services)

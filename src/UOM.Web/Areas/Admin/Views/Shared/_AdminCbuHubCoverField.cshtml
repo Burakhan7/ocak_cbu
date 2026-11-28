@@ -4,7 +4,7 @@
 }
 <div class="card card-body mb-3">
     <h2 class="h6 mb-3">CBÜ Hub kapak görseli</h2>
-    <p class="form-text text-muted mt-0">Ana sayfadaki “CBÜ’lü müsün?” kartında görünür. Görsel yoksa renk geçişi kullanılır.</p>
+    <p class="form-text text-muted mt-0">Ana sayfadaki “CBÜ’lü müsün?” kartı kaldırıldı. Bu kapak şu an herkese açık sayfada kullanılmıyor.</p>
     @if (!string.IsNullOrWhiteSpace(previewUrl))
     {
         <img src="@previewUrl" alt="@(altText ?? "Mevcut kapak")" class="img-thumbnail mb-2" style="max-height: 160px; object-fit: cover;" />
@@ -20,6 +20,6 @@
     </div>
     <div class="form-check">
         <input type="checkbox" class="form-check-input" id="removeCbuHubCover" name="removeCbuHubCover" value="true" />
-        <label class="form-check-label" for="removeCbuHubCover">Kapağı kaldır (renk geçişi kullanılır)</label>
+        <label class="form-check-label" for="removeCbuHubCover">Kapağı kaldır</label>
     </div>
 </div>

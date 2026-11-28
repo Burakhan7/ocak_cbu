@@ -1,0 +1,36 @@
+@model HomeShowcaseSlideModel
+@{
+    var item = Model.Item;
+}
+<div class="home-showcase__media">
+    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+    {
+        <img src="@item.ImageUrl"
+             alt=""
+             width="1600"
+             height="900"
+             decoding="async"
+             loading="@(Model.First ? "eager" : "lazy")"
+             fetchpriority="@(Model.First ? "high" : null)" />
+    }
+    else
+    {
+        <div class="home-showcase__fallback"></div>
+    }
+</div>
+<div class="home-showcase__caption">
+    <p class="home-showcase__kicker">
+        @(string.IsNullOrWhiteSpace(item.Badge) ? "Haber" : item.Badge)
+        @if (Model.External)
+        {
+            <span class="home-showcase__source">· Genel Merkez</span>
+        }
+    </p>
+    <h3 class="home-showcase__heading">@item.Title</h3>
+    <p class="home-showcase__when">@(item.WhenText ?? "")</p>
+    <p class="home-showcase__summary">@(item.Summary ?? "")</p>
+    @if (Model.External)
+    {
+        <span class="visually-hidden"> Yeni sekmede açılır.</span>
+    }
+</div>

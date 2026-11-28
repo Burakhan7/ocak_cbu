@@ -217,6 +217,9 @@ internal sealed class EmptyHomeFeedService : IHomeFeedService
     public Task<IReadOnlyList<HomeFeedCardDto>> GetUpcomingEventsAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<HomeFeedCardDto>>([]);
 
+    public Task<IReadOnlyList<HomeFeedCardDto>> GetShowcaseAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<HomeFeedCardDto>>([]);
+
     public Task<HomeFeedCardDto?> GetHeroAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<HomeFeedCardDto?>(null);
 }

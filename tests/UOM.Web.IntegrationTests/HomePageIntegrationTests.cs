@@ -46,8 +46,9 @@ public class HomePageIntegrationTests
         var html = await client.GetStringAsync("/");
 
         var eventsAt = html.IndexOf("<h2 class=\"h4 mb-0\">Yaklaşan etkinlikler</h2>", StringComparison.Ordinal);
-        var imageAt = html.IndexOf("src=\"/uploads/" + mediumPath + "\"", StringComparison.Ordinal);
+        var imageAt = html.IndexOf("src=\"/uploads/" + mediumPath + "\"", eventsAt, StringComparison.Ordinal);
         var newsAt = html.IndexOf("<h2 class=\"h4 mb-0\">Haberler</h2>", StringComparison.Ordinal);
+        var showcaseAt = html.IndexOf("home-showcase", StringComparison.Ordinal);
 
         eventsAt.Should().BeGreaterThanOrEqualTo(0);
         imageAt.Should().BeGreaterThan(eventsAt);
@@ -56,21 +57,23 @@ public class HomePageIntegrationTests
         html.Should().NotContain("görsel yok");
 
         var heroAt = html.IndexOf("/images/hero-banner.jpg", StringComparison.Ordinal);
-        var cbuAt = html.IndexOf("müsün?", StringComparison.Ordinal);
         heroAt.Should().BeGreaterThanOrEqualTo(0);
         html.Should().Contain("Alparslan Türkeş, Mustafa Kemal Atatürk ve Devlet Bahçeli.");
-        cbuAt.Should().BeGreaterThan(heroAt);
-        eventsAt.Should().BeGreaterThan(cbuAt);
+        showcaseAt.Should().BeGreaterThan(heroAt);
+        eventsAt.Should().BeGreaterThan(showcaseAt);
+        html[showcaseAt..eventsAt].Should().Contain("/etkinlikler/kapakli-etkinlik");
+        html[showcaseAt..eventsAt].Should().Contain("Etkinlik");
+        html[showcaseAt..eventsAt].Should().NotContain("Önceki slayt");
         html.Should().NotContain("Ülkü Ocakları Manisa ile tanış");
         html.Should().NotContain("home-hero-event");
         html.Should().NotContain("Yaklaşan etkinlik yakında burada.");
         html.Should().NotContain("/uploads/images/events/kapak-large.webp");
-        html.Should().Contain("cbu-home__row");
-        html.Should().Contain("cbu-home__aside");
-        html.Should().Contain("cbu-home__cover--placeholder");
-        html.Should().Contain("/cbu/rehber");
-        html.Should().Contain("/cbu/kaynaklar");
-        html.Should().Contain("/duyurular");
+        html.Should().NotContain("müsün?");
+        html.Should().NotContain("cbu-home");
+        html.Should().NotContain("Öğrenci rehberi");
+        html.Should().NotContain("Kaynak arşivi");
+        html.Should().NotContain("/cbu/rehber");
+        html.Should().NotContain("/cbu/kaynaklar");
     }
 
     [Fact]
@@ -84,8 +87,9 @@ public class HomePageIntegrationTests
         var home = await client.GetStringAsync("/");
         var hub = await client.GetStringAsync("/genel-merkez");
 
-        home.Should().Contain("src=\"/uploads/" + coverPath + "\"");
-        home.Should().NotContain("cbu-home__cover--placeholder");
+        home.Should().NotContain("src=\"/uploads/" + coverPath + "\"");
+        home.Should().NotContain("cbu-home");
+        home.Should().NotContain("müsün?");
         home.Should().Contain("col-12 col-lg-6");
         home.Should().Contain("parent-news-grid");
         home.Should().Contain("Panel ozeti");

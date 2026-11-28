@@ -257,6 +257,66 @@ public class ParentSiteFillTests
     }
 
     [Fact]
+    public void Showcase_puts_local_news_then_events_then_parent_items()
+    {
+        var news = new[]
+        {
+            Card("Yerel Haber 1", "/haberler/1"),
+            Card("Yerel Haber 2", "/haberler/2"),
+        };
+        var events = new[] { Card("Yerel Etkinlik", "/etkinlikler/1") };
+        var parent = Enumerable.Range(1, 8)
+            .Select(i => Item($"GM Haber {i}", $"https://ulkuocaklari.org.tr/blog/i/haber-{i}"))
+            .Append(Item("GM Turnuva", "https://ulkuocaklari.org.tr/blog/i/turnuva", ParentSiteItemKind.Event))
+            .ToList();
+
+        var slides = HomeSlotComposer.Showcase(news, events, parent, HomeSlotComposer.ShowcaseSlotCount);
+
+        slides.Should().HaveCount(8);
+        slides.Select(card => card.Title).Take(3).Should().Equal("Yerel Haber 1", "Yerel Haber 2", "Yerel Etkinlik");
+        slides[3].Title.Should().Be("GM Haber 1");
+        slides[3].Badge.Should().Be("Haber");
+        slides.Select(card => card.Title).Should().NotContain("GM Turnuva");
+    }
+
+    [Fact]
+    public void Showcase_keeps_events_when_local_news_would_fill_every_slot()
+    {
+        var news = Enumerable.Range(1, 8).Select(i => Card($"Haber {i}", $"/haberler/{i}")).ToList();
+        var events = Enumerable.Range(1, 3).Select(i => Card($"Etkinlik {i}", $"/etkinlikler/{i}")).ToList();
+
+        var slides = HomeSlotComposer.Showcase(news, events, [Item("GM Haber", "https://ulkuocaklari.org.tr/blog/i/gm")], 8);
+
+        slides.Should().HaveCount(8);
+        slides.Take(5).Select(card => card.Title).Should().Equal("Haber 1", "Haber 2", "Haber 3", "Haber 4", "Haber 5");
+        slides.Skip(5).Select(card => card.Title).Should().Equal("Etkinlik 1", "Etkinlik 2", "Etkinlik 3");
+    }
+
+    [Fact]
+    public void Showcase_is_empty_without_local_or_parent_items()
+    {
+        HomeSlotComposer.Showcase([], [], [], HomeSlotComposer.ShowcaseSlotCount).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Showcase_skips_a_parent_url_already_in_the_local_slides()
+    {
+        var news = new[]
+        {
+            new HomeFeedCardDto("Yerel", "özet", null, "Yerel", null, null, "https://ulkuocaklari.org.tr/blog/i/haber-1", "Haber"),
+        };
+
+        var slides = HomeSlotComposer.Showcase(
+            news,
+            [],
+            [Item("Ayni", "https://ulkuocaklari.org.tr/blog/i/haber-1"), Item("GM Haber 2", "https://ulkuocaklari.org.tr/blog/i/haber-2")],
+            8);
+
+        slides.Select(card => card.Title).Should().Equal("Yerel", "GM Haber 2");
+        slides[1].Badge.Should().Be("Haber");
+    }
+
+    [Fact]
     public void Hub_merge_puts_admin_links_first_and_skips_the_same_url()
     {
         var admin = new[]

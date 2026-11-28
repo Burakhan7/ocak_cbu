@@ -35,6 +35,21 @@ public sealed class HomeFeedService(
         return HomeSlotComposer.Fill(cards, feed.Items, HomeSlotComposer.EventSlotCount, eventsFirst: true);
     }
 
+    public async Task<IReadOnlyList<HomeFeedCardDto>> GetShowcaseAsync(CancellationToken cancellationToken = default)
+    {
+        var localNews = await news.GetFeaturedForHomeAsync(1, HomeSlotComposer.ShowcaseSlotCount - 1, cancellationToken);
+        var localEvents = await events.GetUpcomingAsync(HomeSlotComposer.ShowcaseSlotCount, cancellationToken);
+        var newsCards = localNews.Select(item => MapNews(item) with { Badge = "Haber" }).ToList();
+        var eventCards = localEvents.Select(item => MapEvent(item) with { Badge = "Etkinlik" }).ToList();
+        if (newsCards.Count + eventCards.Count >= HomeSlotComposer.ShowcaseSlotCount)
+        {
+            return HomeSlotComposer.Showcase(newsCards, eventCards, [], HomeSlotComposer.ShowcaseSlotCount);
+        }
+
+        var feed = await parentSite.GetAsync(cancellationToken);
+        return HomeSlotComposer.Showcase(newsCards, eventCards, feed.Items, HomeSlotComposer.ShowcaseSlotCount);
+    }
+
     public async Task<HomeFeedCardDto?> GetHeroAsync(CancellationToken cancellationToken = default)
     {
         var next = await events.GetNextUpcomingAsync(cancellationToken);
