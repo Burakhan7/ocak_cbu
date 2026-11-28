@@ -397,73 +397,210 @@ a.card:hover .card-body strong {
   object-position: center;
 }
 
-.cbu-home__cover--placeholder {
-  background: linear-gradient(
-    145deg,
-    var(--color-brand-primary) 0%,
-    var(--color-brand-secondary) 58%,
-    var(--color-brand-accent) 100%
-  );
-}
-
-.cbu-home__row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.cbu-home__lead {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  color: inherit;
-}
-
-.cbu-home__lead .card-body {
-  flex: 0 0 auto;
-}
-
-.cbu-home__media {
+.home-showcase__panel {
   position: relative;
-  flex: 0 0 auto;
-  height: 9rem;
-  overflow: hidden;
+  background: var(--home-card, #f7f3ec);
+  color: var(--home-on-light, #241c16);
+  border-radius: var(--radius-md);
 }
 
-.cbu-home__media .media-cover {
+.home-showcase__controls {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: 0;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  pointer-events: none;
+}
+
+.home-showcase__controls button {
+  pointer-events: auto;
+  touch-action: manipulation;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: #1c1814;
+  color: #f6f0e6;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.home-showcase__controls button:hover {
+  background: #3a3128;
+}
+
+.home-showcase__controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.home-showcase__controls button:focus-visible,
+.home-showcase__markers button:focus-visible,
+.home-showcase__link:focus-visible,
+.home-showcase__track:focus-visible {
+  outline: 2px solid #f3e2c8;
+  outline-offset: 2px;
+}
+
+.home-showcase__link:focus-visible {
+  outline-color: #4a3220;
+}
+
+.home-showcase__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  touch-action: manipulation;
+}
+
+.home-showcase__track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-showcase__track {
+    scroll-behavior: smooth;
+  }
+}
+
+.home-showcase__track > * {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.home-showcase__track[data-loop] > :first-child {
+  order: clamp(0, var(--current) - (var(--children-count, sibling-count()) - 3), 1);
+}
+
+.home-showcase__track[data-loop] > :last-child {
+  order: calc(-1 * clamp(0, 2 - var(--current), 1));
+}
+
+.home-showcase__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-showcase__link:hover .home-showcase__heading {
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.home-showcase__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #e6d7c4;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.home-showcase__media img,
+.home-showcase__fallback {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  max-height: none;
-  aspect-ratio: auto;
   object-fit: cover;
+  object-position: center;
 }
 
-.cbu-home__aside {
+.home-showcase__caption {
+  max-width: 42rem;
+  padding: 1rem 1.25rem 0.35rem;
+}
+
+.home-showcase__kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  color: #5e564c;
+}
+
+.home-showcase__source {
+  color: #6b6158;
+}
+
+.home-showcase__heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(1.35em * 2);
+}
+
+.home-showcase__when,
+.home-showcase__summary {
+  margin: 0.35rem 0 0;
+  color: #5e564c;
+}
+
+.home-showcase__when {
+  min-height: 1.25em;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.home-showcase__summary {
+  font-size: 0.975rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(1.45em * 2);
+}
+
+.home-showcase__markers {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem 0.85rem;
 }
 
-@media (min-width: 992px) {
-  .cbu-home__row {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  }
+.home-showcase__markers button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
 
-  .cbu-home__media {
-    flex: 1 1 auto;
-    height: auto;
-    min-height: 7.5rem;
-  }
+.home-showcase__markers button::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #5c5146;
+}
 
-  .cbu-home__aside > .card {
-    flex: 1 1 auto;
-    justify-content: center;
-  }
+.home-showcase__markers button[aria-current="true"]::before {
+  width: 1.15rem;
+  background: #241c16;
 }
 
 /* Ana sayfa: fotoğraf bandı ve sepyadan açığa renk geçişi.
@@ -535,8 +672,12 @@ a.card:hover .card-body strong {
 .home-page .home-band--overlap {
   position: relative;
   z-index: 1;
-  /* Görselin alt %40'ı bir sonraki bandın altında kalır. Yüzde, içeren bloğun genişliğine göredir. */
-  margin-top: calc(100% * -0.4 * 452 / 1788);
+  /* Portrelerin üstü kadrajda kalsın: band, görselin yalnızca alt %8'ini örter. */
+  margin-top: calc(100% * -0.08 * 452 / 1788);
+}
+
+.home-page .home-band--ink:not(:has(.home-showcase, .quote-band)) {
+  display: none;
 }
 
 .home-page .home-band--ink {
@@ -624,6 +765,16 @@ a.card:hover .card-body strong {
 .home-page .home-band--ink a,
 .home-page .home-band--events a {
   color: #f3e2c8;
+}
+
+.home-page .home-band--ink .home-showcase__panel,
+.home-page .home-band--ink .home-showcase__panel h3,
+.home-page .home-band--ink .home-showcase__panel a {
+  color: var(--home-on-light);
+}
+
+.home-page .home-band--ink .home-showcase__panel a:hover {
+  color: #4a3220;
 }
 
 .home-page .home-band--news a:not(.btn),

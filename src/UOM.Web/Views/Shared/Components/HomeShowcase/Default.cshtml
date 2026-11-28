@@ -1,0 +1,51 @@
+@using UOM.Application.Features.Public.Models
+@model IReadOnlyList<HomeFeedCardDto>
+@if (Model.Count == 0)
+{
+    return;
+}
+@{
+    var slides = Model.Count;
+    var loop = slides >= 3;
+}
+<section class="home-showcase home-section" aria-roledescription="carousel" aria-labelledby="home-showcase-title" data-home-showcase>
+    <h2 id="home-showcase-title" class="h4 home-showcase__title mb-3">Haberler ve etkinlikler</h2>
+    <div class="home-showcase__panel">
+        @if (slides > 1)
+        {
+            <div class="home-showcase__controls">
+                <button type="button" data-direction="previous" aria-label="Önceki slayt">Önceki</button>
+                <button type="button" data-direction="next" aria-label="Sonraki slayt">Sonraki</button>
+            </div>
+        }
+        <div class="home-showcase__track" id="home-showcase-track" tabindex="0" role="group" aria-label="Slaytlar" data-home-showcase-track@(loop ? " data-loop" : "")>
+            @for (var i = 0; i < slides; i++)
+            {
+                var item = Model[i];
+                var external = string.IsNullOrWhiteSpace(item.LocalPath);
+                var href = external ? item.ExternalUrl : item.LocalPath;
+                var position = $"{i + 1} / {slides}";
+                <article class="home-showcase__slide" role="group" aria-roledescription="slide" aria-label="@($"{position}, {item.Title}")" data-marker-name="@($"Slayt {i + 1}: {item.Title}")">
+                    @if (!string.IsNullOrWhiteSpace(href))
+                    {
+                        <a class="home-showcase__link" href="@href" target="@(external ? "_blank" : null)" rel="@(external ? "noopener noreferrer" : null)">
+                            <partial name="_HomeShowcaseSlide" model="new HomeShowcaseSlideModel(item, i == 0, external)" />
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="home-showcase__link">
+                            <partial name="_HomeShowcaseSlide" model="new HomeShowcaseSlideModel(item, i == 0, false)" />
+                        </div>
+                    }
+                </article>
+            }
+        </div>
+        @if (slides > 1)
+        {
+            <p class="visually-hidden" role="status" aria-live="polite" data-home-showcase-status></p>
+            <nav class="home-showcase__markers" aria-label="Slayt seç" data-home-showcase-markers></nav>
+            <script src="~/js/home-showcase.js" asp-append-version="true"></script>
+        }
+    </div>
+</section>
