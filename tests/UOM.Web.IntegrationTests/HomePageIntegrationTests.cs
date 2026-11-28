@@ -55,10 +55,10 @@ public class HomePageIntegrationTests
         html.Should().Contain("/etkinlikler/kapakli-etkinlik");
         html.Should().NotContain("görsel yok");
 
-        var heroAt = html.IndexOf("/images/hero-ataturk.jpg", StringComparison.Ordinal);
+        var heroAt = html.IndexOf("/images/hero-banner.jpg", StringComparison.Ordinal);
         var cbuAt = html.IndexOf("müsün?", StringComparison.Ordinal);
         heroAt.Should().BeGreaterThanOrEqualTo(0);
-        html.Should().Contain("Atatürk, beraberindekilerle yürürken.");
+        html.Should().Contain("Alparslan Türkeş, Mustafa Kemal Atatürk ve Devlet Bahçeli.");
         cbuAt.Should().BeGreaterThan(heroAt);
         eventsAt.Should().BeGreaterThan(cbuAt);
         html.Should().NotContain("Ülkü Ocakları Manisa ile tanış");

@@ -155,8 +155,8 @@ public class GoogleMapsAndParentFillTests
         await SeedEmptySiteAsync(withCover.Services);
         var covered = await withCover.CreateClient().GetStringAsync("/");
         var hero = HeroHtml(covered);
-        hero.Should().Contain("src=\"/images/hero-ataturk.jpg\"");
-        hero.Should().Contain("Atatürk, beraberindekilerle yürürken.");
+        hero.Should().Contain("src=\"/images/hero-banner.jpg\"");
+        hero.Should().Contain("Alparslan Türkeş, Mustafa Kemal Atatürk ve Devlet Bahçeli.");
         hero.Should().NotContain(cover);
         hero.Should().NotContain("home-hero-event");
         hero.Should().NotContain("src=\"/uploads/");
@@ -172,7 +172,7 @@ public class GoogleMapsAndParentFillTests
         await SeedEmptySiteAsync(withoutCover.Services);
         var plain = await withoutCover.CreateClient().GetStringAsync("/");
         var plainHero = HeroHtml(plain);
-        plainHero.Should().Contain("src=\"/images/hero-ataturk.jpg\"");
+        plainHero.Should().Contain("src=\"/images/hero-banner.jpg\"");
         plainHero.Should().NotContain("card-cover__placeholder");
         plainHero.Should().NotContain(cover);
         var plainEvents = plain.IndexOf("Yaklaşan etkinlikler", StringComparison.Ordinal);
@@ -183,7 +183,7 @@ public class GoogleMapsAndParentFillTests
 
     private static string HeroHtml(string home)
     {
-        var photo = home.IndexOf("/images/hero-ataturk.jpg", StringComparison.Ordinal);
+        var photo = home.IndexOf("/images/hero-banner.jpg", StringComparison.Ordinal);
         var hub = home.IndexOf("müsün?", StringComparison.Ordinal);
         photo.Should().BeGreaterThanOrEqualTo(0);
         hub.Should().BeGreaterThan(photo);
